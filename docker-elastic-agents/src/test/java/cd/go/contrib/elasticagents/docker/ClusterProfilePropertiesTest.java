@@ -19,22 +19,21 @@ package cd.go.contrib.elasticagents.docker;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.requests.JobCompletionRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClusterProfilePropertiesTest {
+class ClusterProfilePropertiesTest {
 
     @Test
-    public void shouldGenerateSameUUIDForClusterProfileProperties() {
+    void shouldGenerateSameUUIDForClusterProfileProperties() {
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties().setGoServerUrl("http://go-server-url/go");
 
-        assertThat(clusterProfileProperties.uuid(), is(clusterProfileProperties.uuid()));
+        assertThat(clusterProfileProperties.uuid()).isEqualTo(clusterProfileProperties.uuid());
     }
 
     @Test
-    public void shouldGenerateSameUUIDForClusterProfilePropertiesAcrossRequests() {
+    void shouldGenerateSameUUIDForClusterProfilePropertiesAcrossRequests() {
         String createAgentRequestJSON = "{\n" +
                 "  \"auto_register_key\": \"secret-key\",\n" +
                 "  \"elastic_agent_profile_properties\": {\n" +
@@ -71,7 +70,7 @@ public class ClusterProfilePropertiesTest {
                 "}";
 
         JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(jobCompletionRequestJSON);
-        assertThat(jobCompletionRequest.getClusterProfileProperties().uuid(), is(createAgentRequest.getClusterProfileProperties().uuid()));
+        assertThat(jobCompletionRequest.getClusterProfileProperties().uuid()).isEqualTo(createAgentRequest.getClusterProfileProperties().uuid());
 
     }
 }

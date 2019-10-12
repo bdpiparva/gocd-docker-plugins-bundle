@@ -23,18 +23,18 @@ import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class CreateAgentRequestExecutorTest {
+class CreateAgentRequestExecutorTest {
 
     private ClusterProfileProperties clusterProfileProperties;
     private CreateAgentRequestExecutor executor;
@@ -45,8 +45,8 @@ public class CreateAgentRequestExecutorTest {
     @Mock
     private PluginRequest pluginRequest;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
         elasticProfileConfiguration = new ElasticProfileConfiguration().setImage("image1");
         clusterProfileProperties = new ClusterProfileProperties();
@@ -56,7 +56,7 @@ public class CreateAgentRequestExecutorTest {
     }
 
     @Test
-    public void shouldAskDockerContainersToCreateAnAgent() throws Exception {
+    void shouldAskDockerContainersToCreateAnAgent() throws Exception {
         final JobIdentifier jobIdentifier = new JobIdentifier("p1", 1L, "l1", "s1", "1", "j1", 1L);
         CreateAgentRequest request = new CreateAgentRequest()
                 .setAutoRegisterKey("key1")
@@ -72,7 +72,7 @@ public class CreateAgentRequestExecutorTest {
     }
 
     @Test
-    public void shouldLogErrorMessageToConsoleIfAgentCreateFails() throws Exception {
+    void shouldLogErrorMessageToConsoleIfAgentCreateFails() throws Exception {
         final JobIdentifier jobIdentifier = new JobIdentifier("p1", 1L, "l1", "s1", "1", "j1", 1L);
         CreateAgentRequest request = new CreateAgentRequest()
                 .setAutoRegisterKey("key1")

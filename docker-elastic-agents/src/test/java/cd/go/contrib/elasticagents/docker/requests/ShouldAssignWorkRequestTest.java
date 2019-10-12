@@ -21,16 +21,14 @@ import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
 import com.google.gson.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ShouldAssignWorkRequestTest {
+class ShouldAssignWorkRequestTest {
 
     @Test
-    public void shouldDeserializeFromJSON() {
+    void shouldDeserializeFromJSON() {
         JsonObject agentJson = new JsonObject();
         agentJson.addProperty("agent_id", "42");
         agentJson.addProperty("agent_state", "Idle");
@@ -52,10 +50,10 @@ public class ShouldAssignWorkRequestTest {
 
         ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString());
 
-        assertThat(request.getEnvironment(), equalTo("prod"));
-        assertThat(request.getAgent(), equalTo(new Agent("42", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled)));
-        assertThat(request.getJobIdentifier(), is(JobIdentifierMother.get()));
-        assertThat(request.getElasticProfileConfiguration(), is(new ElasticProfileConfiguration().setImage("alpine:latest")));
-        assertThat(request.getClusterProfileProperties(), is(new ClusterProfileProperties().setGoServerUrl("some-url")));
+        assertThat(request.getEnvironment()).isEqualTo("prod");
+        assertThat(request.getAgent()).isEqualTo(new Agent("42", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled));
+        assertThat(request.getJobIdentifier()).isEqualTo(JobIdentifierMother.get());
+        assertThat(request.getElasticProfileConfiguration()).isEqualTo(new ElasticProfileConfiguration().setImage("alpine:latest"));
+        assertThat(request.getClusterProfileProperties()).isEqualTo(new ClusterProfileProperties().setGoServerUrl("some-url"));
     }
 }

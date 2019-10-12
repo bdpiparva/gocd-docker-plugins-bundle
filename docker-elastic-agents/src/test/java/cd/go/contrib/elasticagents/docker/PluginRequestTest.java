@@ -19,15 +19,15 @@ package cd.go.contrib.elasticagents.docker;
 import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PluginRequestTest {
+class PluginRequestTest {
     @Test
-    public void shouldNotThrowAnExceptionIfConsoleLogAppenderCallFails() {
+    void shouldNotThrowAnExceptionIfConsoleLogAppenderCallFails() {
         final JobIdentifier jobIdentifier = new JobIdentifier("p1", 1L, "l1", "s1", "1", "j1", 1L);
 
         GoApplicationAccessor accessor = mock(GoApplicationAccessor.class);

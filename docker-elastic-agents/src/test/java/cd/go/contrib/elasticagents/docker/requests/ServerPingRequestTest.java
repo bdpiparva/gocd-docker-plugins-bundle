@@ -18,15 +18,15 @@ package cd.go.contrib.elasticagents.docker.requests;
 
 
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ServerPingRequestTest {
+class ServerPingRequestTest {
     @Test
-    public void shouldDeserializeJSONBody() {
+    void shouldDeserializeJSONBody() {
         String requestBody = "{\n " +
                 " \"all_cluster_profile_properties\": [\n    " +
                 "{\n      " +

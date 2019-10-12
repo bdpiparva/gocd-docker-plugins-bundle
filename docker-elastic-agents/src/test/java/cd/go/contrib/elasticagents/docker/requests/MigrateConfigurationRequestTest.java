@@ -21,17 +21,16 @@ import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import static java.util.List.of;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class MigrateConfigurationRequestTest {
+class MigrateConfigurationRequestTest {
 
     @Test
-    public void shouldCreateMigrationConfigRequestFromRequestBody() {
+    void shouldCreateMigrationConfigRequestFromRequestBody() {
         String requestBody = "{" +
                 "    \"plugin_settings\":{" +
                 "        \"go_server_url\":\"https://127.0.0.1:8154/go\", " +
@@ -76,13 +75,13 @@ public class MigrateConfigurationRequestTest {
                 .setClusterProfileId("cluster_profile_id")
                 .setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine:latest"));
 
-        assertThat(pluginSettings, is(request.getPluginSettings()));
-        assertThat(of(clusterProfile), is(request.getClusterProfiles()));
-        assertThat(of(elasticAgentProfile), is(request.getElasticAgentProfiles()));
+        assertThat(pluginSettings).isEqualTo(request.getPluginSettings());
+        assertThat(of(clusterProfile)).isEqualTo(request.getClusterProfiles());
+        assertThat(of(elasticAgentProfile)).isEqualTo(request.getElasticAgentProfiles());
     }
 
     @Test
-    public void shouldCreateMigrationConfigRequestWhenNoConfigurationsAreSpecified() {
+    void shouldCreateMigrationConfigRequestWhenNoConfigurationsAreSpecified() {
         String requestBody = "{" +
                 "    \"plugin_settings\":{}," +
                 "    \"cluster_profiles\":[]," +
@@ -91,13 +90,13 @@ public class MigrateConfigurationRequestTest {
 
         MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody);
 
-        assertThat(new ClusterProfileProperties(), is(request.getPluginSettings()));
-        assertThat(of(), is(request.getClusterProfiles()));
-        assertThat(of(), is(request.getElasticAgentProfiles()));
+        assertThat(new ClusterProfileProperties()).isEqualTo(request.getPluginSettings());
+        assertThat(of()).isEqualTo(request.getClusterProfiles());
+        assertThat(of()).isEqualTo(request.getElasticAgentProfiles());
     }
 
     @Test
-    public void shouldSerializeToJSONFromMigrationConfigRequest() throws JSONException {
+    void shouldSerializeToJSONFromMigrationConfigRequest() throws JSONException {
         ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
         clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
         clusterProfileProperties.setAutoRegisterTimeout("20");

@@ -17,46 +17,46 @@
 package cd.go.contrib.elasticagents.docker.validator;
 
 import cd.go.plugin.base.validation.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties.GO_SERVER_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GoServerURLValidatorTest {
+class GoServerURLValidatorTest {
     private final GoServerURLValidator goServerURLMetadata = new GoServerURLValidator();
 
     @Test
-    public void shouldCheckBlankInput() {
+    void shouldCheckBlankInput() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, ""));
 
         assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must not be blank.");
     }
 
     @Test
-    public void shouldCheckIfStringIsValidUrl() {
+    void shouldCheckIfStringIsValidUrl() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "foobar"));
 
         assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must be a valid URL (https://example.com:8154/go)");
     }
 
     @Test
-    public void shouldCheckIfSchemeIsValid() {
+    void shouldCheckIfSchemeIsValid() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "example.com"));
 
         assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must be a valid URL (https://example.com:8154/go)");
     }
 
     @Test
-    public void shouldCheckIfSchemeIsHTTPS() {
+    void shouldCheckIfSchemeIsHTTPS() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "http://example.com"));
 
         assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must be a valid HTTPs URL (https://example.com:8154/go)");
     }
 
     @Test
-    public void shouldCheckForLocalhost() {
+    void shouldCheckForLocalhost() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "https://localhost:8154/go"));
 
         assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must not be localhost, since this gets resolved on the agents");
@@ -67,7 +67,7 @@ public class GoServerURLValidatorTest {
     }
 
     @Test
-    public void shouldCheckIfUrlEndsWithContextGo() {
+    void shouldCheckIfUrlEndsWithContextGo() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "https://example.com:8154/"));
         assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must be a valid URL ending with '/go' (https://example.com:8154/go)");
 
@@ -76,7 +76,7 @@ public class GoServerURLValidatorTest {
     }
 
     @Test
-    public void shouldReturnNullForValidUrls() {
+    void shouldReturnNullForValidUrls() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "https://example.com:8154/go"));
         assertThat(result).isEmpty();
 

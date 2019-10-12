@@ -17,16 +17,14 @@
 package cd.go.contrib.elasticagents.docker.requests;
 
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class CreateAgentRequestTest {
+class CreateAgentRequestTest {
 
     @Test
-    public void shouldDeserializeFromJSON() {
+    void shouldDeserializeFromJSON() {
         String json = "{\n" +
                 "  \"auto_register_key\": \"secret-key\",\n" +
                 "  \"elastic_agent_profile_properties\": {\n" +
@@ -40,13 +38,13 @@ public class CreateAgentRequestTest {
                 "}";
 
         CreateAgentRequest request = CreateAgentRequest.fromJSON(json);
-        assertThat(request.getAutoRegisterKey(), equalTo("secret-key"));
-        assertThat(request.getEnvironment(), equalTo("prod"));
-        assertThat(request.getElasticProfileConfiguration().getImage(), is("alpine"));
+        assertThat(request.getAutoRegisterKey()).isEqualTo("secret-key");
+        assertThat(request.getEnvironment()).isEqualTo("prod");
+        assertThat(request.getElasticProfileConfiguration().getImage()).isEqualTo("alpine");
 
         ClusterProfileProperties expectedClusterProfileProperties = new ClusterProfileProperties();
         expectedClusterProfileProperties.setGoServerUrl("https://foo.com/go");
         expectedClusterProfileProperties.setDockerURI("unix:///var/run/docker.sock");
-        assertThat(request.getClusterProfileProperties(), is(expectedClusterProfileProperties));
+        assertThat(request.getClusterProfileProperties()).isEqualTo(expectedClusterProfileProperties);
     }
 }

@@ -19,14 +19,13 @@ package cd.go.contrib.elasticagents.docker.requests;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
 import com.google.gson.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class AgentStatusReportRequestTest {
+class AgentStatusReportRequestTest {
     @Test
-    public void shouldDeserializeFromJSON() {
+    void shouldDeserializeFromJSON() {
         JsonObject jobIdentifierJson = JobIdentifierMother.getJson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("elastic_agent_id", "some-id");
@@ -40,11 +39,11 @@ public class AgentStatusReportRequestTest {
                 .setJobIdentifier(JobIdentifierMother.get())
                 .setClusterProfile(null);
 
-        assertThat(agentStatusReportRequest, is(expected));
+        assertThat(agentStatusReportRequest).isEqualTo(expected);
     }
 
     @Test
-    public void shouldDeserializeFromJSONWithClusterProfile() {
+    void shouldDeserializeFromJSONWithClusterProfile() {
         JsonObject jobIdentifierJson = JobIdentifierMother.getJson();
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("elastic_agent_id", "some-id");
@@ -64,6 +63,6 @@ public class AgentStatusReportRequestTest {
                 .setElasticAgentId("some-id")
                 .setJobIdentifier(JobIdentifierMother.get())
                 .setClusterProfile(expectedClusterProfile);
-        assertThat(agentStatusReportRequest, is(expected));
+        assertThat(agentStatusReportRequest).isEqualTo(expected);
     }
 }

@@ -16,14 +16,14 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class MemorySpecificationTest {
+class MemorySpecificationTest {
     @Test
-    public void memorySpecificationIsParsedCorrectly() {
+    void memorySpecificationIsParsedCorrectly() {
         assertThat(Long.valueOf(10L * 1024L * 1024L)).isEqualTo(new MemorySpecification("10M").getMemory());
         assertThat(Long.valueOf(25L * 1024L * 1024L * 1024L)).isEqualTo(new MemorySpecification("25G").getMemory());
         assertThat(Long.valueOf(138L * 1024L * 1024L * 1024L * 1024L)).isEqualTo(new MemorySpecification("138T").getMemory());
@@ -31,7 +31,7 @@ public class MemorySpecificationTest {
     }
 
     @Test
-    public void shouldBombWhenParsingErrors() {
+    void shouldBombWhenParsingErrors() {
         assertThatCode(() -> new MemorySpecification("5K")).hasMessageContaining("Invalid size: 5K. Wrong size unit");
         assertThatCode(() -> new MemorySpecification("5")).hasMessageContaining("Invalid size: 5");
         assertThatCode(() -> new MemorySpecification("A")).hasMessageContaining("Invalid size: A");

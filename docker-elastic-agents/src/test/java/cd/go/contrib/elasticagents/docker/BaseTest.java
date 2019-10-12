@@ -22,8 +22,8 @@ import com.spotify.docker.client.DockerCertificates;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.exceptions.DockerException;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -31,23 +31,23 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 
 import static java.lang.System.getenv;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 public abstract class BaseTest {
 
-    protected static DefaultDockerClient.Builder builder;
-    protected static DefaultDockerClient docker;
+    private static DefaultDockerClient.Builder builder;
+    static DefaultDockerClient docker;
     protected static HashSet<String> containers;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         builder = DefaultDockerClient.fromEnv();
         docker = builder.build();
         containers = new HashSet<>();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         for (String container : containers) {
             try {
@@ -74,7 +74,7 @@ public abstract class BaseTest {
         return settings;
     }
 
-    protected void assertContainerDoesNotExist(String id) throws DockerException, InterruptedException {
+    void assertContainerDoesNotExist(String id) throws DockerException, InterruptedException {
         try {
             docker.inspectContainer(id);
             fail("Expected ContainerNotFoundException");
@@ -83,8 +83,8 @@ public abstract class BaseTest {
         }
     }
 
-    protected void assertContainerExist(String id) throws DockerException, InterruptedException {
-        assertNotNull(docker.inspectContainer(id));
+    void assertContainerExist(String id) throws DockerException, InterruptedException {
+        assertThat(docker.inspectContainer(id)).isNotNull();
     }
 
 }

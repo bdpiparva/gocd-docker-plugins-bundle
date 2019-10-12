@@ -23,18 +23,17 @@ import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
-public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
+class ShouldAssignWorkRequestExecutorTest extends BaseTest {
 
     private Map<String, DockerContainers> clusterToContainersMap;
     private DockerContainer instance;
@@ -42,8 +41,8 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     private final JobIdentifier jobIdentifier = new JobIdentifier("up42", 2L, "foo", "stage", "1", "job", 1L);
     private ClusterProfileProperties clusterProfileProperties;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         clusterProfileProperties = createClusterProfiles();
         PluginRequest pluginRequest = mock(PluginRequest.class);
         CreateAgentRequest request = new CreateAgentRequest()
@@ -60,19 +59,19 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void shouldAssignWorkToContainerWithSameJobIdentifier() {
+    void shouldAssignWorkToContainerWithSameJobIdentifier() {
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest()
                 .setAgent(new Agent(instance.name(), null, null, null))
                 .setEnvironment(environment)
                 .setJobIdentifier(jobIdentifier)
                 .setClusterProfileProperties(clusterProfileProperties);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToContainersMap).execute(request);
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("true"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("true");
     }
 
     @Test
-    public void shouldNotAssignWorkToContainerWithDifferentJobIdentifier() {
+    void shouldNotAssignWorkToContainerWithDifferentJobIdentifier() {
         JobIdentifier otherJobId = new JobIdentifier("up42", 2L, "foo", "stage", "1", "job", 2L);
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest()
                 .setAgent(new Agent(instance.name(), null, null, null))
@@ -80,19 +79,19 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
                 .setJobIdentifier(otherJobId)
                 .setClusterProfileProperties(clusterProfileProperties);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToContainersMap).execute(request);
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("false"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("false");
     }
 
     @Test
-    public void shouldNotAssignWorkIfInstanceIsNotFound() {
+    void shouldNotAssignWorkIfInstanceIsNotFound() {
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest()
                 .setAgent(new Agent("unknown-name", null, null, null))
                 .setEnvironment(environment)
                 .setJobIdentifier(jobIdentifier)
                 .setClusterProfileProperties(clusterProfileProperties);
         GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToContainersMap).execute(request);
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("false"));
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("false");
     }
 }

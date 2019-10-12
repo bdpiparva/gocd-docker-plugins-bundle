@@ -18,15 +18,14 @@ package cd.go.contrib.elasticagents.docker.requests;
 
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import com.google.gson.JsonObject;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClusterStatusReportRequestTest {
+class ClusterStatusReportRequestTest {
 
     @Test
-    public void shouldDeserializeFromJSON() {
+    void shouldDeserializeFromJSON() {
         JsonObject jsonObject = new JsonObject();
         JsonObject clusterJSON = new JsonObject();
         clusterJSON.addProperty("go_server_url", "https://go-server/go");
@@ -36,6 +35,6 @@ public class ClusterStatusReportRequestTest {
 
         ClusterStatusReportRequest expected = new ClusterStatusReportRequest()
                 .setClusterProfile(new ClusterProfileProperties().setGoServerUrl("https://go-server/go"));
-        assertThat(clusterStatusReportRequest, is(expected));
+        assertThat(clusterStatusReportRequest).isEqualTo(expected);
     }
 }

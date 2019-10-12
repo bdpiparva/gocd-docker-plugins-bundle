@@ -16,45 +16,44 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class SetupSemaphoreTest {
+class SetupSemaphoreTest {
 
     @Test
-    public void shouldDrainSemaphoreCompletely_when_maxAllowedContainersIsLessThanCurrentContainerCount() throws Exception {
+    void shouldDrainSemaphoreCompletely_when_maxAllowedContainersIsLessThanCurrentContainerCount() throws Exception {
         Map<?, ?> instances = instancesWithSize(10);
         Semaphore semaphore = new Semaphore(9, true);
 
         new SetupSemaphore(5, instances, semaphore).run();
 
-        assertThat(semaphore.availablePermits(), is(0));
+        assertThat(semaphore.availablePermits()).isEqualTo(0);
     }
 
     @Test
-    public void shouldDecreaseSemaphore_when_maxAllowedContainersIsMoreThanCurrentContainerCount_and_availablePermitInSemaphoreIsLessThanNumberOfInstances() throws Exception {
+    void shouldDecreaseSemaphore_when_maxAllowedContainersIsMoreThanCurrentContainerCount_and_availablePermitInSemaphoreIsLessThanNumberOfInstances() throws Exception {
         Map<?, ?> instances = instancesWithSize(10);
         Semaphore semaphore = new Semaphore(11, true);
 
         new SetupSemaphore(15, instances, semaphore).run();
 
-        assertThat(semaphore.availablePermits(), is(5));
+        assertThat(semaphore.availablePermits()).isEqualTo(5);
     }
 
     @Test
-    public void shouldIncreaseSemaphore_when_maxAllowedContainersIsMoreThanCurrentContainerCount_and_availablePermitInSemaphoreIsLessThanNumberOfInstances() throws Exception {
+    void shouldIncreaseSemaphore_when_maxAllowedContainersIsMoreThanCurrentContainerCount_and_availablePermitInSemaphoreIsLessThanNumberOfInstances() throws Exception {
         Map<?, ?> instances = instancesWithSize(10);
         Semaphore semaphore = new Semaphore(1, true);
 
         new SetupSemaphore(15, instances, semaphore).run();
 
-        assertThat(semaphore.availablePermits(), is(5));
+        assertThat(semaphore.availablePermits()).isEqualTo(5);
     }
 
     private Map<?, ?> instancesWithSize(int size) {

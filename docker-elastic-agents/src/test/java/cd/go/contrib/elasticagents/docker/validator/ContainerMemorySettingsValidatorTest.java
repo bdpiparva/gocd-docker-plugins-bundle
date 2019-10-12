@@ -17,7 +17,7 @@
 package cd.go.contrib.elasticagents.docker.validator;
 
 import cd.go.plugin.base.validation.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,9 +26,9 @@ import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfigurat
 import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration.RESERVED_MEMORY;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ContainerMemorySettingsValidatorTest {
+class ContainerMemorySettingsValidatorTest {
     @Test
-    public void minimumMaxMemoryValue() {
+    void minimumMaxMemoryValue() {
         Map<String, String> elasticProfile = new HashMap<>();
         elasticProfile.put(MAX_MEMORY, "3M");
 
@@ -40,7 +40,7 @@ public class ContainerMemorySettingsValidatorTest {
     }
 
     @Test
-    public void bothMemorySettingsAreEmpty() {
+    void bothMemorySettingsAreEmpty() {
         Map<String, String> elasticProfile = new HashMap<>();
         elasticProfile.put(MAX_MEMORY, "");
         elasticProfile.put(RESERVED_MEMORY, "");
@@ -51,7 +51,7 @@ public class ContainerMemorySettingsValidatorTest {
     }
 
     @Test
-    public void maxMemorySetReservedMemoryEmpty() {
+    void maxMemorySetReservedMemoryEmpty() {
         Map<String, String> elasticProfile = new HashMap<>();
         elasticProfile.put(MAX_MEMORY, "2G");
         elasticProfile.put(RESERVED_MEMORY, "");
@@ -62,7 +62,7 @@ public class ContainerMemorySettingsValidatorTest {
     }
 
     @Test
-    public void maxMemoryIsLowerThanReservedMemory() {
+    void maxMemoryIsLowerThanReservedMemory() {
         Map<String, String> elasticProfile = new HashMap<>();
         elasticProfile.put(MAX_MEMORY, "1G");
         elasticProfile.put(RESERVED_MEMORY, "2G");

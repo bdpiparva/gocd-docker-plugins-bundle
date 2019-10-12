@@ -19,17 +19,13 @@ package cd.go.contrib.elasticagents.docker.requests;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
-import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-public class JobCompletionRequestTest {
+class JobCompletionRequestTest {
     @Test
-    public void shouldDeserializeFromJSON() {
+    void shouldDeserializeFromJSON() {
         String json = "{\n" +
                 "  \"elastic_agent_id\": \"ea1\",\n" +
                 "  \"elastic_agent_profile_properties\": {\n" +
@@ -52,13 +48,13 @@ public class JobCompletionRequestTest {
         JobCompletionRequest request = JobCompletionRequest.fromJSON(json);
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.getJobIdentifier();
-        assertThat(actualJobIdentifier, is(expectedJobIdentifier));
-        assertThat(request.getElasticAgentId(), is("ea1"));
+        assertThat(actualJobIdentifier).isEqualTo(expectedJobIdentifier);
+        assertThat(request.getElasticAgentId()).isEqualTo("ea1");
 
-        assertThat(request.getElasticProfileConfiguration(), is(new ElasticProfileConfiguration().setImage("alpine:latest")));
+        assertThat(request.getElasticProfileConfiguration()).isEqualTo(new ElasticProfileConfiguration().setImage("alpine:latest"));
 
         ClusterProfileProperties expectedClusterProfileProperties = new ClusterProfileProperties();
         expectedClusterProfileProperties.setGoServerUrl("https://example.com/go");
-        assertThat(request.getClusterProfileProperties(), is(expectedClusterProfileProperties));
+        assertThat(request.getClusterProfileProperties()).isEqualTo(expectedClusterProfileProperties);
     }
 }

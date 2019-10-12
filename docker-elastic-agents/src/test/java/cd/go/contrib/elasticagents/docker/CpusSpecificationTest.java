@@ -16,14 +16,14 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-public class CpusSpecificationTest {
+class CpusSpecificationTest {
     @Test
-    public void cpusIsTranslatedToCpuPeriodAndCpuQuota() {
+    void cpusIsTranslatedToCpuPeriodAndCpuQuota() {
         CpusSpecification cpus1 = new CpusSpecification("1.5");
 
         assertThat(cpus1.getCpuPeriod()).isEqualTo(100_000L);
@@ -36,7 +36,7 @@ public class CpusSpecificationTest {
     }
 
     @Test
-    public void cpusParsedWithErrors() {
+    void cpusParsedWithErrors() {
         assertThatCode(() -> new CpusSpecification("0,3"))
                 .hasMessage("For input string: \"0,3\"");
         assertThatCode(() -> new CpusSpecification("abc"))

@@ -17,8 +17,8 @@
 package cd.go.contrib.elasticagents.docker.validator;
 
 import cd.go.plugin.base.validation.ValidationResult;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
@@ -26,44 +26,44 @@ import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfigurat
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HostsValidatorTest {
+class HostsValidatorTest {
 
     private HostsValidator validator;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         validator = new HostsValidator();
     }
 
     @Test
-    public void shouldReturnEmptyListWhenHostConfigIsNotProvided() {
+    void shouldReturnEmptyListWhenHostConfigIsNotProvided() {
         assertThat(validator.validate(singletonMap(HOSTS, null))).hasSize(0);
         assertThat(new HostsValidator().validate(Map.of(HOSTS, ""))).hasSize(0);
     }
 
     @Test
-    public void shouldAllowOneIPToOneHostnameMapping() {
+    void shouldAllowOneIPToOneHostnameMapping() {
         final ValidationResult result = validator.validate(Map.of(HOSTS, "10.0.0.1 foo-host"));
 
         assertThat(result).hasSize(0);
     }
 
     @Test
-    public void shouldAllowOneIPToManyHostnameMapping() {
+    void shouldAllowOneIPToManyHostnameMapping() {
         final ValidationResult result = validator.validate(Map.of(HOSTS, "10.0.0.1 foo-host bar-host"));
 
         assertThat(result).hasSize(0);
     }
 
     @Test
-    public void shouldIgnoreEmptyLines() {
+    void shouldIgnoreEmptyLines() {
         final ValidationResult result = validator.validate(Map.of(HOSTS, "10.0.0.1 foo-host\n\n\n 10.0.0.2 bar-host"));
 
         assertThat(result).hasSize(0);
     }
 
     @Test
-    public void shouldValidateIPAddress() {
+    void shouldValidateIPAddress() {
         ValidationResult result = validator.validate(Map.of(HOSTS, "10.0.0.foo hostname"));
 
         assertThat(result).hasSize(1);
@@ -71,7 +71,7 @@ public class HostsValidatorTest {
     }
 
     @Test
-    public void shouldValidateInvalidHostConfig() {
+    void shouldValidateInvalidHostConfig() {
         ValidationResult result = validator.validate(Map.of(HOSTS, "some-config"));
 
         assertThat(result).hasSize(1);

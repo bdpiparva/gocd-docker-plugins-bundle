@@ -24,8 +24,8 @@ import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -33,14 +33,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ClusterStatusReportExecutorTest {
+class ClusterStatusReportExecutorTest {
     private ClusterProfileProperties clusterProfile;
-
     @Mock
     private ViewBuilder viewBuilder;
 
@@ -51,8 +49,8 @@ public class ClusterStatusReportExecutorTest {
     private Template template;
     private ClusterStatusReportExecutor executor;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
         clusterProfile = new ClusterProfileProperties();
         Map<String, DockerContainers> clusterToContainersMap = new HashMap<>();
@@ -61,7 +59,7 @@ public class ClusterStatusReportExecutorTest {
     }
 
     @Test
-    public void shouldGetStatusReport() throws Exception {
+    void shouldGetStatusReport() throws Exception {
         StatusReport statusReport = aStatusReport();
         when(dockerContainers.getStatusReport(clusterProfile)).thenReturn(statusReport);
         when(viewBuilder.getTemplate("docker/cluster-status-report.template.ftlh")).thenReturn(template);
@@ -74,7 +72,7 @@ public class ClusterStatusReportExecutorTest {
 
         JsonObject expectedResponseBody = new JsonObject();
         expectedResponseBody.addProperty("view", "statusReportView");
-        assertThat(goPluginApiResponse.responseCode(), is(200));
+        assertThat(goPluginApiResponse.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedResponseBody.toString(), goPluginApiResponse.responseBody(), true);
     }
 

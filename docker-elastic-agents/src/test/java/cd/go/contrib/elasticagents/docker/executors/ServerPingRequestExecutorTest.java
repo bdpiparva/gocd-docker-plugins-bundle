@@ -22,7 +22,7 @@ import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.requests.ServerPingRequest;
 import org.joda.time.Period;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
 
 import java.util.ArrayList;
@@ -32,13 +32,13 @@ import java.util.UUID;
 
 import static cd.go.contrib.elasticagents.docker.Agent.ConfigState.Disabled;
 import static java.util.List.of;
-import static org.junit.Assert.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class ServerPingRequestExecutorTest extends BaseTest {
+class ServerPingRequestExecutorTest extends BaseTest {
 
     @Test
-    public void testShouldDisableIdleAgents() throws Exception {
+    void testShouldDisableIdleAgents() throws Exception {
         String agentId = UUID.randomUUID().toString();
         final Agents agents = new Agents(of(new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled)));
         DockerContainers agentInstances = new DockerContainers();
@@ -68,7 +68,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void testShouldTerminateDisabledAgents() throws Exception {
+    void testShouldTerminateDisabledAgents() throws Exception {
         String agentId = UUID.randomUUID().toString();
         final Agents agents = new Agents(of(new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Disabled)));
         DockerContainers agentInstances = new DockerContainers();
@@ -88,7 +88,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
     }
 
     @Test
-    public void testShouldTerminateInstancesThatNeverAutoRegistered() throws Exception {
+    void testShouldTerminateInstancesThatNeverAutoRegistered() throws Exception {
         PluginRequest pluginRequest = mock(PluginRequest.class);
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.getAllClusterProfileProperties()).thenReturn(of(createClusterProfiles()));
@@ -113,11 +113,11 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         new ServerPingRequestExecutor(dockerContainers, pluginRequest).execute(serverPingRequest);
 
-        assertFalse(agentInstances.hasInstance(container.name()));
+        assertThat(agentInstances.hasInstance(container.name())).isFalse();
     }
 
     @Test
-    public void shouldDeleteAgentFromConfigWhenCorrespondingContainerIsNotPresent() throws Exception {
+    void shouldDeleteAgentFromConfigWhenCorrespondingContainerIsNotPresent() throws Exception {
         PluginRequest pluginRequest = mock(PluginRequest.class);
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.getAllClusterProfileProperties()).thenReturn(of(createClusterProfiles()));

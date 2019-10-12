@@ -16,21 +16,18 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class AgentTest {
+class AgentTest {
 
     @Test
-    public void shouldSerializeToJSON() throws Exception {
+    void shouldSerializeToJSON() throws Exception {
         Agent agent = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         String agentsJSON = Agent.toJSONArray(Arrays.asList(agent));
 
@@ -38,54 +35,54 @@ public class AgentTest {
     }
 
     @Test
-    public void shouldDeserializeFromJSON() throws Exception {
+    void shouldDeserializeFromJSON() throws Exception {
         List<Agent> agents = Agent.fromJSONArray("[{\"agent_id\":\"eeb9e0eb-1f12-4366-a5a5-59011810273b\",\"agent_state\":\"Building\",\"build_state\":\"Cancelled\",\"config_state\":\"Disabled\"}]");
-        assertThat(agents, hasSize(1));
+        assertThat(agents).hasSize(1);
 
         Agent agent = agents.get(0);
 
-        assertThat(agent.elasticAgentId(), is("eeb9e0eb-1f12-4366-a5a5-59011810273b"));
-        assertThat(agent.agentState(), is(Agent.AgentState.Building));
-        assertThat(agent.buildState(), is(Agent.BuildState.Cancelled));
-        assertThat(agent.configState(), is(Agent.ConfigState.Disabled));
+        assertThat(agent.elasticAgentId()).isEqualTo("eeb9e0eb-1f12-4366-a5a5-59011810273b");
+        assertThat(agent.agentState()).isEqualTo(Agent.AgentState.Building);
+        assertThat(agent.buildState()).isEqualTo(Agent.BuildState.Cancelled);
+        assertThat(agent.configState()).isEqualTo(Agent.ConfigState.Disabled);
     }
 
     @Test
-    public void agentsWithSameAttributesShouldBeEqual() throws Exception {
+    void agentsWithSameAttributesShouldBeEqual() throws Exception {
         Agent agent1 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         Agent agent2 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertTrue(agent1.equals(agent2));
+        assertThat(agent1.equals(agent2)).isTrue();
     }
 
     @Test
-    public void agentShouldEqualItself() throws Exception {
+    void agentShouldEqualItself() throws Exception {
         Agent agent = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertTrue(agent.equals(agent));
+        assertThat(agent.equals(agent)).isTrue();
     }
 
     @Test
-    public void agentShouldNotEqualAnotherAgentWithDifferentAttributes() throws Exception {
+    void agentShouldNotEqualAnotherAgentWithDifferentAttributes() throws Exception {
         Agent agent = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertFalse(agent.equals(new Agent()));
+        assertThat(agent.equals(new Agent())).isFalse();
     }
 
     @Test
-    public void agentsWithSameAttributesShareSameHashCode() throws Exception {
+    void agentsWithSameAttributesShareSameHashCode() throws Exception {
         Agent agent1 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         Agent agent2 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
 
-        assertThat(agent1.hashCode(), equalTo(agent2.hashCode()));
+        assertThat(agent1.hashCode()).isEqualTo(agent2.hashCode());
     }
 
     @Test
-    public void agentsWithDifferentAttributesDoNotShareSameHashCode() throws Exception {
+    void agentsWithDifferentAttributesDoNotShareSameHashCode() throws Exception {
         Agent agent1 = new Agent("eeb9e0eb-1f12-4366-a5a5-59011810273b", Agent.AgentState.Building, Agent.BuildState.Cancelled, Agent.ConfigState.Disabled);
         Agent agent2 = new Agent();
 
-        assertThat(agent1.hashCode(), not(equalTo(agent2.hashCode())));
+        assertThat(agent1.hashCode()).isNotEqualTo(agent2.hashCode());
     }
 }
 

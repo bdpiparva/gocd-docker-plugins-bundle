@@ -23,8 +23,8 @@ import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
@@ -34,12 +34,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class JobCompletionRequestExecutorTest {
+class JobCompletionRequestExecutorTest {
     @Mock
     private PluginRequest mockPluginRequest;
     @Mock
@@ -49,8 +48,8 @@ public class JobCompletionRequestExecutorTest {
     private JobCompletionRequestExecutor executor;
     private ClusterProfileProperties clusterProfileProperties;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
         clusterProfileProperties = new ClusterProfileProperties();
 
@@ -60,7 +59,7 @@ public class JobCompletionRequestExecutorTest {
     }
 
     @Test
-    public void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
+    void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
         JobIdentifier jobIdentifier = new JobIdentifier(100L);
         String elasticAgentId = "agent-1";
         JobCompletionRequest request = new JobCompletionRequest()
@@ -75,13 +74,13 @@ public class JobCompletionRequestExecutorTest {
         InOrder inOrder = inOrder(mockPluginRequest, mockAgentInstances);
         inOrder.verify(mockPluginRequest).disableAgents(agentsArgumentCaptor.capture());
         List<Agent> agentsToDisabled = agentsArgumentCaptor.getValue();
-        assertEquals(1, agentsToDisabled.size());
-        assertEquals(elasticAgentId, agentsToDisabled.get(0).elasticAgentId());
+        assertThat(agentsToDisabled.size()).isEqualTo(1);
+        assertThat(agentsToDisabled.get(0).elasticAgentId()).isEqualTo(elasticAgentId);
         inOrder.verify(mockAgentInstances).terminate(elasticAgentId, clusterProfileProperties);
         inOrder.verify(mockPluginRequest).deleteAgents(agentsArgumentCaptor.capture());
         List<Agent> agentsToDelete = agentsArgumentCaptor.getValue();
-        assertEquals(agentsToDisabled, agentsToDelete);
-        assertEquals(200, response.responseCode());
-        assertTrue(response.responseBody().isEmpty());
+        assertThat(agentsToDelete).isEqualTo(agentsToDisabled);
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody().isEmpty()).isTrue();
     }
 }

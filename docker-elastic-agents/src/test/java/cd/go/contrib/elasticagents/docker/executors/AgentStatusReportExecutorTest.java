@@ -24,23 +24,20 @@ import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.*;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AgentStatusReportExecutorTest {
+class AgentStatusReportExecutorTest {
     @Mock
     private DockerContainers dockerContainers;
     @Mock
@@ -50,8 +47,9 @@ public class AgentStatusReportExecutorTest {
     private ClusterProfileProperties clusterProfileProperties;
     private AgentStatusReportExecutor agentStatusReportExecutor;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
+        initMocks(this);
         clusterProfileProperties = new ClusterProfileProperties().setDockerURI("https://ci.gocd.org/go");
         Map<String, DockerContainers> clusterToContainersMap = new HashMap<>();
         clusterToContainersMap.put(clusterProfileProperties.uuid(), dockerContainers);
@@ -59,7 +57,7 @@ public class AgentStatusReportExecutorTest {
     }
 
     @Test
-    public void shouldGetAgentStatusReportWithElasticAgentId() throws Exception {
+    void shouldGetAgentStatusReportWithElasticAgentId() throws Exception {
         String agentId = "elastic-agent-id";
         AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
                 .setElasticAgentId(agentId)
@@ -76,12 +74,12 @@ public class AgentStatusReportExecutorTest {
 
         JsonObject expectedResponseBody = new JsonObject();
         expectedResponseBody.addProperty("view", "agentStatusReportView");
-        assertThat(goPluginApiResponse.responseCode(), is(200));
+        assertThat(goPluginApiResponse.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedResponseBody.toString(), goPluginApiResponse.responseBody(), true);
     }
 
     @Test
-    public void shouldGetAgentStatusReportWithJobIdentifier() throws Exception {
+    void shouldGetAgentStatusReportWithJobIdentifier() throws Exception {
         JobIdentifier jobIdentifier = new JobIdentifier("up42", 2L, "label", "stage1", "1", "job", 1L);
         AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
                 .setClusterProfile(clusterProfileProperties)
@@ -99,12 +97,12 @@ public class AgentStatusReportExecutorTest {
 
         JsonObject expectedResponseBody = new JsonObject();
         expectedResponseBody.addProperty("view", "agentStatusReportView");
-        assertThat(goPluginApiResponse.responseCode(), is(200));
+        assertThat(goPluginApiResponse.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedResponseBody.toString(), goPluginApiResponse.responseBody(), true);
     }
 
     @Test
-    public void shouldRenderContainerNotFoundAgentStatusReportViewWhenNoContainerIsRunningForProvidedJobIdentifier() throws Exception {
+    void shouldRenderContainerNotFoundAgentStatusReportViewWhenNoContainerIsRunningForProvidedJobIdentifier() throws Exception {
         JobIdentifier jobIdentifier = new JobIdentifier("up42", 2L, "label", "stage1", "1", "job", 1L);
 
         AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
@@ -119,12 +117,12 @@ public class AgentStatusReportExecutorTest {
 
         JsonObject expectedResponseBody = new JsonObject();
         expectedResponseBody.addProperty("view", "errorView");
-        assertThat(goPluginApiResponse.responseCode(), is(200));
+        assertThat(goPluginApiResponse.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedResponseBody.toString(), goPluginApiResponse.responseBody(), true);
     }
 
     @Test
-    public void shouldRenderContainerNotFoundAgentStatusReportViewWhenNoContainerIsRunningForProvidedElasticAgentId() throws Exception {
+    void shouldRenderContainerNotFoundAgentStatusReportViewWhenNoContainerIsRunningForProvidedElasticAgentId() throws Exception {
         String elasticAgentId = "elastic-agent-id";
         AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
                 .setElasticAgentId(elasticAgentId)
@@ -138,7 +136,7 @@ public class AgentStatusReportExecutorTest {
 
         JsonObject expectedResponseBody = new JsonObject();
         expectedResponseBody.addProperty("view", "errorView");
-        assertThat(goPluginApiResponse.responseCode(), is(200));
+        assertThat(goPluginApiResponse.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedResponseBody.toString(), goPluginApiResponse.responseBody(), true);
     }
 }

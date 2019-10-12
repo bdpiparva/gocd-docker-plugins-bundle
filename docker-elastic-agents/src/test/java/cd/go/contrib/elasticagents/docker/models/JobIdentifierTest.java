@@ -17,27 +17,26 @@
 package cd.go.contrib.elasticagents.docker.models;
 
 import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class JobIdentifierTest {
+class JobIdentifierTest {
 
     @Test
-    public void shouldDeserializeFromJson() {
+    void shouldDeserializeFromJson() {
         JobIdentifier jobIdentifier = fromJson(JobIdentifierMother.getJson().toString(), JobIdentifier.class);
 
         JobIdentifier expected = JobIdentifierMother.get();
-        assertThat(jobIdentifier, is(expected));
+        assertThat(jobIdentifier).isEqualTo(expected);
     }
 
     @Test
-    public void shouldGetRepresentation() {
+    void shouldGetRepresentation() {
         String representation = JobIdentifierMother.get().getRepresentation();
 
-        assertThat(representation, is("up42/1/stage/1/job1"));
+        assertThat(representation).isEqualTo("up42/1/stage/1/job1");
     }
 
 }
