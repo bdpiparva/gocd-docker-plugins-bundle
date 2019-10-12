@@ -1,0 +1,305 @@
+/*
+ * Copyright 2019 ThoughtWorks, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package cd.go.contrib.elasticagents.docker;
+
+import cd.go.contrib.elasticagents.docker.models.*;
+import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
+import com.google.common.collect.ImmutableList;
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.ImageNotFoundException;
+import com.spotify.docker.client.messages.ContainerInfo;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.Arrays;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+
+public class DockerContainerTest extends BaseTest {
+    private CreateAgentRequest request;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    private JobIdentifier jobIdentifier;
+    private ConsoleLogAppender consoleLogAppender;
+
+    @Before
+    public void setUp() {
+        jobIdentifier = new JobIdentifier("up42", 2L, "foo", "stage", "1", "job", 1L);
+
+        request = new CreateAgentRequest()
+                .setAutoRegisterKey("key")
+                .setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine").setCommand("/bin/sleep\n5"))
+                .setEnvironment("production")
+                .setJobIdentifier(jobIdentifier)
+                .setClusterProfileProperties(new ClusterProfileProperties());
+        consoleLogAppender = mock(ConsoleLogAppender.class);
+    }
+
+    @Test
+    public void shouldCreateContainer() throws Exception {
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+        assertContainerExist(container.name());
+    }
+
+    @Test
+    public void shouldPullAnImageWhenOneDoesNotExist() throws Exception {
+        String imageName = request.getElasticProfileConfiguration().getImage();
+
+        try {
+            docker.removeImage(imageName, true, false);
+        } catch (ImageNotFoundException ignore) {
+        }
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+
+        assertNotNull(docker.inspectImage(imageName));
+        assertContainerExist(container.name());
+    }
+
+    @Test
+    public void shouldRaiseExceptionWhenImageIsNotFoundInDockerRegistry() throws Exception {
+        String imageName = "ubuntu:does-not-exist";
+        request.getElasticProfileConfiguration().setImage(imageName);
+
+        assertThatCode(() -> DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender))
+                .isInstanceOf(ImageNotFoundException.class)
+                .hasMessage("Image not found: " + imageName);
+    }
+
+    @Test
+    public void shouldNotCreateContainerIfTheImageIsNotProvided() throws Exception {
+        request.getElasticProfileConfiguration().setImage(null);
+
+        assertThatCode(() -> DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Must provide `Image` attribute.");
+    }
+
+    @Test
+    public void shouldStartContainerWithCorrectEnvironmentVariables() throws Exception {
+        request.getElasticProfileConfiguration().setEnvironmentVariables("A=B\nC=D\r\nE=F\n\n\nX=Y");
+
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        clusterProfiles.setEnvironmentVariables("GLOBAL=something");
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        assertThat(containerInfo.config().env(), hasItems("A=B", "C=D", "E=F", "X=Y", "GLOBAL=something"));
+        DockerContainer dockerContainer = DockerContainer.fromContainerInfo(containerInfo);
+    }
+
+    @Test
+    public void shouldStartContainerWithPrivilegedMode() throws Exception {
+        request.getElasticProfileConfiguration().setPrivileged("true");
+
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        clusterProfiles.setEnvironmentVariables("GLOBAL=something");
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        assertThat(containerInfo.hostConfig().privileged(), is(true));
+    }
+
+    @Test
+    public void shouldStartContainerWithAutoregisterEnvironmentVariables() throws Exception {
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+        assertThat(containerInfo.config().env(), hasItem("GO_EA_AUTO_REGISTER_KEY=key"));
+        assertThat(containerInfo.config().env(), hasItem("GO_EA_AUTO_REGISTER_ENVIRONMENT=production"));
+        assertThat(containerInfo.config().env(), hasItem("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID=" + container.name()));
+        assertThat(containerInfo.config().env(), hasItem("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID=" + Constants.PLUGIN_ID));
+    }
+
+    @Test
+    public void shouldStartContainerWithCorrectCommand() throws Exception {
+        request.getElasticProfileConfiguration().setCommand("cat\n/etc/hosts\n/etc/group");
+
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+        assertThat(containerInfo.config().cmd(), is(Arrays.asList("cat", "/etc/hosts", "/etc/group")));
+        String logs = docker.logs(container.name(), DockerClient.LogsParam.stdout()).readFully();
+        assertThat(logs, containsString("127.0.0.1")); // from /etc/hosts
+        assertThat(logs, containsString("floppy:x:")); // from /etc/group
+    }
+
+    @Test
+    public void shouldTerminateAnExistingContainer() throws Exception {
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+
+        container.terminate(docker);
+
+        assertContainerDoesNotExist(container.name());
+    }
+
+    @Test
+    public void shouldFindAnExistingContainer() throws Exception {
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+
+        DockerContainer dockerContainer = DockerContainer.fromContainerInfo(docker.inspectContainer(container.name()));
+
+        assertEquals(container, dockerContainer);
+    }
+
+    @Test
+    public void shouldStartContainerWithHostEntry() throws Exception {
+        request.getElasticProfileConfiguration()
+                .setHosts("127.0.0.2\tbaz \n192.168.5.1\tfoo\tbar\n127.0.0.1  gocd.local")
+                .setCommand("cat\n/etc/hosts");
+
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+
+        containers.add(container.name());
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        final ImmutableList<String> extraHosts = containerInfo.hostConfig().extraHosts();
+        assertThat(extraHosts, containsInAnyOrder(
+                "baz:127.0.0.2", "foo\tbar:192.168.5.1", "gocd.local:127.0.0.1"
+        ));
+
+        String logs = docker.logs(container.name(), DockerClient.LogsParam.stdout()).readFully();
+        assertThat(logs, containsString("127.0.0.2\tbaz"));
+        assertThat(logs, containsString("192.168.5.1\tfoo"));
+        assertThat(logs, containsString("127.0.0.1\tgocd.local"));
+
+        AgentStatusReport agentStatusReport = container.getAgentStatusReport(docker);
+        assertThat(agentStatusReport.getHosts(), containsInAnyOrder(
+                "baz:127.0.0.2", "foo\tbar:192.168.5.1", "gocd.local:127.0.0.1"));
+    }
+
+    @Test
+    public void shouldGetContainerStatusReport() throws Exception {
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerStatusReport containerStatusReport = container.getContainerStatusReport(docker);
+
+        assertThat(containerStatusReport, is(notNullValue()));
+        assertThat(containerStatusReport.getElasticAgentId(), is(container.name()));
+        assertThat(containerStatusReport.getImage(), is("alpine:latest"));
+        assertThat(containerStatusReport.getJobIdentifier(), is(jobIdentifier));
+        assertThat(containerStatusReport.getState(), equalToIgnoringCase("running"));
+    }
+
+    @Test
+    public void shouldGetAgentStatusReport() throws Exception {
+        request.getElasticProfileConfiguration().setEnvironmentVariables("A=B\nC=D");
+        DockerContainer container = DockerContainer.create(request, createClusterProfiles(), docker, consoleLogAppender);
+        containers.add(container.name());
+
+        AgentStatusReport agentStatusReport = container.getAgentStatusReport(docker);
+
+        assertThat(agentStatusReport, is(notNullValue()));
+        assertThat(agentStatusReport.getElasticAgentId(), is(container.name()));
+        assertThat(agentStatusReport.getImage(), is("alpine:latest"));
+        assertThat(agentStatusReport.getJobIdentifier(), is(jobIdentifier));
+        assertThat(agentStatusReport.getCommand(), is("/bin/sleep"));
+        Map<String, String> environmentVariables = agentStatusReport.getEnvironmentVariables();
+        assertThat(environmentVariables, hasEntry("A", "B"));
+        assertThat(environmentVariables, hasEntry("C", "D"));
+    }
+
+    @Test
+    public void shouldPullImageWhenPullSettingIsEnabled() throws Exception {
+        String imageName = request.getElasticProfileConfiguration().getImage();
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        clusterProfiles.setPullOnContainerCreate(true);
+
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        assertContainerExist(container.name());
+        containers.add(container.name());
+
+        assertNotNull(docker.inspectImage(imageName));
+        assertContainerExist(container.name());
+    }
+
+    @Test
+    public void shouldStartContainerWithMemoryLimits() throws Exception {
+        request.getElasticProfileConfiguration()
+                .setMaxMemory("10M")
+                .setReservedMemory("6M");
+
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        assertThat(containerInfo.hostConfig().memoryReservation(), is(6 * 1024 * 1024L));
+        assertThat(containerInfo.hostConfig().memory(), is(10 * 1024 * 1024L));
+    }
+
+    @Test
+    public void shouldStartContainerNoMemoryLimits() throws Exception {
+        request.getElasticProfileConfiguration()
+                .setMaxMemory("")
+                .setReservedMemory("");
+
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        assertThat(containerInfo.hostConfig().memoryReservation(), is(0L));
+        assertThat(containerInfo.hostConfig().memory(), is(0L));
+    }
+
+    @Test
+    public void shouldStartContainerWithCpuLimit() throws Exception {
+        request.getElasticProfileConfiguration().setCpus(".75");
+
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        assertThat(containerInfo.hostConfig().cpuPeriod(), is(100_000L));
+        assertThat(containerInfo.hostConfig().cpuQuota(), is(75_000L));
+    }
+
+    @Test
+    public void shouldStartContainerWithMountedVolumes() throws Exception {
+        // using "/" as source folder because it seems the folder must exist on testing machine
+        request.getElasticProfileConfiguration().setMounts("/:/A\n/:/B:ro");
+
+        ClusterProfileProperties clusterProfiles = createClusterProfiles();
+        DockerContainer container = DockerContainer.create(request, clusterProfiles, docker, consoleLogAppender);
+        containers.add(container.name());
+
+        ContainerInfo containerInfo = docker.inspectContainer(container.name());
+
+        assertThat(containerInfo.hostConfig().binds(), containsInAnyOrder(
+                "/:/A", "/:/B:ro"));
+    }
+}
