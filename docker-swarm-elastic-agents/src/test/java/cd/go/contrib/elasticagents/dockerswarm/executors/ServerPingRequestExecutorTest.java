@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.Agents;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
@@ -25,7 +27,6 @@ import org.junit.Test;
 
 import java.util.*;
 
-import static cd.go.contrib.elasticagents.dockerswarm.Agent.ConfigState.Disabled;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
@@ -37,7 +38,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         ClusterProfileProperties clusterProfileProperties = createClusterProfileProperties();
         Agent agent1 = new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent agent1AfterDisabling = new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Disabled); //idle time elapsed
+        Agent agent1AfterDisabling = new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled); //idle time elapsed
 
         final Agents allAgentsInitially = new Agents(Arrays.asList(agent1));
         final Agents allAgentsAfterDisablingIdleAgents = new Agents(Arrays.asList(agent1AfterDisabling));
@@ -70,10 +71,10 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         ClusterProfileProperties clusterProfileProperties2 = createClusterProfileProperties();
         clusterProfileProperties2.setMaxDockerContainers(2);
         Agent agent1 = new Agent(agentId1, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent agent1AfterDisabling = new Agent(agentId1, Agent.AgentState.Idle, Agent.BuildState.Idle, Disabled); //idle time elapsed
+        Agent agent1AfterDisabling = new Agent(agentId1, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled); //idle time elapsed
 
         Agent agent2 = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent agent2AfterDisabling = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Disabled); //idle time elapsed
+        Agent agent2AfterDisabling = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled); //idle time elapsed
 
         final Agents allAgentsInitially1 = new Agents(Arrays.asList(agent1, agent2));
         final Agents allAgentsAfter1GotDeleted = new Agents(Arrays.asList(agent2));

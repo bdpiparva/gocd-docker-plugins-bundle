@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.Agents;
 import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import org.hamcrest.Matchers;
@@ -129,7 +131,7 @@ public class DockerServicesTestElasticAgent extends BaseTest {
 
         Agents filteredDockerContainers = dockerServices.instancesCreatedAfterTimeout(createClusterProfiles(), new Agents(Arrays.asList(new Agent(dockerService.name(), null, null, null))));
 
-        assertFalse(filteredDockerContainers.containsServiceWithId(dockerService.name()));
+        assertFalse(filteredDockerContainers.containsAgentWithId(dockerService.name()));
     }
 
     @Test
@@ -142,7 +144,7 @@ public class DockerServicesTestElasticAgent extends BaseTest {
 
         Agents filteredDockerContainers = dockerServices.instancesCreatedAfterTimeout(createClusterProfiles(), new Agents(Arrays.asList(new Agent(dockerService.name(), null, null, null))));
 
-        assertTrue(filteredDockerContainers.containsServiceWithId(dockerService.name()));
+        assertTrue(filteredDockerContainers.containsAgentWithId(dockerService.name()));
     }
 
     @Test

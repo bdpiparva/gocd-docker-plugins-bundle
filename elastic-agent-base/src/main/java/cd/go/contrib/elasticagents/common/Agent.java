@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker;
+package cd.go.contrib.elasticagents.common;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -71,7 +71,7 @@ public class Agent {
     public Agent() {
     }
 
-    public Agent(String agentId){
+    public Agent(String agentId) {
         this(agentId, null, null, null);
     }
 
@@ -85,6 +85,10 @@ public class Agent {
 
     public String elasticAgentId() {
         return agentId;
+    }
+
+    public void elasticAgentId(String agentId) {
+        this.agentId = agentId;
     }
 
     public AgentState agentState() {

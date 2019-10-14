@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker;
+package cd.go.contrib.elasticagents.common;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;

@@ -16,6 +16,7 @@
 
 rootProject.name = 'gocd-docker-plugin-bundle'
 
+include ':elastic-agent-base'
 include ':docker-elastic-agents'
 include ':docker-swarm-elastic-agents'
 include ':docker-registry-artifact-plugin'

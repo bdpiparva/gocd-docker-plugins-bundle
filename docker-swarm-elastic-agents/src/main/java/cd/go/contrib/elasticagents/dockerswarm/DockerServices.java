@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.Agents;
 import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import com.google.common.collect.ImmutableMap;
@@ -168,7 +170,7 @@ public class DockerServices implements AgentInstances<DockerService> {
         DockerServices unregisteredContainers = new DockerServices();
 
         for (String serviceName : services.keySet()) {
-            if (knownAgents.containsServiceWithId(serviceName)) {
+            if (knownAgents.containsAgentWithId(serviceName)) {
                 continue;
             }
 

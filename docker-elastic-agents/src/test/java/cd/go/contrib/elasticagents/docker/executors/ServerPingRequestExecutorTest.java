@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.Agents;
 import cd.go.contrib.elasticagents.docker.*;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
@@ -30,7 +32,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static cd.go.contrib.elasticagents.docker.Agent.ConfigState.Disabled;
+import static cd.go.contrib.elasticagents.common.Agent.ConfigState.Disabled;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;

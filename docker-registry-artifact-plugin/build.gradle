@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-sourceSets {
-  integrationTest {
-    resources.srcDirs += ['src/testdata']
-    compileClasspath += main.output + configurations.compileOnly
-    runtimeClasspath += main.output + configurations.compileOnly
-  }
-}
-
 dependencies {
   compileOnly group: 'cd.go.plugin', name: 'go-plugin-api', version: '19.9.0'
   compile group: 'cd.go.plugin.base', name: 'gocd-plugin-base', version: '0.0.1'

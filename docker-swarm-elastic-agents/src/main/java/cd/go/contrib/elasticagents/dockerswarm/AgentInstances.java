@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.Agents;
 import cd.go.contrib.elasticagents.dockerswarm.executors.ServerPingRequestExecutor;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 

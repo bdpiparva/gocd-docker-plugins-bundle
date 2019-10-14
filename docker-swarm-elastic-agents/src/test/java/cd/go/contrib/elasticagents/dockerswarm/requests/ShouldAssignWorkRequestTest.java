@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.dockerswarm.Agent;
+import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import com.google.gson.JsonObject;
 import org.hamcrest.Matchers;

@@ -16,7 +16,11 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
-import cd.go.contrib.elasticagents.docker.*;
+import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.docker.DockerContainers;
+import cd.go.contrib.elasticagents.docker.PluginRequest;
+import cd.go.contrib.elasticagents.docker.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.requests.ServerPingRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
