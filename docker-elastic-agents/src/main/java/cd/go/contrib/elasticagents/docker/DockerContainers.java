@@ -16,8 +16,8 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import cd.go.contrib.elasticagents.common.Agent;
-import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.docker.models.*;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import com.spotify.docker.client.DockerClient;

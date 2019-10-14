@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
-import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.PluginRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;

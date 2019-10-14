@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker;
+package cd.go.contrib.elasticagents.common;
 
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.exceptions.ServerRequestFailedException;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
+import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
+import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.DefaultGoApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 
@@ -30,21 +33,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.docker.Constants.*;
-import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
-
 /**
  * Instances of this class know how to send messages to the GoCD Server.
  */
-public class PluginRequest {
+public class ElasticAgentRequestClient {
+    private static final Logger LOG = Logger.getLoggerFor(ElasticAgentRequestClient.class);
+    private static final String CONSOLE_LOG_API_VERSION = "1.0";
+    private static final String REQUEST_SERVER_DISABLE_AGENT = "go.processor.elastic-agents.disable-agents";
+    private static final String REQUEST_SERVER_DELETE_AGENT = "go.processor.elastic-agents.delete-agents";
+    private static final String REQUEST_SERVER_LIST_AGENTS = "go.processor.elastic-agents.list-agents";
+    private static final String REQUEST_SERVER_SERVER_HEALTH_ADD_MESSAGES = "go.processor.server-health.add-messages";
+    private static final String REQUEST_SERVER_APPEND_TO_CONSOLE_LOG = "go.processor.console-log.append";
+
+    private String processorApiVersion;
+    private GoPluginIdentifier pluginIdentifier;
+
     private final GoApplicationAccessor accessor;
 
-    public PluginRequest(GoApplicationAccessor accessor) {
+    public ElasticAgentRequestClient(GoApplicationAccessor accessor,
+                                     String processorApiVersion,
+                                     GoPluginIdentifier pluginIdentifier) {
         this.accessor = accessor;
+        this.processorApiVersion = processorApiVersion;
+        this.pluginIdentifier = pluginIdentifier;
     }
 
     public Agents listAgents() throws ServerRequestFailedException {
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_LIST_AGENTS, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(REQUEST_SERVER_LIST_AGENTS, processorApiVersion, pluginIdentifier);
         GoApiResponse response = accessor.submit(request);
 
         if (response.responseCode() != 200) {
@@ -59,7 +74,7 @@ public class PluginRequest {
             return;
         }
 
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_DISABLE_AGENT, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(REQUEST_SERVER_DISABLE_AGENT, processorApiVersion, pluginIdentifier);
         request.setRequestBody(Agent.toJSONArray(toBeDisabled));
 
         GoApiResponse response = accessor.submit(request);
@@ -74,7 +89,7 @@ public class PluginRequest {
             return;
         }
 
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_DELETE_AGENT, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(REQUEST_SERVER_DELETE_AGENT, processorApiVersion, pluginIdentifier);
         request.setRequestBody(Agent.toJSONArray(toBeDeleted));
         GoApiResponse response = accessor.submit(request);
 
@@ -86,7 +101,7 @@ public class PluginRequest {
     public void addServerHealthMessage(List<Map<String, String>> messages) {
         Gson gson = new Gson();
 
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_SERVER_HEALTH_ADD_MESSAGES, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(REQUEST_SERVER_SERVER_HEALTH_ADD_MESSAGES, processorApiVersion, pluginIdentifier);
 
         request.setRequestBody(gson.toJson(messages));
 
@@ -106,7 +121,7 @@ public class PluginRequest {
         requestMap.put("jobName", jobIdentifier.getJobName());
         requestMap.put("text", text);
 
-        DefaultGoApiRequest request = new DefaultGoApiRequest(Constants.REQUEST_SERVER_APPEND_TO_CONSOLE_LOG, CONSOLE_LOG_API_VERSION, PLUGIN_IDENTIFIER);
+        DefaultGoApiRequest request = new DefaultGoApiRequest(REQUEST_SERVER_APPEND_TO_CONSOLE_LOG, CONSOLE_LOG_API_VERSION, pluginIdentifier);
         request.setRequestBody(new GsonBuilder().create().toJson(requestMap));
 
         GoApiResponse response = accessor.submit(request);

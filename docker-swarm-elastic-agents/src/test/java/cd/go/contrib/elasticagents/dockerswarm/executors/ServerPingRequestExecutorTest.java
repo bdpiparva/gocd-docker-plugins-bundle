@@ -16,8 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.common.Agent;
-import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.common.agent.*;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
@@ -37,8 +36,8 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         String agentId = UUID.randomUUID().toString();
 
         ClusterProfileProperties clusterProfileProperties = createClusterProfileProperties();
-        Agent agent1 = new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent agent1AfterDisabling = new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled); //idle time elapsed
+        Agent agent1 = new Agent(agentId, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle time elapsed
+        Agent agent1AfterDisabling = new Agent(agentId, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Disabled); //idle time elapsed
 
         final Agents allAgentsInitially = new Agents(Arrays.asList(agent1));
         final Agents allAgentsAfterDisablingIdleAgents = new Agents(Arrays.asList(agent1AfterDisabling));
@@ -70,11 +69,11 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         ClusterProfileProperties clusterProfileProperties1 = createClusterProfileProperties();
         ClusterProfileProperties clusterProfileProperties2 = createClusterProfileProperties();
         clusterProfileProperties2.setMaxDockerContainers(2);
-        Agent agent1 = new Agent(agentId1, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent agent1AfterDisabling = new Agent(agentId1, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled); //idle time elapsed
+        Agent agent1 = new Agent(agentId1, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle time elapsed
+        Agent agent1AfterDisabling = new Agent(agentId1, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Disabled); //idle time elapsed
 
-        Agent agent2 = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent agent2AfterDisabling = new Agent(agentId2, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Disabled); //idle time elapsed
+        Agent agent2 = new Agent(agentId2, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle time elapsed
+        Agent agent2AfterDisabling = new Agent(agentId2, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Disabled); //idle time elapsed
 
         final Agents allAgentsInitially1 = new Agents(Arrays.asList(agent1, agent2));
         final Agents allAgentsAfter1GotDeleted = new Agents(Arrays.asList(agent2));
@@ -144,8 +143,8 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
     @Test
     public void testShouldDeleteAndDisableMissingAgents() throws Exception {
-        Agent agentInCluster = new Agent("agent1", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle time elapsed
-        Agent missingAgent = new Agent("agent2", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled); //idle just created
+        Agent agentInCluster = new Agent("agent1", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle time elapsed
+        Agent missingAgent = new Agent("agent2", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle just created
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
         Agents agents = new Agents();

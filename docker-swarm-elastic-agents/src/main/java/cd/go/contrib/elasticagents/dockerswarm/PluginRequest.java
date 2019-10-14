@@ -16,8 +16,8 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
-import cd.go.contrib.elasticagents.common.Agent;
-import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agents;
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.request.DefaultGoApiRequest;

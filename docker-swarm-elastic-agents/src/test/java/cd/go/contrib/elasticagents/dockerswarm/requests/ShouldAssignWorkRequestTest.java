@@ -16,7 +16,10 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.AgentBuildState;
+import cd.go.contrib.elasticagents.common.agent.AgentConfigState;
+import cd.go.contrib.elasticagents.common.agent.AgentState;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import com.google.gson.JsonObject;
 import org.hamcrest.Matchers;
@@ -50,7 +53,7 @@ public class ShouldAssignWorkRequestTest {
         ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString());
 
         assertThat(request.environment(), equalTo("prod"));
-        assertThat(request.agent(), equalTo(new Agent("42", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled)));
+        assertThat(request.agent(), equalTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled)));
         HashMap<String, String> expectedProperties = new HashMap<>();
         expectedProperties.put("property_name", "property_value");
         assertThat(request.properties(), Matchers.equalTo(expectedProperties));

@@ -14,36 +14,32 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.common;
+package cd.go.contrib.elasticagents.common.agent;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.FluentIterable;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.*;
+import java.util.function.Predicate;
 
-/**
- * Represents a map of {@link Agent#elasticAgentId()} to the {@link Agent} for easy lookups
- */
+import static java.util.stream.Collectors.toList;
+
+@ToString
+@EqualsAndHashCode
 public class Agents {
 
     private final Map<String, Agent> agents = new HashMap<>();
 
     // Filter for agents that can be disabled safely
-    private static final Predicate<Agent> AGENT_IDLE_PREDICATE = new Predicate<Agent>() {
-        @Override
-        public boolean apply(Agent metadata) {
-            Agent.AgentState agentState = metadata.agentState();
-            return metadata.configState().equals(Agent.ConfigState.Enabled) && (agentState.equals(Agent.AgentState.Idle) || agentState.equals(Agent.AgentState.Missing) || agentState.equals(Agent.AgentState.LostContact));
-        }
+    private static final Predicate<Agent> AGENT_IDLE_PREDICATE = metadata -> {
+        AgentState agentState = metadata.agentState();
+        return metadata.configState().equals(AgentConfigState.Enabled) && (agentState.equals(AgentState.Idle) || agentState.equals(AgentState.Missing) || agentState.equals(AgentState.LostContact));
     };
 
     // Filter for agents that can be terminated safely
-    private static final Predicate<Agent> AGENT_DISABLED_PREDICATE = new Predicate<Agent>() {
-        @Override
-        public boolean apply(Agent metadata) {
-            Agent.AgentState agentState = metadata.agentState();
-            return metadata.configState().equals(Agent.ConfigState.Disabled) && (agentState.equals(Agent.AgentState.Idle) || agentState.equals(Agent.AgentState.Missing) || agentState.equals(Agent.AgentState.LostContact));
-        }
+    private static final Predicate<Agent> AGENT_DISABLED_PREDICATE = metadata -> {
+        AgentState agentState = metadata.agentState();
+        return metadata.configState().equals(AgentConfigState.Disabled) && (agentState.equals(AgentState.Idle) || agentState.equals(AgentState.Missing) || agentState.equals(AgentState.LostContact));
     };
 
     public Agents() {
@@ -64,11 +60,11 @@ public class Agents {
     }
 
     public Collection<Agent> findInstancesToDisable() {
-        return FluentIterable.from(agents.values()).filter(AGENT_IDLE_PREDICATE).toList();
+        return agents.values().stream().filter(AGENT_IDLE_PREDICATE).collect(toList());
     }
 
     public Collection<Agent> findInstancesToTerminate() {
-        return FluentIterable.from(agents.values()).filter(AGENT_DISABLED_PREDICATE).toList();
+        return agents.values().stream().filter(AGENT_DISABLED_PREDICATE).collect(toList());
     }
 
     public Set<String> agentIds() {

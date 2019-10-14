@@ -16,8 +16,7 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
-import cd.go.contrib.elasticagents.common.Agent;
-import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.common.agent.*;
 import cd.go.contrib.elasticagents.docker.*;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
@@ -32,7 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static cd.go.contrib.elasticagents.common.Agent.ConfigState.Disabled;
+import static cd.go.contrib.elasticagents.common.agent.AgentConfigState.Disabled;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -42,7 +41,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
     @Test
     void testShouldDisableIdleAgents() throws Exception {
         String agentId = UUID.randomUUID().toString();
-        final Agents agents = new Agents(of(new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled)));
+        final Agents agents = new Agents(of(new Agent(agentId, AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled)));
         DockerContainers agentInstances = new DockerContainers();
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
@@ -72,7 +71,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
     @Test
     void testShouldTerminateDisabledAgents() throws Exception {
         String agentId = UUID.randomUUID().toString();
-        final Agents agents = new Agents(of(new Agent(agentId, Agent.AgentState.Idle, Agent.BuildState.Idle, Disabled)));
+        final Agents agents = new Agents(of(new Agent(agentId, AgentState.Idle, AgentBuildState.Idle, Disabled)));
         DockerContainers agentInstances = new DockerContainers();
 
         PluginRequest pluginRequest = mock(PluginRequest.class);
@@ -123,7 +122,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
         PluginRequest pluginRequest = mock(PluginRequest.class);
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.getAllClusterProfileProperties()).thenReturn(of(createClusterProfiles()));
-        when(pluginRequest.listAgents()).thenReturn(new Agents(of(new Agent("foo", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled))));
+        when(pluginRequest.listAgents()).thenReturn(new Agents(of(new Agent("foo", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled))));
         verifyNoMoreInteractions(pluginRequest);
 
         DockerContainers agentInstances = new DockerContainers();

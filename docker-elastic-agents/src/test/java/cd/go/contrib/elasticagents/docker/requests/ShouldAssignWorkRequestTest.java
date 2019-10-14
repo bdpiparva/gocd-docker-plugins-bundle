@@ -16,7 +16,10 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
-import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.AgentBuildState;
+import cd.go.contrib.elasticagents.common.agent.AgentConfigState;
+import cd.go.contrib.elasticagents.common.agent.AgentState;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
@@ -51,7 +54,7 @@ class ShouldAssignWorkRequestTest {
         ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString());
 
         assertThat(request.getEnvironment()).isEqualTo("prod");
-        assertThat(request.getAgent()).isEqualTo(new Agent("42", Agent.AgentState.Idle, Agent.BuildState.Idle, Agent.ConfigState.Enabled));
+        assertThat(request.getAgent()).isEqualTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled));
         assertThat(request.getJobIdentifier()).isEqualTo(JobIdentifierMother.get());
         assertThat(request.getElasticProfileConfiguration()).isEqualTo(new ElasticProfileConfiguration().setImage("alpine:latest"));
         assertThat(request.getClusterProfileProperties()).isEqualTo(new ClusterProfileProperties().setGoServerUrl("some-url"));

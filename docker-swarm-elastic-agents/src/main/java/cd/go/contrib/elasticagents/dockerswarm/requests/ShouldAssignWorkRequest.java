@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.common.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.executors.ShouldAssignWorkRequestExecutor;
 import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;

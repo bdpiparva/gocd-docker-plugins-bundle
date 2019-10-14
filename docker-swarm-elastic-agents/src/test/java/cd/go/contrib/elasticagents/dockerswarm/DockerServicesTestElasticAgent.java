@@ -16,8 +16,8 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
-import cd.go.contrib.elasticagents.common.Agent;
-import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import org.hamcrest.Matchers;
