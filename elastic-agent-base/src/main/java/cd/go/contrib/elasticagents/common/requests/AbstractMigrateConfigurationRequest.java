@@ -16,10 +16,7 @@
 
 package cd.go.contrib.elasticagents.common.requests;
 
-import cd.go.contrib.elasticagents.common.models.ClusterProfile;
-import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
-import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
-import cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.common.models.*;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
@@ -30,7 +27,6 @@ import lombok.experimental.Accessors;
 
 import java.util.List;
 
-import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static cd.go.plugin.base.GsonTransformer.toJson;
 
 @Getter
@@ -38,10 +34,10 @@ import static cd.go.plugin.base.GsonTransformer.toJson;
 @Accessors(chain = true)
 @ToString
 @EqualsAndHashCode
-public abstract class AbstractMigrateConfigurationRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
+public abstract class AbstractMigrateConfigurationRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration, P extends PluginSettings> {
     @Expose
     @SerializedName("plugin_settings")
-    private C pluginSettings;
+    private P pluginSettings;
 
     @Expose
     @SerializedName("cluster_profiles")
@@ -52,11 +48,6 @@ public abstract class AbstractMigrateConfigurationRequest<E extends ElasticProfi
     private List<ElasticAgentProfile<E>> elasticAgentProfiles;
 
     public AbstractMigrateConfigurationRequest() {
-    }
-
-    public static <T extends AbstractMigrateConfigurationRequest> T fromJSON(String json,
-                                                                             Class<T> type) {
-        return fromJson(json, type);
     }
 
     public String toJSON() {

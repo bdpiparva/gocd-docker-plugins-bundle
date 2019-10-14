@@ -40,8 +40,4 @@ public abstract class AbstractClusterStatusReportRequest<C extends ClusterProfil
     public AbstractClusterStatusReportRequest() {
     }
 
-    public static <T extends AbstractClusterStatusReportRequest> T fromJSON(String json,
-                                                                            Class<T> type) {
-        return fromJson(json, type);
-    }
 }

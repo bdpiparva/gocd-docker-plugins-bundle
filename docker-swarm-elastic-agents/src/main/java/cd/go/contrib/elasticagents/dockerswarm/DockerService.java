@@ -17,11 +17,10 @@
 package cd.go.contrib.elasticagents.dockerswarm;
 
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Size;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.ServiceNotFoundException;
@@ -33,20 +32,22 @@ import org.joda.time.DateTime;
 import java.util.*;
 
 import static cd.go.contrib.elasticagents.dockerswarm.Constants.*;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.text.MessageFormat.format;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class DockerService {
     private static final Gson GSON = new Gson();
     private final DateTime createdAt;
-    private final Map<String, String> properties;
+    private final ElasticProfileConfiguration properties;
     private final String environment;
     private JobIdentifier jobIdentifier;
     private String name;
 
     public DockerService(String name,
                          Date createdAt,
-                         Map<String, String> properties,
+                         ElasticProfileConfiguration properties,
                          String environment,
                          JobIdentifier jobIdentifier) {
         this.name = name;
@@ -68,7 +69,7 @@ public class DockerService {
         return environment;
     }
 
-    public Map<String, String> properties() {
+    public ElasticProfileConfiguration getElasticProfileConfiguration() {
         return properties;
     }
 
@@ -78,17 +79,16 @@ public class DockerService {
 
     public void terminate(DockerClient docker) throws DockerException, InterruptedException {
         try {
-            DockerSwarmPlugin.LOG.debug("Terminating service " + this.name());
+            LOG.debug("Terminating service " + this.name());
             docker.removeService(name);
         } catch (ServiceNotFoundException ignore) {
-            DockerSwarmPlugin.LOG.warn("Cannot terminate a service that does not exist " + name);
+            LOG.warn("Cannot terminate a service that does not exist " + name);
         }
     }
 
     public static DockerService fromService(Service service) {
         Map<String, String> labels = service.spec().labels();
-        final Map<String, String> properties = GSON.fromJson(labels.get(CONFIGURATION_LABEL_KEY), new TypeToken<Map<String, String>>() {
-        }.getType());
+        final ElasticProfileConfiguration properties = fromJson(labels.get(CONFIGURATION_LABEL_KEY), ElasticProfileConfiguration.class);
         return new DockerService(service.spec().name(),
                 service.createdAt(),
                 properties,
@@ -96,49 +96,49 @@ public class DockerService {
                 JobIdentifier.fromJson(labels.get(JOB_IDENTIFIER_LABEL_KEY)));
     }
 
-    public static DockerService create(CreateAgentRequest request,
-                                       PluginSettings settings,
+    public static DockerService create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
+                                       ClusterProfileProperties clusterProfileProperties,
                                        DockerClient docker) throws InterruptedException, DockerException {
         String serviceName = UUID.randomUUID().toString();
 
         HashMap<String, String> labels = labelsFrom(request);
-        String imageName = image(request.properties());
-        String[] env = environmentFrom(request, settings, serviceName);
+        String imageName = image(request.getElasticProfileConfiguration().getImage());
+        String[] env = environmentFrom(request, clusterProfileProperties, serviceName);
 
         final ContainerSpec.Builder containerSpecBuilder = ContainerSpec.builder()
                 .image(imageName)
                 .env(env);
 
-        if (StringUtils.isNotBlank(request.properties().get("Command"))) {
-            containerSpecBuilder.command(Util.splitIntoLinesAndTrimSpaces(request.properties().get("Command")).toArray(new String[]{}));
+        if (StringUtils.isNotBlank(request.getElasticProfileConfiguration().getCommand())) {
+            containerSpecBuilder.command(Util.splitIntoLinesAndTrimSpaces(request.getElasticProfileConfiguration().getCommand()).toArray(new String[]{}));
         }
 
         if (Util.dockerApiVersionAtLeast(docker, "1.26")) {
-            containerSpecBuilder.hosts(new Hosts().hosts(request.properties().get("Hosts")));
-            final DockerMounts dockerMounts = DockerMounts.fromString(request.properties().get("Mounts"));
+            containerSpecBuilder.hosts(new Hosts().hosts(request.getElasticProfileConfiguration().getHosts()));
+            final DockerMounts dockerMounts = DockerMounts.fromString(request.getElasticProfileConfiguration().getMounts());
             containerSpecBuilder.mounts(dockerMounts.toMount());
-            final DockerSecrets dockerSecrets = DockerSecrets.fromString(request.properties().get("Secrets"));
+            final DockerSecrets dockerSecrets = DockerSecrets.fromString(request.getElasticProfileConfiguration().getSecrets());
             containerSpecBuilder.secrets(dockerSecrets.toSecretBind(docker.listSecrets()));
         } else {
-            DockerSwarmPlugin.LOG.warn(format("Detected docker version and api version is {0} and {1} respectively. Docker with api version 1.26 or above is required to use volume mounts, secrets and host file entries. Please refer https://docs.docker.com/engine/api/v1.32/#section/Versioning for more information about docker release.", docker.version().version(), docker.version().apiVersion()));
+            LOG.warn(format("Detected docker version and api version is {0} and {1} respectively. Docker with api version 1.26 or above is required to use volume mounts, secrets and host file entries. Please refer https://docs.docker.com/engine/api/v1.32/#section/Versioning for more information about docker release.", docker.version().version(), docker.version().apiVersion()));
         }
 
         Driver.Builder driverBuilder = Driver.builder()
-                .name(request.properties().get("LogDriver"))
-                .options(Util.linesToMap(request.properties().get("LogDriverOptions")));
+                .name(request.getElasticProfileConfiguration().getLogDriver())
+                .options(Util.linesToMap(request.getElasticProfileConfiguration().getLogDriverOptions()));
 
         TaskSpec taskSpec = TaskSpec.builder()
                 .containerSpec(containerSpecBuilder.build())
-                .resources(resourceRequirements(request))
-                .placement(Placement.create(Util.linesToList(request.properties().get("Constraints"))))
-                .logDriver(StringUtils.isBlank(request.properties().get("LogDriver")) ? null : driverBuilder.build())
+                .resources(resourceRequirements(request.getElasticProfileConfiguration()))
+                .placement(Placement.create(Util.linesToList(request.getElasticProfileConfiguration().getConstraints())))
+                .logDriver(StringUtils.isBlank(request.getElasticProfileConfiguration().getLogDriver()) ? null : driverBuilder.build())
                 .build();
 
         ServiceSpec serviceSpec = ServiceSpec.builder()
                 .name(serviceName)
                 .labels(labels)
                 .taskTemplate(taskSpec)
-                .networks(Networks.fromString(request.properties().get("Networks"), docker.listNetworks()))
+                .networks(Networks.fromString(request.getElasticProfileConfiguration().getNetworks(), docker.listNetworks()))
                 .build();
 
         ServiceCreateResponse service = docker.createService(serviceSpec);
@@ -147,17 +147,17 @@ public class DockerService {
 
         Service serviceInfo = docker.inspectService(id);
 
-        DockerSwarmPlugin.LOG.debug("Created service " + serviceInfo.spec().name());
+        LOG.debug("Created service " + serviceInfo.spec().name());
         return new DockerService(serviceName,
                 serviceInfo.createdAt(),
-                request.properties(),
-                request.environment(),
-                request.jobIdentifier());
+                request.getElasticProfileConfiguration(),
+                request.getEnvironment(),
+                request.getJobIdentifier());
     }
 
-    private static ResourceRequirements resourceRequirements(CreateAgentRequest request) {
+    private static ResourceRequirements resourceRequirements(ElasticProfileConfiguration elasticProfileConfiguration) {
         ResourceRequirements.Builder resourceRequirementsBuilder = ResourceRequirements.builder();
-        final String maxMemory = request.properties().get("MaxMemory");
+        final String maxMemory = elasticProfileConfiguration.getMaxMemory();
         if (StringUtils.isNotBlank(maxMemory)) {
             resourceRequirementsBuilder.limits(
                     Resources.builder()
@@ -166,7 +166,7 @@ public class DockerService {
             );
         }
 
-        final String reservedMemory = request.properties().get("ReservedMemory");
+        final String reservedMemory = elasticProfileConfiguration.getReservedMemory();
         if (StringUtils.isNotBlank(reservedMemory)) {
             resourceRequirementsBuilder.reservations(
                     Resources.builder()
@@ -178,34 +178,36 @@ public class DockerService {
         return resourceRequirementsBuilder.build();
     }
 
-    private static String[] environmentFrom(CreateAgentRequest request, PluginSettings settings, String containerName) {
+    private static String[] environmentFrom(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
+                                            ClusterProfileProperties clusterProfileProperties,
+                                            String containerName) {
         Set<String> env = new HashSet<>();
 
-        env.addAll(settings.getEnvironmentVariables());
-        if (StringUtils.isNotBlank(request.properties().get("Environment"))) {
-            env.addAll(Util.splitIntoLinesAndTrimSpaces(request.properties().get("Environment")));
+        env.addAll(clusterProfileProperties.getEnvironmentVariables());
+        if (StringUtils.isNotBlank(request.getElasticProfileConfiguration().getEnvironment())) {
+            env.addAll(Util.splitIntoLinesAndTrimSpaces(request.getElasticProfileConfiguration().getEnvironment()));
         }
 
         env.addAll(Arrays.asList(
                 "GO_EA_MODE=" + mode(),
-                "GO_EA_SERVER_URL=" + settings.getGoServerUrl(),
+                "GO_EA_SERVER_URL=" + clusterProfileProperties.getGoServerUrl(),
                 "GO_EA_GUID=" + "docker-swarm." + containerName
         ));
 
-        env.addAll(request.autoregisterPropertiesAsEnvironmentVars(containerName));
+        env.addAll(request.autoregisterPropertiesAsEnvironmentVars(containerName, PLUGIN_ID));
 
         return env.toArray(new String[env.size()]);
     }
 
-    private static HashMap<String, String> labelsFrom(CreateAgentRequest request) {
+    private static HashMap<String, String> labelsFrom(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request) {
         HashMap<String, String> labels = new HashMap<>();
 
         labels.put(CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID);
-        labels.put(JOB_IDENTIFIER_LABEL_KEY, request.jobIdentifier().toJson());
-        if (StringUtils.isNotBlank(request.environment())) {
-            labels.put(ENVIRONMENT_LABEL_KEY, request.environment());
+        labels.put(JOB_IDENTIFIER_LABEL_KEY, request.getJobIdentifier().toJson());
+        if (StringUtils.isNotBlank(request.getEnvironment())) {
+            labels.put(ENVIRONMENT_LABEL_KEY, request.getEnvironment());
         }
-        labels.put(CONFIGURATION_LABEL_KEY, GSON.toJson(request.properties()));
+        labels.put(CONFIGURATION_LABEL_KEY, GSON.toJson(request.getElasticProfileConfiguration()));
         return labels;
     }
 
@@ -236,9 +238,7 @@ public class DockerService {
         return "";
     }
 
-    private static String image(Map<String, String> properties) {
-        String image = properties.get("Image");
-
+    private static String image(String image) {
         if (isBlank(image)) {
             throw new IllegalArgumentException("Must provide `Image` attribute.");
         }

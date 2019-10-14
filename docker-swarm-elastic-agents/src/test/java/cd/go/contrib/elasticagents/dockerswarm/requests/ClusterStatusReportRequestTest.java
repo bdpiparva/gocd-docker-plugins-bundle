@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ClusterStatusReportRequestTest {
@@ -32,7 +33,7 @@ public class ClusterStatusReportRequestTest {
         clusterJSON.addProperty("go_server_url", "https://go-server/go");
         jsonObject.add("cluster_profile_properties", clusterJSON);
 
-        ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(jsonObject.toString());
+        ClusterStatusReportRequest clusterStatusReportRequest = fromJson(jsonObject.toString(), null);
 
         ClusterStatusReportRequest expected = new ClusterStatusReportRequest(Collections.singletonMap("go_server_url", "https://go-server/go"));
         assertThat(clusterStatusReportRequest, CoreMatchers.is(expected));

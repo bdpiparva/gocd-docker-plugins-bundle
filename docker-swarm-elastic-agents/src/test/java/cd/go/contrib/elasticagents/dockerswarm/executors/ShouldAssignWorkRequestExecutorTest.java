@@ -56,7 +56,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Test
     public void shouldAssignWorkToContainerWithMatchingJobId() {
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, properties, jobIdentifier, null);
-        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
+        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToServicesMap).execute();
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("true"));
     }
@@ -65,7 +65,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     public void shouldNotAssignWorkToContainerWithNotMatchingJobId() {
         JobIdentifier mismatchingJobIdentifier = new JobIdentifier("up42", 98765L, "foo", "stage_1", "30000", "job_1", 999999L);
         ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), "FooEnv", properties, mismatchingJobIdentifier, null);
-        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(request, agentInstances).execute();
+        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToServicesMap).execute();
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("false"));
     }

@@ -19,6 +19,7 @@ package cd.go.contrib.elasticagents.dockerswarm.requests;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import org.junit.Test;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -40,7 +41,7 @@ public class JobCompletionRequestTest {
                 "  }\n" +
                 "}";
 
-        JobCompletionRequest request = JobCompletionRequest.fromJSON(json);
+        JobCompletionRequest request = fromJson(json, null);
 
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.jobIdentifier();

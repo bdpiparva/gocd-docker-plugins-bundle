@@ -22,29 +22,25 @@ import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 
-import java.util.Map;
-
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.dockerApiVersionAtLeast;
 
-public class DockerMountsValidator implements Validatable {
-    private final CreateAgentRequest createAgentRequest;
+public class DockerMountsValidator implements Validatable<CreateAgentRequest> {
     private final DockerClientFactory dockerClientFactory;
 
-    public DockerMountsValidator(CreateAgentRequest createAgentRequest) {
-        this(createAgentRequest, DockerClientFactory.instance());
+    public DockerMountsValidator() {
+        this(DockerClientFactory.instance());
     }
 
-    DockerMountsValidator(CreateAgentRequest createAgentRequest, DockerClientFactory dockerClientFactory) {
-        this.createAgentRequest = createAgentRequest;
+    DockerMountsValidator(DockerClientFactory dockerClientFactory) {
         this.dockerClientFactory = dockerClientFactory;
     }
 
     @Override
-    public ValidationResult validate(Map<String, String> elasticProfile) {
+    public ValidationResult validate(CreateAgentRequest createAgentRequest) {
         final ValidationResult validationResult = new ValidationResult();
 
         try {
-            final DockerMounts dockerMounts = DockerMounts.fromString(elasticProfile.get("Mounts"));
+            final DockerMounts dockerMounts = DockerMounts.fromString(createAgentRequest.getElasticProfileConfiguration().getMounts());
 
             if (!dockerMounts.isEmpty()) {
                 DockerClient dockerClient = dockerClientFactory.docker(createAgentRequest.getClusterProfileProperties());

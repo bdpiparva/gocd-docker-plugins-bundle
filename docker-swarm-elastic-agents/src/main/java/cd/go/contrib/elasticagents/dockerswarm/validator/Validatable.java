@@ -18,8 +18,6 @@ package cd.go.contrib.elasticagents.dockerswarm.validator;
 
 import cd.go.plugin.base.validation.ValidationResult;
 
-import java.util.Map;
-
-public interface Validatable {
-    ValidationResult validate(Map<String, String> elasticProfile);
+public interface Validatable<T> {
+    ValidationResult validate(T createAgentRequest);
 }

@@ -65,7 +65,7 @@ public class DockerSecretValidatorTest {
         when(dockerClient.listVolumes()).thenReturn(volumeList);
         when(volumeList.volumes()).thenReturn(new ImmutableList.Builder<Volume>().add(Volume.builder().name("Foo").build()).build());
 
-        ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
+        ValidationResult validationResult = new DockerMountsValidator(dockerClientFactory).validate(properties);
 
         assertTrue(validationResult.isEmpty());
     }
@@ -80,7 +80,7 @@ public class DockerSecretValidatorTest {
         when(version.apiVersion()).thenReturn("1.25");
         when(dockerClient.version()).thenReturn(version);
 
-        ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
+        ValidationResult validationResult = new DockerMountsValidator(dockerClientFactory).validate(properties);
 
         assertFalse(validationResult.isEmpty());
         assertThat(validationResult.find("Mounts").get().getMessage(), is("Docker volume mount requires api version 1.26 or higher."));
@@ -99,7 +99,7 @@ public class DockerSecretValidatorTest {
         when(dockerClient.listVolumes()).thenReturn(volumeList);
         when(volumeList.volumes()).thenReturn(new ImmutableList.Builder<Volume>().add(Volume.builder().name("Foo").build()).build());
 
-        ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
+        ValidationResult validationResult = new DockerMountsValidator(dockerClientFactory).validate(properties);
 
         assertFalse(validationResult.isEmpty());
         assertThat(validationResult.find("Mounts").get().getMessage(), is("Invalid mount target specification `src=Foo`. `target` has to be specified."));
@@ -113,7 +113,7 @@ public class DockerSecretValidatorTest {
 
         when(createAgentRequest.getClusterProfileProperties()).thenThrow(new PluginSettingsNotConfiguredException());
 
-        ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
+        ValidationResult validationResult = new DockerMountsValidator(dockerClientFactory).validate(properties);
 
         assertFalse(validationResult.isEmpty());
         assertThat(validationResult.find("Mounts").get().getMessage(), is("Plugin settings is not configured."));

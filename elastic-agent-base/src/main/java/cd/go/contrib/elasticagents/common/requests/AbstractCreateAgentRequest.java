@@ -59,11 +59,6 @@ public abstract class AbstractCreateAgentRequest<E extends ElasticProfileConfigu
     public AbstractCreateAgentRequest() {
     }
 
-    public static <T extends AbstractCreateAgentRequest> T fromJSON(String json,
-                                                                    Class<T> type) {
-        return fromJson(json, type);
-    }
-
     public Collection<String> autoregisterPropertiesAsEnvironmentVars(String elasticAgentId, String pluginId) {
         List<String> vars = new ArrayList<>();
         vars.add("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID=" + elasticAgentId);

@@ -16,10 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
-import cd.go.contrib.elasticagents.dockerswarm.DockerService;
-import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
+import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.validator.DockerMountsValidator;
 import cd.go.contrib.elasticagents.dockerswarm.validator.DockerSecretValidator;
@@ -28,6 +27,9 @@ import cd.go.plugin.base.GsonTransformer;
 import cd.go.plugin.base.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import org.joda.time.LocalTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,50 +37,62 @@ import java.util.List;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.text.MessageFormat.format;
 
-public class CreateAgentRequestExecutor implements RequestExecutor {
-    private final AgentInstances<DockerService> agentInstances;
+public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest> {
+    private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormat.forPattern("'##|'HH:mm:ss.SSS '[go]'");
     private final ElasticAgentRequestClient pluginRequest;
-    private final CreateAgentRequest request;
     private List<Validatable> validators = new ArrayList<>();
 
-    public CreateAgentRequestExecutor(CreateAgentRequest request,
-                                      AgentInstances<DockerService> agentInstances,
+    public CreateAgentRequestExecutor(Map<String, DockerServices> clusterToServicesMap,
                                       ElasticAgentRequestClient pluginRequest) {
-        this.request = request;
-        this.agentInstances = agentInstances;
+        super(clusterToServicesMap);
         this.pluginRequest = pluginRequest;
-        validators.add(new DockerSecretValidator(request));
-        validators.add(new DockerMountsValidator(request));
+        validators.add(new DockerSecretValidator());
+        validators.add(new DockerMountsValidator());
     }
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
-        LOG.debug(format("[create-agent] Validating with profile: {0}", request.properties()));
-        boolean hasError = false;
-        List<Map<String, String>> messages = new ArrayList<>();
-        for (Validatable validatable : validators) {
-            ValidationResult validationResult = validatable.validate(request.properties());
-            if (!validationResult.isEmpty()) {
-                hasError = true;
-                Map<String, String> messageToBeAdded = new HashMap<>();
-                messageToBeAdded.put("type", "warning");
-                messageToBeAdded.put("message", GsonTransformer.toJson(validationResult));
-                messages.add(messageToBeAdded);
+    protected GoPluginApiResponse execute(CreateAgentRequest request) {
+        try {
+            ConsoleLogAppender consoleLogAppender = text -> {
+                final String message = String.format("%s %s\n", LocalTime.now().toString(MESSAGE_PREFIX_FORMATTER), text);
+                pluginRequest.appendToConsoleLog(request.getJobIdentifier(), message);
+            };
+            refreshInstancesForCluster(request.getClusterProfileProperties());
+            LOG.debug(format("[create-agent] Validating with profile: {0}", request.getElasticProfileConfiguration()));
+            boolean hasError = false;
+            List<Map<String, String>> messages = new ArrayList<>();
+            for (Validatable validatable : validators) {
+                ValidationResult validationResult = validatable.validate(request.getElasticProfileConfiguration());
+                if (!validationResult.isEmpty()) {
+                    hasError = true;
+                    Map<String, String> messageToBeAdded = new HashMap<>();
+                    messageToBeAdded.put("type", "warning");
+                    messageToBeAdded.put("message", GsonTransformer.toJson(validationResult));
+                    messages.add(messageToBeAdded);
+                }
             }
-        }
-        if (hasError) {
-            LOG.debug(format("[create-agent] Error in validtion: {0}", messages));
-            pluginRequest.addServerHealthMessage(messages);
-            return DefaultGoPluginApiResponse.incompleteRequest(messages.toString());
-        }
-        LOG.debug(format("[create-agent] Creating agent with profile: {0}", request.properties()));
+            if (hasError) {
+                LOG.debug(format("[create-agent] Error in validtion: {0}", messages));
+                pluginRequest.addServerHealthMessage(messages);
+                return DefaultGoPluginApiResponse.incompleteRequest(messages.toString());
+            }
+            LOG.debug(format("[create-agent] Creating agent with profile: {0}", request.getElasticProfileConfiguration()));
 
-        agentInstances.create(request, pluginRequest);
+            DockerServices dockerServices = clusterToServicesMap.get(request.getClusterProfileProperties().uuid());
+            dockerServices.create(request, pluginRequest, consoleLogAppender);
 
-        LOG.debug(format("[create-agent] Done creating agent for profile: {0}", request.properties()));
-        return new DefaultGoPluginApiResponse(200);
+            LOG.debug(format("[create-agent] Done creating agent for profile: {0}", request.getElasticProfileConfiguration()));
+            return new DefaultGoPluginApiResponse(200);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    @Override
+    protected CreateAgentRequest parseRequest(String requestBody) {
+        return fromJson(requestBody, CreateAgentRequest.class);
+    }
 }

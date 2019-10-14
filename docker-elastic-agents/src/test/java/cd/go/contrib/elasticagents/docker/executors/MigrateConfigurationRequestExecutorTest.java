@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.util.Collections.emptyList;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -67,7 +68,7 @@ class MigrateConfigurationRequestExecutorTest {
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(new ClusterProfileProperties());
         assertThat(responseObject.getClusterProfiles()).isEqualTo(of(clusterProfile));
@@ -83,7 +84,7 @@ class MigrateConfigurationRequestExecutorTest {
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         assertThat(responseObject.getClusterProfiles()).isEqualTo(of(clusterProfile));
@@ -101,7 +102,7 @@ class MigrateConfigurationRequestExecutorTest {
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
@@ -127,7 +128,7 @@ class MigrateConfigurationRequestExecutorTest {
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
@@ -150,7 +151,7 @@ class MigrateConfigurationRequestExecutorTest {
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
@@ -183,7 +184,7 @@ class MigrateConfigurationRequestExecutorTest {
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
 
@@ -219,7 +220,7 @@ class MigrateConfigurationRequestExecutorTest {
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
 
@@ -254,7 +255,7 @@ class MigrateConfigurationRequestExecutorTest {
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         assertThat(responseObject.getClusterProfiles()).isEqualTo(of(cluster1, cluster2));

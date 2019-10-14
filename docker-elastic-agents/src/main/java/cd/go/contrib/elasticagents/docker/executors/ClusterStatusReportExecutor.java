@@ -28,6 +28,8 @@ import freemarker.template.Template;
 
 import java.util.Map;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
+
 public class ClusterStatusReportExecutor extends BaseExecutor<ClusterStatusReportRequest> {
     private final ViewBuilder viewBuilder;
 
@@ -59,6 +61,6 @@ public class ClusterStatusReportExecutor extends BaseExecutor<ClusterStatusRepor
 
     @Override
     protected ClusterStatusReportRequest parseRequest(String requestBody) {
-        return ClusterStatusReportRequest.fromJSON(requestBody, ClusterStatusReportRequest.class);
+        return fromJson(requestBody, ClusterStatusReportRequest.class);
     }
 }

@@ -75,9 +75,9 @@ public class DockerClientFactory {
         return docker;
     }
 
-    private static void setupCerts(PluginSettings pluginSettings,
+    private static void setupCerts(ClusterProfileProperties clusterProfileProperties,
                                    DefaultDockerClient.Builder builder) throws IOException, DockerCertificateException {
-        if (isBlank(pluginSettings.getDockerCACert()) || isBlank(pluginSettings.getDockerClientCert()) || isBlank(pluginSettings.getDockerClientKey())) {
+        if (isBlank(clusterProfileProperties.getDockerCACert()) || isBlank(clusterProfileProperties.getDockerClientCert()) || isBlank(clusterProfileProperties.getDockerClientKey())) {
             DockerSwarmPlugin.LOG.warn("Missing docker certificates, will attempt to connect without certificates");
             return;
         }
@@ -86,9 +86,9 @@ public class DockerClientFactory {
         File tempDirectory = certificateDir.toFile();
 
         try {
-            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CA_CERT_NAME), pluginSettings.getDockerCACert(), StandardCharsets.UTF_8);
-            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_CERT_NAME), pluginSettings.getDockerClientCert(), StandardCharsets.UTF_8);
-            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_KEY_NAME), pluginSettings.getDockerClientKey(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CA_CERT_NAME), clusterProfileProperties.getDockerCACert(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_CERT_NAME), clusterProfileProperties.getDockerClientCert(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_KEY_NAME), clusterProfileProperties.getDockerClientKey(), StandardCharsets.UTF_8);
             builder.dockerCertificates(new DockerCertificates(certificateDir));
         } finally {
             FileUtils.deleteDirectory(tempDirectory);

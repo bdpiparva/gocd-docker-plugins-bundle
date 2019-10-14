@@ -102,7 +102,7 @@ public class DockerServiceElasticAgentTest extends BaseTest {
         properties.put("Image", "alpine:latest");
         properties.put("Environment", "A=B\nC=D\r\nE=F\n\n\nX=Y");
 
-        PluginSettings settings = createClusterProfiles();
+        ClusterProfileProperties settings = createClusterProfiles();
         settings.setEnvironmentVariables("GLOBAL=something");
         DockerService service = DockerService.create(new CreateAgentRequest("key", properties, "prod", new JobIdentifier(100L), new HashMap<>()), settings, docker);
         services.add(service.name());

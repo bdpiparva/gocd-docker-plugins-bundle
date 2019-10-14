@@ -17,9 +17,9 @@
 package cd.go.contrib.elasticagents.docker.executors;
 
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.common.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
+import cd.go.contrib.elasticagents.common.exceptions.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.requests.ServerPingRequest;
@@ -29,6 +29,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import java.util.*;
 
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 
 public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
     private final ElasticAgentRequestClient pluginRequest;
@@ -117,6 +118,6 @@ public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
 
     @Override
     protected ServerPingRequest parseRequest(String requestBody) {
-        return ServerPingRequest.fromJSON(requestBody, ServerPingRequest.class);
+        return fromJson(requestBody, ServerPingRequest.class);
     }
 }

@@ -24,6 +24,7 @@ import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +59,7 @@ class MigrateConfigurationRequestTest {
                 "    ]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody, MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest request = fromJson(requestBody, MigrateConfigurationRequest.class);
 
         ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
@@ -88,7 +89,7 @@ class MigrateConfigurationRequestTest {
                 "    \"elastic_agent_profiles\":[]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody, MigrateConfigurationRequest.class);
+        MigrateConfigurationRequest request = fromJson(requestBody, MigrateConfigurationRequest.class);
 
         assertThat(new ClusterProfileProperties()).isEqualTo(request.getPluginSettings());
         assertThat(of()).isEqualTo(request.getClusterProfiles());

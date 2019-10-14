@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -50,7 +51,7 @@ public class ShouldAssignWorkRequestTest {
         json.add("job_identifier", JobIdentifierMother.getJson());
         json.add("properties", propertiesJson);
 
-        ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString());
+        ShouldAssignWorkRequest request = fromJson(json.toString(), null);
 
         assertThat(request.environment(), equalTo("prod"));
         assertThat(request.agent(), equalTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled)));

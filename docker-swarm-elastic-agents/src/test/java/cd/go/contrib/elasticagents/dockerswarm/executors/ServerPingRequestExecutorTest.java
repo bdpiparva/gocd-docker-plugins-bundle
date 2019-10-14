@@ -57,7 +57,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.allClusterProfileProperties()).thenReturn(Collections.singletonList(clusterProfileProperties));
-        new ServerPingRequestExecutor(serverPingRequest, clusterSpecificInstances, pluginRequest).execute();
+        new ServerPingRequestExecutor(clusterSpecificInstances, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Arrays.asList(agent1));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(agent1AfterDisabling));
@@ -107,7 +107,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.allClusterProfileProperties()).thenReturn(Arrays.asList(clusterProfileProperties1, clusterProfileProperties2));
-        new ServerPingRequestExecutor(serverPingRequest, clusterSpecificInstances, pluginRequest).execute();
+        new ServerPingRequestExecutor(clusterSpecificInstances, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Arrays.asList(agent1));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Arrays.asList(agent1AfterDisabling));
@@ -138,7 +138,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
             put(createClusterProfiles().uuid(), agentInstances);
         }};
 
-        new ServerPingRequestExecutor(serverPingRequest, dockerContainers, pluginRequest).execute();
+        new ServerPingRequestExecutor(dockerContainers, pluginRequest).execute();
 
         assertFalse(agentInstances.hasInstance(container.name()));
     }
@@ -164,7 +164,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.allClusterProfileProperties()).thenReturn(Collections.singletonList(createClusterProfileProperties()));
 
-        new ServerPingRequestExecutor(serverPingRequest, dockerServices, pluginRequest).execute();
+        new ServerPingRequestExecutor(dockerServices, pluginRequest).execute();
 
         verify(pluginRequest, atLeastOnce()).disableAgents(Arrays.asList(missingAgent));
         verify(pluginRequest, atLeastOnce()).deleteAgents(Collections.singletonList(missingAgent));

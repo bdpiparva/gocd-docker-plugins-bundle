@@ -22,6 +22,7 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -38,7 +39,7 @@ public class CreateAgentRequestTest {
                 "  \"environment\": \"prod\"\n" +
                 "}";
 
-        CreateAgentRequest request = CreateAgentRequest.fromJSON(json);
+        CreateAgentRequest request = fromJson(json, null);
         assertThat(request.autoRegisterKey(), equalTo("secret-key"));
         assertThat(request.environment(), equalTo("prod"));
         HashMap<String, String> expectedProperties = new HashMap<>();

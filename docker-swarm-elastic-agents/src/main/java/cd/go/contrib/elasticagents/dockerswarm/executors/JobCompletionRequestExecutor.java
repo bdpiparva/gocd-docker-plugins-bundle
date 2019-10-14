@@ -18,44 +18,54 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
-import cd.go.contrib.elasticagents.dockerswarm.*;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.text.MessageFormat.format;
 
-public class JobCompletionRequestExecutor implements RequestExecutor {
-    private final JobCompletionRequest jobCompletionRequest;
-    private final AgentInstances<DockerService> agentInstances;
+public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequest> {
     private final ElasticAgentRequestClient pluginRequest;
 
-    public JobCompletionRequestExecutor(JobCompletionRequest jobCompletionRequest,
-                                        AgentInstances<DockerService> agentInstances,
+    public JobCompletionRequestExecutor(Map<String, DockerServices> clusterToDockerServiceMap,
                                         ElasticAgentRequestClient pluginRequest) {
-        this.jobCompletionRequest = jobCompletionRequest;
-        this.agentInstances = agentInstances;
+        super(clusterToDockerServiceMap);
         this.pluginRequest = pluginRequest;
     }
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
-        ClusterProfileProperties pluginSettings = jobCompletionRequest.getClusterProfileProperties();
-        String elasticAgentId = jobCompletionRequest.getElasticAgentId();
+    protected GoPluginApiResponse execute(JobCompletionRequest request) {
+        try {
+            refreshInstancesForCluster(request.getClusterProfileConfiguration());
+            ClusterProfileProperties clusterProfileProperties = request.getClusterProfileConfiguration();
+            String elasticAgentId = request.getElasticAgentId();
 
-        Agent agent = new Agent();
-        agent.elasticAgentId(elasticAgentId);
+            Agent agent = new Agent();
+            agent.elasticAgentId(elasticAgentId);
 
-        LOG.info(format("[Job Completion] Terminating elastic agent with id {0} on job completion {1}.", agent.elasticAgentId(), jobCompletionRequest.jobIdentifier()));
+            LOG.info(format("[Job Completion] Terminating elastic agent with id {0} on job completion {1}.", agent.elasticAgentId(), request.getJobIdentifier()));
 
-        List<Agent> agents = Collections.singletonList(agent);
-        pluginRequest.disableAgents(agents);
-        agentInstances.terminate(agent.elasticAgentId(), pluginSettings);
-        pluginRequest.deleteAgents(agents);
-        return DefaultGoPluginApiResponse.success("");
+            DockerServices dockerServices = clusterToServicesMap.get(clusterProfileProperties.uuid());
+            List<Agent> agents = Collections.singletonList(agent);
+            pluginRequest.disableAgents(agents);
+            dockerServices.terminate(agent.elasticAgentId(), clusterProfileProperties);
+            pluginRequest.deleteAgents(agents);
+            return DefaultGoPluginApiResponse.success("");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected JobCompletionRequest parseRequest(String requestBody) {
+        return fromJson(requestBody, JobCompletionRequest.class);
     }
 }

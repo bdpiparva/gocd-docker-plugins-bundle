@@ -16,68 +16,13 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.common.agent.Agent;
-import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.executors.ShouldAssignWorkRequestExecutor;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import java.util.Map;
+import cd.go.contrib.elasticagents.common.requests.AbstractShouldAssignWorkRequest;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.Request;
 
 /**
  * Represents the {@link Request#REQUEST_SHOULD_ASSIGN_WORK} message.
  */
-public class ShouldAssignWorkRequest {
-    public static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-    private Agent agent;
-    private String environment;
-    private Map<String, String> properties;
-    private JobIdentifier jobIdentifier;
-    private ClusterProfileProperties clusterProfileProperties;
-
-    public ShouldAssignWorkRequest(Agent agent,
-                                   String environment,
-                                   Map<String, String> properties,
-                                   JobIdentifier jobIdentifier,
-                                   Map<String, String> clusterProfileProperties) {
-        this.agent = agent;
-        this.environment = environment;
-        this.properties = properties;
-        this.jobIdentifier = jobIdentifier;
-        this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileProperties);
-    }
-
-    public ShouldAssignWorkRequest() {
-    }
-
-    public Agent agent() {
-        return agent;
-    }
-
-    public String environment() {
-        return environment;
-    }
-
-    public Map<String, String> properties() {
-        return properties;
-    }
-
-    public JobIdentifier jobIdentifier() {
-        return jobIdentifier;
-    }
-
-    public static ShouldAssignWorkRequest fromJSON(String json) {
-        return GSON.fromJson(json, ShouldAssignWorkRequest.class);
-    }
-
-    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, ElasticAgentRequestClient client) {
-        return new ShouldAssignWorkRequestExecutor(this, agentInstances);
-    }
-
-    public ClusterProfileProperties getClusterProfileProperties() {
-        return clusterProfileProperties;
-    }
+public class ShouldAssignWorkRequest extends AbstractShouldAssignWorkRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
 }

@@ -27,7 +27,7 @@ import org.joda.time.Period;
 
 import java.util.Collection;
 
-public class PluginSettings {
+public class DockerSwarmPluginSettings implements cd.go.contrib.elasticagents.common.models.PluginSettings {
     public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .excludeFieldsWithoutExposeAnnotation()
@@ -83,8 +83,8 @@ public class PluginSettings {
 
     private Period autoRegisterPeriod;
 
-    public static PluginSettings fromJSON(String json) {
-        return GSON.fromJson(json, PluginSettings.class);
+    public static DockerSwarmPluginSettings fromJSON(String json) {
+        return GSON.fromJson(json, DockerSwarmPluginSettings.class);
     }
 
     public Period getAutoRegisterPeriod() {
@@ -170,7 +170,7 @@ public class PluginSettings {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        PluginSettings that = (PluginSettings) o;
+        DockerSwarmPluginSettings that = (DockerSwarmPluginSettings) o;
 
         if (useDockerAuthInfo != that.useDockerAuthInfo) return false;
         if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;

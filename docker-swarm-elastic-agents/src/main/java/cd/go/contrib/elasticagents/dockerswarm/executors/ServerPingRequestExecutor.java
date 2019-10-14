@@ -17,12 +17,11 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.common.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
+import cd.go.contrib.elasticagents.common.exceptions.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
-import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ServerPingRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -33,33 +32,33 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 
-public class ServerPingRequestExecutor implements RequestExecutor {
-
-
-    private final ServerPingRequest serverPingRequest;
-    private final Map<String, DockerServices> clusterSpecificAgentInstances;
+public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
     private final ElasticAgentRequestClient pluginRequest;
 
-    public ServerPingRequestExecutor(ServerPingRequest serverPingRequest,
-                                     Map<String, DockerServices> clusterSpecificAgentInstances,
+    public ServerPingRequestExecutor(Map<String, DockerServices> clusterSpecificAgentInstances,
                                      ElasticAgentRequestClient pluginRequest) {
-        this.serverPingRequest = serverPingRequest;
-        this.clusterSpecificAgentInstances = clusterSpecificAgentInstances;
+        super(clusterSpecificAgentInstances);
         this.pluginRequest = pluginRequest;
     }
 
     @Override
-    public GoPluginApiResponse execute() throws Exception {
-        LOG.info("[server-ping] Starting execute server ping request.");
-        List<ClusterProfileProperties> allClusterProfileProperties = serverPingRequest.allClusterProfileProperties();
+    protected GoPluginApiResponse execute(ServerPingRequest serverPingRequest) {
+        try {
+            refreshInstancesForAllClusters(serverPingRequest.getAllClusterProfileConfigurations());
+            LOG.info("[server-ping] Starting execute server ping request.");
+            List<ClusterProfileProperties> allClusterProfileProperties = serverPingRequest.getAllClusterProfileConfigurations();
 
-        for (ClusterProfileProperties clusterProfileProperties : allClusterProfileProperties) {
-            performCleanupForACluster(clusterProfileProperties, clusterSpecificAgentInstances.get(clusterProfileProperties.uuid()));
+            for (ClusterProfileProperties clusterProfileProperties : allClusterProfileProperties) {
+                performCleanupForACluster(clusterProfileProperties, clusterToServicesMap.get(clusterProfileProperties.uuid()));
+            }
+
+            CheckForPossiblyMissingAgents();
+            return DefaultGoPluginApiResponse.success("");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        CheckForPossiblyMissingAgents();
-        return DefaultGoPluginApiResponse.success("");
     }
 
     private void performCleanupForACluster(ClusterProfileProperties clusterProfileProperties,
@@ -85,9 +84,9 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         pluginRequest.deleteAgents(toBeDeleted);
     }
 
-    private void CheckForPossiblyMissingAgents() throws Exception {
+    private void CheckForPossiblyMissingAgents() {
         Collection<Agent> allAgents = pluginRequest.listAgents().agents();
-        List<Agent> missingAgents = allAgents.stream().filter(agent -> clusterSpecificAgentInstances.values().stream()
+        List<Agent> missingAgents = allAgents.stream().filter(agent -> clusterToServicesMap.values().stream()
                 .noneMatch(instances -> instances.hasInstance(agent.elasticAgentId()))).collect(Collectors.toList());
 
         if (!missingAgents.isEmpty()) {
@@ -102,4 +101,8 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         pluginRequest.disableAgents(agents.findInstancesToDisable());
     }
 
+    @Override
+    protected ServerPingRequest parseRequest(String requestBody) {
+        return fromJson(requestBody, ServerPingRequest.class);
+    }
 }

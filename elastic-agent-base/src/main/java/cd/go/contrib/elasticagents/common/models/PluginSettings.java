@@ -14,23 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.dockerswarm.executors;
+package cd.go.contrib.elasticagents.common.models;
 
-
-import org.apache.commons.lang.StringUtils;
-
-public class NonBlankField extends Field {
-
-    public NonBlankField(String key, String displayName, String defaultValue, Boolean secure, String displayOrder) {
-        super(key, displayName, defaultValue, true, secure, displayOrder);
-    }
-
-    @Override
-    public String doValidate(String input) {
-        if (StringUtils.isBlank(input)) {
-            return this.displayName + " must not be blank.";
-        }
-        return null;
-    }
-
+public interface PluginSettings {
 }

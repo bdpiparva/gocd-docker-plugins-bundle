@@ -18,7 +18,7 @@ package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfile;
 import cd.go.contrib.elasticagents.dockerswarm.ElasticAgentProfile;
-import cd.go.contrib.elasticagents.dockerswarm.PluginSettings;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import org.json.JSONException;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -26,6 +26,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -60,9 +61,9 @@ public class MigrateConfigurationRequestTest {
                 "    ]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody);
+        MigrateConfigurationRequest request = fromJson(requestBody, null);
 
-        PluginSettings pluginSettings = new PluginSettings();
+        ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
@@ -93,16 +94,16 @@ public class MigrateConfigurationRequestTest {
                 "    \"elastic_agent_profiles\":[]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody);
+        MigrateConfigurationRequest request = fromJson(requestBody, null);
 
-        assertThat(new PluginSettings(), is(request.getPluginSettings()));
+        assertThat(new ClusterProfileProperties(), is(request.getPluginSettings()));
         assertThat(Arrays.asList(), is(request.getClusterProfiles()));
         assertThat(Arrays.asList(), is(request.getElasticAgentProfiles()));
     }
 
     @Test
     public void shouldSerializeToJSONFromMigrationConfigRequest() throws JSONException {
-        PluginSettings pluginSettings = new PluginSettings();
+        ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 

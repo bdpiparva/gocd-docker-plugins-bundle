@@ -43,8 +43,4 @@ public abstract class AbstractServerPingRequest<C extends ClusterProfileConfigur
     public AbstractServerPingRequest() {
     }
 
-    public static <T extends AbstractServerPingRequest> T fromJSON(String json,
-                                                                   Class<T> type) {
-        return fromJson(json, type);
-    }
 }

@@ -21,6 +21,7 @@ import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.requests.JobCompletionRequest;
 import org.junit.jupiter.api.Test;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ClusterProfilePropertiesTest {
@@ -47,7 +48,7 @@ class ClusterProfilePropertiesTest {
                 "  \"environment\": \"prod\"\n" +
                 "}";
 
-        CreateAgentRequest createAgentRequest = CreateAgentRequest.fromJSON(createAgentRequestJSON, CreateAgentRequest.class);
+        CreateAgentRequest createAgentRequest = fromJson(createAgentRequestJSON, CreateAgentRequest.class);
 
         String jobCompletionRequestJSON = "{\n" +
                 "  \"elastic_agent_id\": \"ea1\",\n" +
@@ -69,7 +70,7 @@ class ClusterProfilePropertiesTest {
                 "  }\n" +
                 "}";
 
-        JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(jobCompletionRequestJSON, JobCompletionRequest.class);
+        JobCompletionRequest jobCompletionRequest = fromJson(jobCompletionRequestJSON, JobCompletionRequest.class);
         assertThat(jobCompletionRequest.getClusterProfileConfiguration().uuid()).isEqualTo(createAgentRequest.getClusterProfileProperties().uuid());
 
     }

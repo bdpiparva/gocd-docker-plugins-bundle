@@ -34,7 +34,7 @@ public class CreateAgentRequestExecutorTest {
         ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         ClusterProfileProperties clusterProfileProperties = mock(ClusterProfileProperties.class);
         when(request.getClusterProfileProperties()).thenReturn(clusterProfileProperties);
-        new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();
+        new CreateAgentRequestExecutor(clusterToServicesMap, pluginRequest).execute();
 
         verify(agentInstances).create(request, pluginRequest);
     }

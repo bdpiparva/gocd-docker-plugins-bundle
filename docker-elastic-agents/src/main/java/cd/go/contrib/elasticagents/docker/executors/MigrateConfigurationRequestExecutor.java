@@ -33,12 +33,13 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.util.List.of;
 
 public class MigrateConfigurationRequestExecutor extends AbstractExecutor<MigrateConfigurationRequest> {
     @Override
     protected MigrateConfigurationRequest parseRequest(String requestBody) {
-        return MigrateConfigurationRequest.fromJSON(requestBody, MigrateConfigurationRequest.class);
+        return fromJson(requestBody, MigrateConfigurationRequest.class);
     }
 
     @Override

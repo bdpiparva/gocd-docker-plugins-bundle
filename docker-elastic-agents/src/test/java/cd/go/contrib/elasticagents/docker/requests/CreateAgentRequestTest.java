@@ -19,6 +19,7 @@ package cd.go.contrib.elasticagents.docker.requests;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import org.junit.jupiter.api.Test;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class CreateAgentRequestTest {
@@ -37,7 +38,7 @@ class CreateAgentRequestTest {
                 "  \"environment\": \"prod\"\n" +
                 "}";
 
-        CreateAgentRequest request = CreateAgentRequest.fromJSON(json, CreateAgentRequest.class);
+        CreateAgentRequest request = fromJson(json, CreateAgentRequest.class);
         assertThat(request.getAutoRegisterKey()).isEqualTo("secret-key");
         assertThat(request.getEnvironment()).isEqualTo("prod");
         assertThat(request.getElasticProfileConfiguration().getImage()).isEqualTo("alpine");

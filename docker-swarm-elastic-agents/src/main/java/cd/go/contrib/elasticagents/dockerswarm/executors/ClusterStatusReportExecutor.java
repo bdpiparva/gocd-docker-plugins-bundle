@@ -18,46 +18,39 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
-import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.SwarmCluster;
 import cd.go.contrib.elasticagents.dockerswarm.reports.StatusReportGenerationErrorHandler;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ClusterStatusReportRequest;
+import cd.go.plugin.base.executors.AbstractExecutor;
 import com.google.gson.JsonObject;
 import com.spotify.docker.client.DockerClient;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
 
-import java.io.IOException;
-
 import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 
-public class ClusterStatusReportExecutor {
-
-    private final ClusterStatusReportRequest clusterStatusReportRequest;
-    private final DockerServices agentInstances;
+public class ClusterStatusReportExecutor extends AbstractExecutor<ClusterStatusReportRequest> {
     private final DockerClientFactory dockerClientFactory;
     private ViewBuilder viewBuilder;
 
-    public ClusterStatusReportExecutor(ClusterStatusReportRequest clusterStatusReportRequest,
-                                       DockerServices agentInstances) throws IOException {
-        this(clusterStatusReportRequest, agentInstances, DockerClientFactory.instance(), ViewBuilder.instance());
+    public ClusterStatusReportExecutor() {
+        this(DockerClientFactory.instance(), ViewBuilder.instance());
     }
 
-    ClusterStatusReportExecutor(ClusterStatusReportRequest clusterStatusReportRequest,
-                                DockerServices agentInstances,
-                                DockerClientFactory dockerClientFactory,
+    ClusterStatusReportExecutor(DockerClientFactory dockerClientFactory,
                                 ViewBuilder viewBuilder) {
-        this.clusterStatusReportRequest = clusterStatusReportRequest;
-        this.agentInstances = agentInstances;
         this.dockerClientFactory = dockerClientFactory;
         this.viewBuilder = viewBuilder;
     }
 
-    public GoPluginApiResponse execute() {
+
+    @Override
+    protected GoPluginApiResponse execute(ClusterStatusReportRequest request) {
         try {
             LOG.debug("[status-report] Generating cluster status report.");
-            final DockerClient dockerClient = dockerClientFactory.docker(clusterStatusReportRequest.getClusterProfile());
+            final DockerClient dockerClient = dockerClientFactory.docker(request.getClusterProfileConfiguration());
             final SwarmCluster swarmCluster = new SwarmCluster(dockerClient);
             final Template template = viewBuilder.getTemplate("status-report.template.ftlh");
             final String statusReportView = viewBuilder.build(template, swarmCluster);
@@ -69,5 +62,10 @@ public class ClusterStatusReportExecutor {
         } catch (Exception e) {
             return StatusReportGenerationErrorHandler.handle(viewBuilder, e);
         }
+    }
+
+    @Override
+    protected ClusterStatusReportRequest parseRequest(String requestBody) {
+        return fromJson(requestBody, ClusterStatusReportRequest.class);
     }
 }

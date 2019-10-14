@@ -25,6 +25,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 
 public class ShouldAssignWorkRequestExecutor extends BaseExecutor<ShouldAssignWorkRequest> {
 
@@ -57,6 +58,6 @@ public class ShouldAssignWorkRequestExecutor extends BaseExecutor<ShouldAssignWo
 
     @Override
     protected ShouldAssignWorkRequest parseRequest(String requestBody) {
-        return ShouldAssignWorkRequest.fromJSON(requestBody,ShouldAssignWorkRequest.class);
+        return fromJson(requestBody, ShouldAssignWorkRequest.class);
     }
 }

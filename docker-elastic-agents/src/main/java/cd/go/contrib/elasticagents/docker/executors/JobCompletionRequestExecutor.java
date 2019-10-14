@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 
 public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequest> {
     private final ElasticAgentRequestClient pluginRequest;
@@ -60,6 +61,6 @@ public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequ
 
     @Override
     protected JobCompletionRequest parseRequest(String requestBody) {
-        return JobCompletionRequest.fromJSON(requestBody, JobCompletionRequest.class);
+        return fromJson(requestBody, JobCompletionRequest.class);
     }
 }

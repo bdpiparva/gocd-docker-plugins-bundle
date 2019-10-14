@@ -24,6 +24,7 @@ import cd.go.contrib.elasticagents.dockerswarm.model.reports.agent.DockerService
 import cd.go.contrib.elasticagents.dockerswarm.reports.StatusReportGenerationErrorHandler;
 import cd.go.contrib.elasticagents.dockerswarm.reports.StatusReportGenerationException;
 import cd.go.contrib.elasticagents.dockerswarm.requests.AgentStatusReportRequest;
+import cd.go.plugin.base.executors.AbstractExecutor;
 import com.google.gson.JsonObject;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.messages.swarm.Service;
@@ -31,35 +32,38 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.IOException;
 import java.util.Objects;
 
 import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 
-public class AgentStatusReportExecutor {
-    private final AgentStatusReportRequest request;
+public class AgentStatusReportExecutor extends AbstractExecutor<AgentStatusReportRequest> {
     private final DockerClientFactory dockerClientFactory;
     private final ViewBuilder builder;
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request) throws IOException {
-        this(request, DockerClientFactory.instance(), ViewBuilder.instance());
+    public AgentStatusReportExecutor() {
+        this(DockerClientFactory.instance(), ViewBuilder.instance());
     }
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request,
-                                     DockerClientFactory dockerClientFactory,
+    public AgentStatusReportExecutor(DockerClientFactory dockerClientFactory,
                                      ViewBuilder builder) {
-        this.request = request;
         this.dockerClientFactory = dockerClientFactory;
         this.builder = builder;
     }
 
-    public GoPluginApiResponse execute() throws Exception {
+
+    @Override
+    protected AgentStatusReportRequest parseRequest(String requestBody) {
+        return AgentStatusReportRequest.fromJSON(requestBody, AgentStatusReportRequest.class);
+    }
+
+    @Override
+    protected GoPluginApiResponse execute(AgentStatusReportRequest request) {
         String elasticAgentId = request.getElasticAgentId();
         JobIdentifier jobIdentifier = request.getJobIdentifier();
         LOG.info(String.format("[status-report] Generating status report for agent: %s with job: %s", elasticAgentId, jobIdentifier));
 
         try {
-            final DockerClient dockerClient = dockerClientFactory.docker(request.getClusterProfileProperties());
+            final DockerClient dockerClient = dockerClientFactory.docker(request.getClusterProfileConfiguration());
             Service dockerService = findService(elasticAgentId, jobIdentifier, dockerClient);
 
             DockerServiceElasticAgent elasticAgent = DockerServiceElasticAgent.fromService(dockerService, dockerClient);

@@ -17,12 +17,14 @@
 package cd.go.contrib.elasticagents.dockerswarm;
 
 import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.SetupSemaphore;
 import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.AgentInstances;
 import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import com.google.common.collect.ImmutableMap;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.ServiceNotFoundException;
@@ -37,22 +39,23 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
-public class DockerServices implements AgentInstances<DockerService> {
+public class DockerServices implements AgentInstances<DockerService, ElasticProfileConfiguration, ClusterProfileProperties> {
     private final ConcurrentHashMap<String, DockerService> services = new ConcurrentHashMap<>();
     private boolean refreshed;
     private List<JobIdentifier> jobsWaitingForAgentCreation = new ArrayList<>();
     public Clock clock = Clock.DEFAULT;
-
     final Semaphore semaphore = new Semaphore(0, true);
 
 
     @Override
-    public DockerService create(CreateAgentRequest request, ElasticAgentRequestClient pluginRequest) throws Exception {
+    public DockerService create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
+                                ElasticAgentRequestClient pluginRequest,
+                                ConsoleLogAppender consoleLogAppender) throws Exception {
         ClusterProfileProperties clusterProfileProperties = request.getClusterProfileProperties();
         final Integer maxAllowedContainers = clusterProfileProperties.getMaxDockerContainers();
         synchronized (services) {
-            if (!jobsWaitingForAgentCreation.contains(request.jobIdentifier())) {
-                jobsWaitingForAgentCreation.add(request.jobIdentifier());
+            if (!jobsWaitingForAgentCreation.contains(request.getJobIdentifier())) {
+                jobsWaitingForAgentCreation.add(request.getJobIdentifier());
             }
             doWithLockOnSemaphore(new SetupSemaphore(maxAllowedContainers, services, semaphore));
             List<Map<String, String>> messages = new ArrayList<>();
@@ -61,7 +64,7 @@ public class DockerServices implements AgentInstances<DockerService> {
                 pluginRequest.addServerHealthMessage(messages);
                 DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker(clusterProfileProperties));
                 register(dockerService);
-                jobsWaitingForAgentCreation.remove(request.jobIdentifier());
+                jobsWaitingForAgentCreation.remove(request.getJobIdentifier());
                 return dockerService;
             } else {
                 String maxLimitExceededMessage = "The number of containers currently running is currently at the maximum permissible limit (" + services.size() + "). Not creating any more containers.";
@@ -118,7 +121,7 @@ public class DockerServices implements AgentInstances<DockerService> {
     }
 
     @Override
-    public Agents instancesCreatedAfterTimeout(PluginSettings settings, Agents agents) {
+    public Agents instancesCreatedAfterTimeout(ClusterProfileProperties settings, Agents agents) {
         ArrayList<Agent> oldAgents = new ArrayList<>();
         for (Agent agent : agents.agents()) {
             DockerService instance = services.get(agent.elasticAgentId());
@@ -146,10 +149,10 @@ public class DockerServices implements AgentInstances<DockerService> {
         refreshed = true;
     }
 
-    @Override
-    public void refreshAll(ClusterProfileProperties pluginSettings, boolean forceRefresh) throws Exception {
+    //TODO: Delete this
+    public void refreshAll(ClusterProfileProperties clusterProfileProperties, boolean forceRefresh) throws Exception {
         if (!refreshed || forceRefresh) {
-            refreshAgentInstances(pluginSettings);
+            refreshAgentInstances(clusterProfileProperties);
         }
     }
 

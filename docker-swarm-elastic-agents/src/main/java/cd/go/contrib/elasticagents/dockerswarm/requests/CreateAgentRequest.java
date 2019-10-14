@@ -16,94 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.executors.CreateAgentRequestExecutor;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
-public class CreateAgentRequest {
-    private static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-    private String autoRegisterKey;
-    private Map<String, String> elasticAgentProfileProperties;
-    private String environment;
-    private JobIdentifier jobIdentifier;
-    private ClusterProfileProperties clusterProfileProperties;
-
-    public CreateAgentRequest() {
-    }
-
-    public CreateAgentRequest(String autoRegisterKey,
-                              Map<String, String> elasticAgentProfileProperties,
-                              String environment,
-                              JobIdentifier jobIdentifier,
-                              Map<String, String> clusterProfileProperties) {
-        this.autoRegisterKey = autoRegisterKey;
-        this.elasticAgentProfileProperties = elasticAgentProfileProperties;
-        this.environment = environment;
-        this.jobIdentifier = jobIdentifier;
-        this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileProperties);
-    }
-
-    public CreateAgentRequest(String autoRegisterKey,
-                              Map<String, String> elasticAgentProfileProperties,
-                              String environment,
-                              JobIdentifier jobIdentifier,
-                              ClusterProfileProperties clusterProfileProperties) {
-        this.autoRegisterKey = autoRegisterKey;
-        this.elasticAgentProfileProperties = elasticAgentProfileProperties;
-        this.environment = environment;
-        this.jobIdentifier = jobIdentifier;
-        this.clusterProfileProperties = clusterProfileProperties;
-    }
-
-    public String autoRegisterKey() {
-        return autoRegisterKey;
-    }
-
-    public Map<String, String> properties() {
-        return elasticAgentProfileProperties;
-    }
-
-    public String environment() {
-        return environment;
-    }
-
-    public JobIdentifier jobIdentifier() {
-        return jobIdentifier;
-    }
-
-    public static CreateAgentRequest fromJSON(String json) {
-        return GSON.fromJson(json, CreateAgentRequest.class);
-    }
-
-    public RequestExecutor executor(AgentInstances<DockerService> agentInstances,
-                                    ElasticAgentRequestClient pluginRequest) {
-        return new CreateAgentRequestExecutor(this, agentInstances, pluginRequest);
-    }
-
-    public Collection<String> autoregisterPropertiesAsEnvironmentVars(String elasticAgentId) {
-        ArrayList<String> vars = new ArrayList<>();
-        if (isNotBlank(autoRegisterKey)) {
-            vars.add("GO_EA_AUTO_REGISTER_KEY=" + autoRegisterKey);
-        }
-        if (isNotBlank(environment)) {
-            vars.add("GO_EA_AUTO_REGISTER_ENVIRONMENT=" + environment);
-        }
-        vars.add("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID=" + elasticAgentId);
-        vars.add("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID=" + Constants.PLUGIN_ID);
-        return vars;
-    }
-
-    public ClusterProfileProperties getClusterProfileProperties() {
-        return clusterProfileProperties;
-    }
+public class CreateAgentRequest extends AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
 }

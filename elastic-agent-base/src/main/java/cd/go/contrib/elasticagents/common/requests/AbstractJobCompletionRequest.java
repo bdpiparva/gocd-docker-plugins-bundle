@@ -55,8 +55,4 @@ public abstract class AbstractJobCompletionRequest<E extends ElasticProfileConfi
     public AbstractJobCompletionRequest() {
     }
 
-    public static <T extends AbstractJobCompletionRequest> T fromJSON(String json,
-                                                                      Class<T> type) {
-        return fromJson(json, type);
-    }
 }

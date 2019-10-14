@@ -74,7 +74,7 @@ public class AgentStatusReportExecutorTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        executor = new AgentStatusReportExecutor(statusReportRequest, dockerClientFactory, ViewBuilder.instance());
+        executor = new AgentStatusReportExecutor(dockerClientFactory, ViewBuilder.instance());
         clusterProfileProperties = new ClusterProfileProperties();
         when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(client);
         when(statusReportRequest.getClusterProfileProperties()).thenReturn(clusterProfileProperties);

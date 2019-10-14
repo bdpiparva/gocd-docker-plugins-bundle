@@ -22,28 +22,24 @@ import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 
-import java.util.Map;
-
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.dockerApiVersionAtLeast;
 
-public class DockerSecretValidator implements Validatable {
-    private final CreateAgentRequest createAgentRequest;
+public class DockerSecretValidator implements Validatable<CreateAgentRequest> {
     private final DockerClientFactory dockerClientFactory;
 
-    public DockerSecretValidator(CreateAgentRequest createAgentRequest) {
-        this(createAgentRequest, DockerClientFactory.instance());
+    public DockerSecretValidator() {
+        this(DockerClientFactory.instance());
     }
 
-    DockerSecretValidator(CreateAgentRequest createAgentRequest, DockerClientFactory dockerClientFactory) {
-        this.createAgentRequest = createAgentRequest;
+    DockerSecretValidator(DockerClientFactory dockerClientFactory) {
         this.dockerClientFactory = dockerClientFactory;
     }
 
     @Override
-    public ValidationResult validate(Map<String, String> elasticProfile) {
+    public ValidationResult validate(CreateAgentRequest createAgentRequest) {
         final ValidationResult validationResult = new ValidationResult();
         try {
-            final DockerSecrets dockerSecrets = DockerSecrets.fromString(elasticProfile.get("Secrets"));
+            final DockerSecrets dockerSecrets = DockerSecrets.fromString(createAgentRequest.getElasticProfileConfiguration().getSecrets());
             if (!dockerSecrets.isEmpty()) {
                 DockerClient dockerClient = dockerClientFactory.docker(createAgentRequest.getClusterProfileProperties());
                 if (!dockerApiVersionAtLeast(dockerClient, "1.26")) {

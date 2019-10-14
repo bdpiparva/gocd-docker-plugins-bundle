@@ -55,8 +55,4 @@ public abstract class AbstractShouldAssignWorkRequest<E extends ElasticProfileCo
     public AbstractShouldAssignWorkRequest() {
     }
 
-    public static <T extends AbstractShouldAssignWorkRequest> T fromJSON(String json,
-                                                                         Class<T> type) {
-        return fromJson(json, type);
-    }
 }

@@ -61,7 +61,7 @@ public class ClusterStatusReportExecutorTest {
 
         when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(SwarmCluster.class))).thenReturn("status-report");
-        final GoPluginApiResponse response = new ClusterStatusReportExecutor(clusterStatusReportRequest, dockerServices, dockerClientFactory, builder).execute();
+        final GoPluginApiResponse response = new ClusterStatusReportExecutor(dockerClientFactory, builder).execute();
 
         assertThat(response.responseCode(), is(200));
         assertThat(response.responseBody(), is("{\"view\":\"status-report\"}"));

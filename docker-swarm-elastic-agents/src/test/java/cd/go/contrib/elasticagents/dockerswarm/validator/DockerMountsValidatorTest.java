@@ -67,7 +67,7 @@ public class DockerMountsValidatorTest {
         when(secret.secretSpec()).thenReturn(SecretSpec.builder().name("Foo").build());
         when(secret.id()).thenReturn("service-id");
 
-        ValidationResult validationResult = new DockerSecretValidator(createAgentRequest, dockerClientFactory).validate(properties);
+        ValidationResult validationResult = new DockerSecretValidator(dockerClientFactory).validate(properties);
 
         assertTrue(validationResult.isEmpty());
     }
@@ -83,7 +83,7 @@ public class DockerMountsValidatorTest {
         when(dockerClient.version()).thenReturn(version);
         when(dockerClientFactory.docker(any(ClusterProfileProperties.class))).thenReturn(dockerClient);
 
-        ValidationResult validationResult = new DockerSecretValidator(createAgentRequest, null).validate(properties);
+        ValidationResult validationResult = new DockerSecretValidator(null).validate(properties);
 
         assertFalse(validationResult.isEmpty());
         assertThat(validationResult.find("Secrets").get().getMessage(), is("Invalid secret specification `Foo`. Must specify property `src` with value."));

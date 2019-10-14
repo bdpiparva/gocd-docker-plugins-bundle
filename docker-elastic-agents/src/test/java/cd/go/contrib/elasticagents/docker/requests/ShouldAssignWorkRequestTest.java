@@ -26,6 +26,7 @@ import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ShouldAssignWorkRequestTest {
@@ -51,7 +52,7 @@ class ShouldAssignWorkRequestTest {
         json.add("elastic_agent_profile_properties", elasticProfileJson);
         json.add("cluster_profile_properties", clusterProfileJson);
 
-        ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString(), ShouldAssignWorkRequest.class);
+        ShouldAssignWorkRequest request = fromJson(json.toString(), ShouldAssignWorkRequest.class);
 
         assertThat(request.getEnvironment()).isEqualTo("prod");
         assertThat(request.getAgent()).isEqualTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled));

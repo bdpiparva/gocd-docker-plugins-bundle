@@ -16,74 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.executors.JobCompletionRequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import cd.go.contrib.elasticagents.common.requests.AbstractJobCompletionRequest;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
 
-import java.util.Map;
-
-public class JobCompletionRequest {
-    @Expose
-    @SerializedName("elastic_agent_id")
-    private String elasticAgentId;
-    @Expose
-    @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
-
-    @Expose
-    @SerializedName("cluster_profile_properties")
-    private ClusterProfileProperties clusterProfileProperties;
-
-    public JobCompletionRequest() {
-    }
-
-    public JobCompletionRequest(String elasticAgentId,
-                                JobIdentifier jobIdentifier,
-                                Map<String, String> clusterProfile) {
-        this.elasticAgentId = elasticAgentId;
-        this.jobIdentifier = jobIdentifier;
-        this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfile);
-    }
-
-    public JobCompletionRequest(String elasticAgentId,
-                                JobIdentifier jobIdentifier,
-                                ClusterProfileProperties profileProperties) {
-        this.elasticAgentId = elasticAgentId;
-        this.jobIdentifier = jobIdentifier;
-        this.clusterProfileProperties = profileProperties;
-    }
-
-    public static JobCompletionRequest fromJSON(String json) {
-        JobCompletionRequest jobCompletionRequest = Util.GSON.fromJson(json, JobCompletionRequest.class);
-        return jobCompletionRequest;
-    }
-
-    public String getElasticAgentId() {
-        return elasticAgentId;
-    }
-
-    public JobIdentifier jobIdentifier() {
-        return jobIdentifier;
-    }
-
-    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, ElasticAgentRequestClient pluginRequest) {
-        return new JobCompletionRequestExecutor(this, agentInstances, pluginRequest);
-    }
-
-    @Override
-    public String toString() {
-        return "JobCompletionRequest{" +
-                "elasticAgentId='" + elasticAgentId + '\'' +
-                ", jobIdentifier=" + jobIdentifier +
-                ", clusterProfileProperties=" + clusterProfileProperties +
-                '}';
-    }
-
-    public ClusterProfileProperties getClusterProfileProperties() {
-        return clusterProfileProperties;
-    }
+public class JobCompletionRequest extends AbstractJobCompletionRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
 }

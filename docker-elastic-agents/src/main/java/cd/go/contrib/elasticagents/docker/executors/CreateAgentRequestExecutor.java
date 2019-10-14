@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagents.docker.executors;
 
 import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -29,6 +28,8 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.Map;
+
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 
 public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest> {
     private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormat.forPattern("'##|'HH:mm:ss.SSS '[go]'");
@@ -63,6 +64,6 @@ public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest>
 
     @Override
     protected CreateAgentRequest parseRequest(String requestBody) {
-        return CreateAgentRequest.fromJSON(requestBody, CreateAgentRequest.class);
+        return fromJson(requestBody, CreateAgentRequest.class);
     }
 }

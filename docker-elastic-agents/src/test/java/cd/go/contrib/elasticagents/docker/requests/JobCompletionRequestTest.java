@@ -21,6 +21,7 @@ import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import org.junit.jupiter.api.Test;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class JobCompletionRequestTest {
@@ -45,7 +46,7 @@ class JobCompletionRequestTest {
                 "  }\n" +
                 "}";
 
-        JobCompletionRequest request = JobCompletionRequest.fromJSON(json, JobCompletionRequest.class);
+        JobCompletionRequest request = fromJson(json, JobCompletionRequest.class);
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.getJobIdentifier();
         assertThat(actualJobIdentifier).isEqualTo(expectedJobIdentifier);

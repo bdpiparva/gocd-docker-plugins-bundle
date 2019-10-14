@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ServerPingRequestTest {
@@ -42,7 +43,7 @@ class ServerPingRequestTest {
                 "   ]" +
                 "\n}";
 
-        List<ClusterProfileProperties> allClusterProfileProperties = ServerPingRequest.fromJSON(requestBody, ServerPingRequest.class).getAllClusterProfileConfigurations();
+        List<ClusterProfileProperties> allClusterProfileProperties = fromJson(requestBody, ServerPingRequest.class).getAllClusterProfileConfigurations();
         assertThat(allClusterProfileProperties).hasSize(1);
     }
 }
