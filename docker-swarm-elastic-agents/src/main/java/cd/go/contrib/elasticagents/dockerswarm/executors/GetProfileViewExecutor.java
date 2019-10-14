@@ -30,7 +30,7 @@ public class GetProfileViewExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() throws Exception {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("template", readResource("/profile.template.html"));
+        jsonObject.addProperty("template", readResource("/docker-swarm/profile.template.html"));
         DefaultGoPluginApiResponse defaultGoPluginApiResponse = new DefaultGoPluginApiResponse(200, GSON.toJson(jsonObject));
         return defaultGoPluginApiResponse;
     }

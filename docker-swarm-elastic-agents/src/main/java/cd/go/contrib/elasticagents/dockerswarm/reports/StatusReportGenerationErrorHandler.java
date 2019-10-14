@@ -23,7 +23,7 @@ import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
 
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 import static java.text.MessageFormat.format;
 
 public class StatusReportGenerationErrorHandler {

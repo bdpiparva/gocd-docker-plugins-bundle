@@ -42,6 +42,6 @@ public class GetPluginIconExecutor implements RequestExecutor {
     }
 
     private String getIcon() {
-        return "/plugin-icon.svg";
+        return "/docker-registry/plugin-icon.svg";
     }
 }

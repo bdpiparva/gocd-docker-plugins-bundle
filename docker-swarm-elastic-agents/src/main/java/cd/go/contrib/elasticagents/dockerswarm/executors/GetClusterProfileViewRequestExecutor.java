@@ -30,7 +30,7 @@ public class GetClusterProfileViewRequestExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() throws Exception {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("template", readResource("/plugin-settings.template.html"));
+        jsonObject.addProperty("template", readResource("/docker-swarm/plugin-settings.template.html"));
         DefaultGoPluginApiResponse defaultGoPluginApiResponse = new DefaultGoPluginApiResponse(200, GSON.toJson(jsonObject));
         return defaultGoPluginApiResponse;
     }

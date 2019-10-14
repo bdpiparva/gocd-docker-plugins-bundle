@@ -72,7 +72,7 @@ public class DockerSecrets extends ArrayList<DockerSecrets.DockerSecret> {
                 throw new RuntimeException(format("Secret with name `{0}` does not exist.", dockerSecret.name()));
             }
 
-            DockerPlugin.LOG.debug(format("Using secret `{0}` with id `{1}`.", dockerSecret.name(), secret.id()));
+            DockerSwarmPlugin.LOG.debug(format("Using secret `{0}` with id `{1}`.", dockerSecret.name(), secret.id()));
             final SecretFile secretFile = SecretFile.builder()
                     .name(dockerSecret.file())
                     .uid(dockerSecret.uid())

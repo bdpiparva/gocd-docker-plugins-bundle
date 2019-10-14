@@ -34,6 +34,6 @@ public class GetArtifactStoreViewExecutorTest {
         Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(responseHash).containsEntry("template", readResource("/artifact-store.template.html"));
+        assertThat(responseHash).containsEntry("template", readResource("/docker-registry/artifact-store.template.html"));
     }
 }

@@ -29,7 +29,7 @@ public class GetPublishArtifactViewExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("template", readResource("/publish-artifact.template.html"));
+        jsonObject.addProperty("template", readResource("/docker-registry/publish-artifact.template.html"));
         return DefaultGoPluginApiResponse.success( GSON.toJson(jsonObject));
     }
 

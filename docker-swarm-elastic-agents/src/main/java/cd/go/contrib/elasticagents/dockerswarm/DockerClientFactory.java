@@ -63,7 +63,7 @@ public class DockerClientFactory {
 
         if (clusterProfileProperties.useDockerAuthInfo()) {
             final RegistryAuth registryAuth = clusterProfileProperties.registryAuth();
-            DockerPlugin.LOG.info(format("Using private docker registry server `{0}`.", registryAuth.serverAddress()));
+            DockerSwarmPlugin.LOG.info(format("Using private docker registry server `{0}`.", registryAuth.serverAddress()));
             builder.registryAuth(registryAuth);
         }
 
@@ -77,7 +77,7 @@ public class DockerClientFactory {
 
     private static void setupCerts(PluginSettings pluginSettings, DefaultDockerClient.Builder builder) throws IOException, DockerCertificateException {
         if (isBlank(pluginSettings.getDockerCACert()) || isBlank(pluginSettings.getDockerClientCert()) || isBlank(pluginSettings.getDockerClientKey())) {
-            DockerPlugin.LOG.warn("Missing docker certificates, will attempt to connect without certificates");
+            DockerSwarmPlugin.LOG.warn("Missing docker certificates, will attempt to connect without certificates");
             return;
         }
 

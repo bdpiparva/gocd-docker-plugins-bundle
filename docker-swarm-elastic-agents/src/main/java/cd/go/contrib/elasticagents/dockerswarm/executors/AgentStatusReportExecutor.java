@@ -31,24 +31,21 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 
 public class AgentStatusReportExecutor {
     private final AgentStatusReportRequest request;
-    private final PluginRequest pluginRequest;
-    private final AgentInstances<DockerService> agentInstances;
     private final DockerClientFactory dockerClientFactory;
     private final PluginStatusReportViewBuilder builder;
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request, PluginRequest pluginRequest, AgentInstances<DockerService> agentInstances) throws IOException {
-        this(request, pluginRequest, agentInstances, DockerClientFactory.instance(), PluginStatusReportViewBuilder.instance());
+    public AgentStatusReportExecutor(AgentStatusReportRequest request) throws IOException {
+        this(request, DockerClientFactory.instance(), PluginStatusReportViewBuilder.instance());
     }
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request, PluginRequest pluginRequest, AgentInstances<DockerService> agentInstances, DockerClientFactory dockerClientFactory, PluginStatusReportViewBuilder builder) {
+    public AgentStatusReportExecutor(AgentStatusReportRequest request, DockerClientFactory dockerClientFactory, PluginStatusReportViewBuilder builder) {
         this.request = request;
-        this.pluginRequest = pluginRequest;
-        this.agentInstances = agentInstances;
         this.dockerClientFactory = dockerClientFactory;
         this.builder = builder;
     }
@@ -63,7 +60,7 @@ public class AgentStatusReportExecutor {
             Service dockerService = findService(elasticAgentId, jobIdentifier, dockerClient);
 
             DockerServiceElasticAgent elasticAgent = DockerServiceElasticAgent.fromService(dockerService, dockerClient);
-            final String statusReportView = builder.build(builder.getTemplate("agent-status-report.template.ftlh"), elasticAgent);
+            final String statusReportView = builder.build(builder.getTemplate("/docker-swarm/agent-status-report.template.ftlh"), elasticAgent);
 
             JsonObject responseJSON = new JsonObject();
             responseJSON.addProperty("view", statusReportView);
@@ -94,7 +91,7 @@ public class AgentStatusReportExecutor {
 
     private Service findServiceUsingElasticAgentId(String elasticAgentId, DockerClient client) throws Exception {
         for (Service service : client.listServices()) {
-            if (service.spec().name().equals(elasticAgentId) || service.id().equals(elasticAgentId)) {
+            if (Objects.equals(service.spec().name(), elasticAgentId) || service.id().equals(elasticAgentId)) {
                 return service;
             }
         }

@@ -69,7 +69,7 @@ public class AgentStatusReportRequest {
     }
 
     public AgentStatusReportExecutor executor(PluginRequest pluginRequest, AgentInstances<DockerService> agentInstances) throws IOException {
-        return new AgentStatusReportExecutor(this, pluginRequest, agentInstances);
+        return new AgentStatusReportExecutor(this);
     }
 
     @Override

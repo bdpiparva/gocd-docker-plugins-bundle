@@ -181,7 +181,7 @@ public class DockerServiceElasticAgentTest extends BaseTest {
         final Volume volume = docker.createVolume(Volume.builder()
                 .name(volumeName)
                 .driver("local")
-                .labels(Collections.singletonMap("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerPlugin", ""))
+                .labels(Collections.singletonMap("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerSwarmPlugin", ""))
                 .build()
         );
 
@@ -239,7 +239,7 @@ public class DockerServiceElasticAgentTest extends BaseTest {
         final SecretCreateResponse secret = docker.createSecret(SecretSpec.builder()
                 .name(secretName)
                 .data(Base64.getEncoder().encodeToString("some-random-junk".getBytes()))
-                .labels(Collections.singletonMap("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerPlugin", ""))
+                .labels(Collections.singletonMap("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerSwarmPlugin", ""))
                 .build()
         );
 

@@ -35,6 +35,6 @@ public class GetFetchArtifactViewExecutorTest {
         Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(responseHash).containsEntry("template", readResource("/fetch-artifact.template.html"));
+        assertThat(responseHash).containsEntry("template", readResource("/docker-registry/fetch-artifact.template.html"));
     }
 }

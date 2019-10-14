@@ -37,6 +37,6 @@ public class GetPluginSettingsIconExecutorTest {
         }.getType());
         assertThat(hashMap.size(), is(2));
         assertThat(hashMap.get("content_type"), is("image/png"));
-        assertThat(readResourceBytes("/docker-swarm.png"), is(Base64.decodeBase64(hashMap.get("data"))));
+        assertThat(readResourceBytes("/docker-swarm/docker-swarm.png"), is(Base64.decodeBase64(hashMap.get("data"))));
     }
 }

@@ -37,12 +37,12 @@ public class GetClusterProfileViewRequestExecutorTest {
         final Type type = new TypeToken<Map<String, String>>() {
         }.getType();
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), type);
-        assertThat(hashSet, hasEntry("template", readResource("/plugin-settings.template.html")));
+        assertThat(hashSet, hasEntry("template", readResource("/docker-swarm/plugin-settings.template.html")));
     }
 
     @Test
     public void allFieldsShouldBePresentInView() throws Exception {
-        String template = readResource("/plugin-settings.template.html");
+        String template = readResource("/docker-swarm/plugin-settings.template.html");
 
         for (Metadata field : GetClusterProfileMetadataExecutor.FIELDS) {
             assertThat(template, containsString("ng-model=\"" + field.getKey() + "\""));

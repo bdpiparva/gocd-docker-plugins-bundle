@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 
 public class ServerPingRequestExecutor implements RequestExecutor {
 

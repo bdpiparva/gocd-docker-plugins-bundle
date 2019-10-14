@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 
 public class MigrateConfigurationRequestExecutor implements RequestExecutor {
     private MigrateConfigurationRequest migrateConfigurationRequest;

@@ -91,7 +91,7 @@ public class PluginRequest {
 
         // check status
         if (response.responseCode() != 200) {
-            DockerPlugin.LOG.error("The server sent an unexpected status code " + response.responseCode() + " with the response body " + response.responseBody());
+            DockerSwarmPlugin.LOG.error("The server sent an unexpected status code " + response.responseCode() + " with the response body " + response.responseBody());
         }
 
     }

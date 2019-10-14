@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 import static java.text.MessageFormat.format;
 
 public class CreateAgentRequestExecutor implements RequestExecutor {

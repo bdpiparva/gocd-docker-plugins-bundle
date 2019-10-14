@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cd.go.contrib.elasticagents.dockerswarm.Constants.SWARM_SERVICE_NAME;
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.dockerApiVersionAtLeast;
 import static java.lang.System.getenv;
 import static java.text.MessageFormat.format;
@@ -71,7 +71,7 @@ public abstract class BaseTest {
     private static void removeSecrets() throws Exception {
         if (dockerApiVersionAtLeast(docker, "1.26")) {
             docker.listSecrets().forEach(secret -> {
-                if (secret.secretSpec().labels().containsKey("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerPlugin")) {
+                if (secret.secretSpec().labels().containsKey("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerSwarmPlugin")) {
                     try {
                         docker.deleteSecret(secret.id());
                     } catch (DockerException | InterruptedException e) {
@@ -87,7 +87,7 @@ public abstract class BaseTest {
         if (dockerApiVersionAtLeast(docker, "1.26")) {
             if (docker.listVolumes().volumes() != null) {
                 docker.listVolumes().volumes().forEach(volume -> {
-                    if (volume.labels() != null && volume.labels().containsKey("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerPlugin")) {
+                    if (volume.labels() != null && volume.labels().containsKey("cd.go.contrib.elasticagents.dockerswarm.elasticagent.DockerSwarmPlugin")) {
                         try {
                             docker.removeVolume(volume.name());
                         } catch (DockerException | InterruptedException e) {

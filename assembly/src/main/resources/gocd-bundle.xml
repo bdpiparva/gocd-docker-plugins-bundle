@@ -47,7 +47,7 @@
       </about>
 
       <extensions>
-        <extension class="cd.go.contrib.elasticagents.dockerswarm.DockerPlugin"/>
+        <extension class="cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin"/>
       </extensions>
     </plugin>
 

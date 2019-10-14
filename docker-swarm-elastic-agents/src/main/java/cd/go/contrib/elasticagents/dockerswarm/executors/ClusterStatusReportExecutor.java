@@ -30,7 +30,7 @@ import freemarker.template.Template;
 
 import java.io.IOException;
 
-import static cd.go.contrib.elasticagents.dockerswarm.DockerPlugin.LOG;
+import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 
 public class ClusterStatusReportExecutor {
 

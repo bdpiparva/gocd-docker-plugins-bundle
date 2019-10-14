@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 
 @Extension
-public class DockerPlugin implements GoPlugin {
-    public static final Logger LOG = Logger.getLoggerFor(DockerPlugin.class);
+public class DockerSwarmPlugin implements GoPlugin {
+    public static final Logger LOG = Logger.getLoggerFor(DockerSwarmPlugin.class);
     private PluginRequest pluginRequest;
     private Map<String, DockerServices> clusterSpecificAgentInstances;
 

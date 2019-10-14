@@ -43,7 +43,7 @@ public class Networks {
                 throw new RuntimeException(format("Network with name `{0}` does not exist.", networkEntry));
             }
 
-            DockerPlugin.LOG.debug(format("Using network `{0}` with id `{1}`.", networkEntry, availableNetwork.id()));
+            DockerSwarmPlugin.LOG.debug(format("Using network `{0}` with id `{1}`.", networkEntry, availableNetwork.id()));
             serviceNetworks.add(NetworkAttachmentConfig.builder().target(networkEntry).build());
         });
 

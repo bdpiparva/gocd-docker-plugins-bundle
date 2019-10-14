@@ -34,6 +34,6 @@ public class GetPluginIconExecutorTest {
         Map<String, String> hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
         assertThat(hashMap).hasSize(2);
         assertThat(hashMap.get("content_type")).isEqualTo("image/svg+xml");
-        assertThat(readResourceBytes("/plugin-icon.svg")).isEqualTo(Base64.getDecoder().decode(hashMap.get("data")));
+        assertThat(readResourceBytes("/docker-registry/plugin-icon.svg")).isEqualTo(Base64.getDecoder().decode(hashMap.get("data")));
     }
 }

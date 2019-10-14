@@ -74,10 +74,10 @@ public class DockerService {
 
     public void terminate(DockerClient docker) throws DockerException, InterruptedException {
         try {
-            DockerPlugin.LOG.debug("Terminating service " + this.name());
+            DockerSwarmPlugin.LOG.debug("Terminating service " + this.name());
             docker.removeService(name);
         } catch (ServiceNotFoundException ignore) {
-            DockerPlugin.LOG.warn("Cannot terminate a service that does not exist " + name);
+            DockerSwarmPlugin.LOG.warn("Cannot terminate a service that does not exist " + name);
         }
     }
 
@@ -114,7 +114,7 @@ public class DockerService {
             final DockerSecrets dockerSecrets = DockerSecrets.fromString(request.properties().get("Secrets"));
             containerSpecBuilder.secrets(dockerSecrets.toSecretBind(docker.listSecrets()));
         } else {
-            DockerPlugin.LOG.warn(format("Detected docker version and api version is {0} and {1} respectively. Docker with api version 1.26 or above is required to use volume mounts, secrets and host file entries. Please refer https://docs.docker.com/engine/api/v1.32/#section/Versioning for more information about docker release.", docker.version().version(), docker.version().apiVersion()));
+            DockerSwarmPlugin.LOG.warn(format("Detected docker version and api version is {0} and {1} respectively. Docker with api version 1.26 or above is required to use volume mounts, secrets and host file entries. Please refer https://docs.docker.com/engine/api/v1.32/#section/Versioning for more information about docker release.", docker.version().version(), docker.version().apiVersion()));
         }
 
         Driver.Builder driverBuilder = Driver.builder()
@@ -141,7 +141,7 @@ public class DockerService {
 
         Service serviceInfo = docker.inspectService(id);
 
-        DockerPlugin.LOG.debug("Created service " + serviceInfo.spec().name());
+        DockerSwarmPlugin.LOG.debug("Created service " + serviceInfo.spec().name());
         return new DockerService(serviceName,
                 serviceInfo.createdAt(),
                 request.properties(),

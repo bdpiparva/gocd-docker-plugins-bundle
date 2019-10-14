@@ -29,7 +29,7 @@ public class GetFetchArtifactViewExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("template", readResource("/fetch-artifact.template.html"));
+        jsonObject.addProperty("template", readResource("/docker-registry/fetch-artifact.template.html"));
         return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
     }
 }

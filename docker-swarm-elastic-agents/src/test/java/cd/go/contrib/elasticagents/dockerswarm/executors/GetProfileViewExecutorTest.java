@@ -38,12 +38,12 @@ public class GetProfileViewExecutorTest {
         assertThat(response.responseCode(), is(200));
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertThat(hashSet, hasEntry("template", readResource("/profile.template.html")));
+        assertThat(hashSet, hasEntry("template", readResource("/docker-swarm/profile.template.html")));
     }
 
     @Test
     public void allFieldsShouldBePresentInView() throws Exception {
-        String template = readResource("/profile.template.html");
+        String template = readResource("/docker-swarm/profile.template.html");
         final Document document = Jsoup.parse(template);
 
         for (Metadata field : GetProfileMetadataExecutor.FIELDS) {

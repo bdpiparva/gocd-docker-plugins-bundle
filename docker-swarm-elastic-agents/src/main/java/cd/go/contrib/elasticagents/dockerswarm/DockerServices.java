@@ -66,7 +66,7 @@ public class DockerServices implements AgentInstances<DockerService> {
                 messageToBeAdded.put("message", maxLimitExceededMessage);
                 messages.add(messageToBeAdded);
                 pluginRequest.addServerHealthMessage(messages);
-                DockerPlugin.LOG.info(maxLimitExceededMessage);
+                DockerSwarmPlugin.LOG.info(maxLimitExceededMessage);
                 return null;
             }
         }
@@ -84,7 +84,7 @@ public class DockerServices implements AgentInstances<DockerService> {
         if (instance != null) {
             instance.terminate(docker(clusterProfileProperties));
         } else {
-            DockerPlugin.LOG.warn("Requested to terminate an instance that does not exist " + agentId);
+            DockerSwarmPlugin.LOG.warn("Requested to terminate an instance that does not exist " + agentId);
         }
 
         doWithLockOnSemaphore(new Runnable() {
@@ -106,7 +106,7 @@ public class DockerServices implements AgentInstances<DockerService> {
             return;
         }
 
-        DockerPlugin.LOG.warn("Terminating services that did not register " + toTerminate.services.keySet());
+        DockerSwarmPlugin.LOG.warn("Terminating services that did not register " + toTerminate.services.keySet());
         for (DockerService dockerService : toTerminate.services.values()) {
             terminate(dockerService.name(), clusterProfileProperties);
         }
@@ -176,7 +176,7 @@ public class DockerServices implements AgentInstances<DockerService> {
             try {
                 serviceInfo = docker(clusterProfileProperties).inspectService(serviceName);
             } catch (ServiceNotFoundException e) {
-                DockerPlugin.LOG.warn("The container " + serviceName + " could not be found.");
+                DockerSwarmPlugin.LOG.warn("The container " + serviceName + " could not be found.");
                 continue;
             }
             DateTime dateTimeCreated = new DateTime(serviceInfo.createdAt());
