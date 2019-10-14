@@ -57,7 +57,8 @@ public abstract class ViewTest {
 
     private Document getDocument() throws Exception {
         final GoPluginApiResponse response = getRequestExecutor().execute();
-        final Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
+        final Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
+        }.getType());
 
         assertThat(response.responseCode()).isEqualTo(200);
         assertThat(responseHash).containsKey("template");

@@ -48,7 +48,10 @@ public class PublishArtifactRequest {
         this.artifactPlan = artifactPlan;
     }
 
-    public PublishArtifactRequest(ArtifactStore artifactStore, ArtifactPlan artifactPlan, String agentWorkingDir, Map<String, String> environmentVariables) {
+    public PublishArtifactRequest(ArtifactStore artifactStore,
+                                  ArtifactPlan artifactPlan,
+                                  String agentWorkingDir,
+                                  Map<String, String> environmentVariables) {
         this.agentWorkingDir = agentWorkingDir;
         this.artifactStore = artifactStore;
         this.artifactPlan = artifactPlan;

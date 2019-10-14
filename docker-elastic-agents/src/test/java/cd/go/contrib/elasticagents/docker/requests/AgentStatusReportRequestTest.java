@@ -31,13 +31,13 @@ class AgentStatusReportRequestTest {
         jsonObject.addProperty("elastic_agent_id", "some-id");
         jsonObject.add("job_identifier", jobIdentifierJson);
 
-        AgentStatusReportRequest agentStatusReportRequest = AgentStatusReportRequest.fromJSON(jsonObject.toString());
+        AgentStatusReportRequest agentStatusReportRequest = AgentStatusReportRequest.fromJSON(jsonObject.toString(), AgentStatusReportRequest.class);
 
 
-        AgentStatusReportRequest expected = new AgentStatusReportRequest()
-                .setElasticAgentId("some-id")
+        AgentStatusReportRequest expected = new AgentStatusReportRequest();
+        expected.setElasticAgentId("some-id")
                 .setJobIdentifier(JobIdentifierMother.get())
-                .setClusterProfile(null);
+                .setClusterProfileConfiguration(null);
 
         assertThat(agentStatusReportRequest).isEqualTo(expected);
     }
@@ -53,16 +53,16 @@ class AgentStatusReportRequestTest {
         clusterJSON.addProperty("docker_uri", "unix:///var/run/docker.sock");
         jsonObject.add("cluster_profile_properties", clusterJSON);
 
-        AgentStatusReportRequest agentStatusReportRequest = AgentStatusReportRequest.fromJSON(jsonObject.toString());
+        AgentStatusReportRequest agentStatusReportRequest = AgentStatusReportRequest.fromJSON(jsonObject.toString(), AgentStatusReportRequest.class);
 
         ClusterProfileProperties expectedClusterProfile = new ClusterProfileProperties()
                 .setGoServerUrl("https://foo.com/go")
                 .setDockerURI("unix:///var/run/docker.sock");
 
-        AgentStatusReportRequest expected = new AgentStatusReportRequest()
-                .setElasticAgentId("some-id")
+        AgentStatusReportRequest expected = new AgentStatusReportRequest();
+        expected.setElasticAgentId("some-id")
                 .setJobIdentifier(JobIdentifierMother.get())
-                .setClusterProfile(expectedClusterProfile);
+                .setClusterProfileConfiguration(expectedClusterProfile);
         assertThat(agentStatusReportRequest).isEqualTo(expected);
     }
 }

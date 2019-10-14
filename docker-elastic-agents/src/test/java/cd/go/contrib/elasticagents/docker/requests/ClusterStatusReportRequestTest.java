@@ -31,10 +31,10 @@ class ClusterStatusReportRequestTest {
         clusterJSON.addProperty("go_server_url", "https://go-server/go");
         jsonObject.add("cluster_profile_properties", clusterJSON);
 
-        ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(jsonObject.toString());
+        ClusterStatusReportRequest clusterStatusReportRequest = ClusterStatusReportRequest.fromJSON(jsonObject.toString(), ClusterStatusReportRequest.class);
 
-        ClusterStatusReportRequest expected = new ClusterStatusReportRequest()
-                .setClusterProfile(new ClusterProfileProperties().setGoServerUrl("https://go-server/go"));
+        ClusterStatusReportRequest expected = new ClusterStatusReportRequest();
+        expected.setClusterProfileConfiguration(new ClusterProfileProperties().setGoServerUrl("https://go-server/go"));
         assertThat(clusterStatusReportRequest).isEqualTo(expected);
     }
 }

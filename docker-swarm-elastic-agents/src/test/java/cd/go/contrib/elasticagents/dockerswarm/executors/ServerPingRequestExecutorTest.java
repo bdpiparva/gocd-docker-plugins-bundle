@@ -16,9 +16,11 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.*;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ServerPingRequest;
 import org.joda.time.Period;
@@ -47,7 +49,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         agentInstances.register(dockerServiceForAgent1);
 
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially, allAgentsAfterDisablingIdleAgents, new Agents());
 
         HashMap<String, DockerServices> clusterSpecificInstances = new HashMap<>();
@@ -92,7 +94,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
         agentInstances2.register(dockerServiceForAgent2);
 
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         when(pluginRequest.listAgents()).thenReturn(allAgentsInitially1,
                 allAgentsAfterDisablingIdleAgent1,
                 allAgentsAfter1GotDeleted,
@@ -116,7 +118,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
 
     @Test
     public void testShouldTerminateUnregisteredInstances() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         ServerPingRequest serverPingRequest = mock(ServerPingRequest.class);
         when(serverPingRequest.allClusterProfileProperties()).thenReturn(Arrays.asList(createClusterProfiles()));
         when(pluginRequest.listAgents()).thenReturn(new Agents());
@@ -146,7 +148,7 @@ public class ServerPingRequestExecutorTest extends BaseTest {
         Agent agentInCluster = new Agent("agent1", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle time elapsed
         Agent missingAgent = new Agent("agent2", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled); //idle just created
 
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         Agents agents = new Agents();
         agents.add(agentInCluster);
         agents.add(missingAgent);

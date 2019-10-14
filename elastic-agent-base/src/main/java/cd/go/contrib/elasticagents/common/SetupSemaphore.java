@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.dockerswarm;
+package cd.go.contrib.elasticagents.common;
 
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-class SetupSemaphore implements Runnable {
+public class SetupSemaphore implements Runnable {
     private final Integer maxAllowedContainers;
     private final Map<?, ?> instances;
     private final Semaphore semaphore;

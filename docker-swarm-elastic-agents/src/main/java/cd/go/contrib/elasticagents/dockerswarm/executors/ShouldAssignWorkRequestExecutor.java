@@ -31,7 +31,8 @@ public class ShouldAssignWorkRequestExecutor implements RequestExecutor {
     private final AgentInstances<DockerService> agentInstances;
     private final ShouldAssignWorkRequest request;
 
-    public ShouldAssignWorkRequestExecutor(ShouldAssignWorkRequest request, AgentInstances<DockerService> agentInstances) {
+    public ShouldAssignWorkRequestExecutor(ShouldAssignWorkRequest request,
+                                           AgentInstances<DockerService> agentInstances) {
         this.request = request;
         this.agentInstances = agentInstances;
     }

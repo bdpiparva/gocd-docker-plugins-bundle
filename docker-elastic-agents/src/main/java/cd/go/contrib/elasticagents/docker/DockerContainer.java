@@ -16,13 +16,13 @@
 
 package cd.go.contrib.elasticagents.docker;
 
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.models.*;
-import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.utils.Util;
-import cd.go.plugin.base.GsonTransformer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.gson.Gson;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.exceptions.DockerException;
@@ -39,13 +39,11 @@ import java.util.*;
 import static cd.go.contrib.elasticagents.docker.Constants.*;
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
 import static cd.go.contrib.elasticagents.docker.utils.Util.splitIntoLinesAndTrimSpaces;
-import static cd.go.plugin.base.GsonTransformer.*;
 import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static cd.go.plugin.base.GsonTransformer.toJson;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class DockerContainer {
-    private static final Gson GSON = new Gson();
     private final DateTime createdAt;
     private final ElasticProfileConfiguration elasticProfileConfiguration;
     private final String environment;
@@ -103,7 +101,7 @@ public class DockerContainer {
         return new DockerContainer(container.id(), container.name().substring(1), jobIdentifier(container), container.created(), elasticProfileConfiguration, labels.get(Constants.ENVIRONMENT_LABEL_KEY));
     }
 
-    public static DockerContainer create(CreateAgentRequest request,
+    public static DockerContainer create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
                                          ClusterProfileProperties clusterProfile,
                                          DockerClient docker,
                                          ConsoleLogAppender consoleLogAppender) throws InterruptedException, DockerException {
@@ -175,7 +173,7 @@ public class DockerContainer {
         return new DockerContainer(id, containerName, request.getJobIdentifier(), containerInfo.created(), elasticProfileConfiguration, request.getEnvironment());
     }
 
-    private static List<String> environmentFrom(CreateAgentRequest request,
+    private static List<String> environmentFrom(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
                                                 ClusterProfileProperties clusterProfile,
                                                 String containerName) {
         Set<String> env = new HashSet<>(clusterProfile.getEnvironmentVariables());
@@ -189,12 +187,12 @@ public class DockerContainer {
                 "GO_EA_SERVER_URL=" + clusterProfile.getGoServerUrl()
         ));
 
-        env.addAll(request.autoregisterPropertiesAsEnvironmentVars(containerName));
+        env.addAll(request.autoregisterPropertiesAsEnvironmentVars(containerName, PLUGIN_ID));
 
         return new ArrayList<>(env);
     }
 
-    private static HashMap<String, String> labelsFrom(CreateAgentRequest request) {
+    private static HashMap<String, String> labelsFrom(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request) {
         HashMap<String, String> labels = new HashMap<>();
 
         labels.put(CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID);
@@ -202,7 +200,7 @@ public class DockerContainer {
         if (StringUtils.isNotBlank(request.getEnvironment())) {
             labels.put(ENVIRONMENT_LABEL_KEY, request.getEnvironment());
         }
-        labels.put(CONFIGURATION_LABEL_KEY, GSON.toJson(request.getElasticProfileConfiguration()));
+        labels.put(CONFIGURATION_LABEL_KEY, toJson(request.getElasticProfileConfiguration()));
         return labels;
     }
 

@@ -16,10 +16,10 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.models.ClusterProfile;
+import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.Constants;
-import cd.go.contrib.elasticagents.docker.models.ClusterProfile;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.docker.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.requests.MigrateConfigurationRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -33,10 +33,9 @@ import static java.util.List.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MigrateConfigurationRequestExecutorTest {
-
     private ClusterProfileProperties clusterProfileProperties;
-    private ClusterProfile clusterProfile;
-    private ElasticAgentProfile elasticAgentProfile;
+    private ClusterProfile<ClusterProfileProperties> clusterProfile;
+    private ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile;
     private MigrateConfigurationRequestExecutor executor;
 
     @BeforeEach
@@ -61,14 +60,14 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void shouldNotMigrateConfigWhenNoPluginSettingsAreConfigured() {
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(clusterProfile))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(clusterProfile))
                 .setElasticAgentProfiles(of(elasticAgentProfile))
                 .setPluginSettings(new ClusterProfileProperties());
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(new ClusterProfileProperties());
         assertThat(responseObject.getClusterProfiles()).isEqualTo(of(clusterProfile));
@@ -77,14 +76,14 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void shouldNotMigrateConfigWhenClusterProfileIsAlreadyConfigured() {
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(clusterProfile))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(clusterProfile))
                 .setElasticAgentProfiles(of(elasticAgentProfile))
                 .setPluginSettings(clusterProfileProperties);
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         assertThat(responseObject.getClusterProfiles()).isEqualTo(of(clusterProfile));
@@ -93,19 +92,19 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations() {
-        ClusterProfile emptyClusterProfile = new ClusterProfile(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID), Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<ClusterProfileProperties> emptyClusterProfile = new ClusterProfile(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID), Constants.PLUGIN_ID, new ClusterProfileProperties());
         elasticAgentProfile.setClusterProfileId(emptyClusterProfile.getId());
 
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(emptyClusterProfile))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(emptyClusterProfile))
                 .setElasticAgentProfiles(of(elasticAgentProfile))
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
-        List<ClusterProfile> actual = responseObject.getClusterProfiles();
+        List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
 
         assertThat(actualClusterProfile.getId()).isNotEqualTo(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID));
@@ -120,18 +119,18 @@ class MigrateConfigurationRequestExecutorTest {
     @Test
     void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations_WithoutChangingClusterProfileIdIfItsNotNoOp() {
         String clusterProfileId = "i-renamed-no-op-cluster-to-something-else";
-        ClusterProfile emptyClusterProfile = new ClusterProfile(clusterProfileId, Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<ClusterProfileProperties> emptyClusterProfile = new ClusterProfile(clusterProfileId, Constants.PLUGIN_ID, new ClusterProfileProperties());
         elasticAgentProfile.setClusterProfileId(emptyClusterProfile.getId());
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(emptyClusterProfile))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(emptyClusterProfile))
                 .setElasticAgentProfiles(of(elasticAgentProfile))
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
-        List<ClusterProfile> actual = responseObject.getClusterProfiles();
+        List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
 
         assertThat(actualClusterProfile.getId()).isEqualTo(clusterProfileId);
@@ -145,16 +144,16 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void shouldMigratePluginSettingsToClusterProfile_WhenNoElasticAgentProfilesAreConfigured() {
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(emptyList())
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(emptyList())
                 .setElasticAgentProfiles(emptyList())
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
-        List<ClusterProfile> actual = responseObject.getClusterProfiles();
+        List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
         this.clusterProfile.setId(actualClusterProfile.getId());
 
@@ -177,14 +176,14 @@ class MigrateConfigurationRequestExecutorTest {
         elasticAgentProfile2.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile2.setClusterProfileId(emptyCluster2.getId());
 
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(emptyCluster1, emptyCluster2))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(emptyCluster1, emptyCluster2))
                 .setElasticAgentProfiles(of(elasticAgentProfile1, elasticAgentProfile2))
                 .setPluginSettings(clusterProfileProperties);
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
 
@@ -213,14 +212,14 @@ class MigrateConfigurationRequestExecutorTest {
         elasticAgentProfile2.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile2.setClusterProfileId(emptyCluster1.getId());
 
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(emptyCluster1, emptyCluster2))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(emptyCluster1, emptyCluster2))
                 .setElasticAgentProfiles(of(elasticAgentProfile1, elasticAgentProfile2))
                 .setPluginSettings(clusterProfileProperties);
 
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
 
@@ -249,13 +248,13 @@ class MigrateConfigurationRequestExecutorTest {
         elasticAgentProfile2.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile2.setClusterProfileId(cluster2.getId());
 
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setClusterProfiles(of(cluster1, cluster2))
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setClusterProfiles(of(cluster1, cluster2))
                 .setElasticAgentProfiles(of(elasticAgentProfile1, elasticAgentProfile2))
                 .setPluginSettings(clusterProfileProperties);
         GoPluginApiResponse response = executor.execute(request);
 
-        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody());
+        MigrateConfigurationRequest responseObject = MigrateConfigurationRequest.fromJSON(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(clusterProfileProperties);
         assertThat(responseObject.getClusterProfiles()).isEqualTo(of(cluster1, cluster2));

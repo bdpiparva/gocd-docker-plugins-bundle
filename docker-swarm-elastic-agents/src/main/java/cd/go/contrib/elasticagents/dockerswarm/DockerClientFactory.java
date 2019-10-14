@@ -75,7 +75,8 @@ public class DockerClientFactory {
         return docker;
     }
 
-    private static void setupCerts(PluginSettings pluginSettings, DefaultDockerClient.Builder builder) throws IOException, DockerCertificateException {
+    private static void setupCerts(PluginSettings pluginSettings,
+                                   DefaultDockerClient.Builder builder) throws IOException, DockerCertificateException {
         if (isBlank(pluginSettings.getDockerCACert()) || isBlank(pluginSettings.getDockerClientCert()) || isBlank(pluginSettings.getDockerClientKey())) {
             DockerSwarmPlugin.LOG.warn("Missing docker certificates, will attempt to connect without certificates");
             return;

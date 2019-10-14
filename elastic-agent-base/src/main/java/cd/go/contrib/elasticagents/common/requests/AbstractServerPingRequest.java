@@ -16,10 +16,7 @@
 
 package cd.go.contrib.elasticagents.common.requests;
 
-import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
-import cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
@@ -28,35 +25,26 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static cd.go.plugin.base.GsonTransformer.fromJson;
 
 @Getter
 @Setter
 @Accessors(chain = true)
-@EqualsAndHashCode
 @ToString
-public class ShouldAssignWorkRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
+@EqualsAndHashCode
+public abstract class AbstractServerPingRequest<C extends ClusterProfileConfiguration> {
     @Expose
-    @SerializedName("agent")
-    private Agent agent;
-    @Expose
-    @SerializedName("environment")
-    private String environment;
-    @Expose
-    @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
-    @Expose
-    @SerializedName("elastic_agent_profile_properties")
-    private E elasticProfileConfiguration;
-    @Expose
-    @SerializedName("cluster_profile_properties")
-    private C clusterProfileProperties;
+    @SerializedName("all_cluster_profile_properties")
+    private List<C> allClusterProfileConfigurations = new ArrayList<>();
 
-    public ShouldAssignWorkRequest() {
+    public AbstractServerPingRequest() {
     }
 
-
-    public static ShouldAssignWorkRequest fromJSON(String json) {
-        return fromJson(json, ShouldAssignWorkRequest.class);
+    public static <T extends AbstractServerPingRequest> T fromJSON(String json,
+                                                                   Class<T> type) {
+        return fromJson(json, type);
     }
 }

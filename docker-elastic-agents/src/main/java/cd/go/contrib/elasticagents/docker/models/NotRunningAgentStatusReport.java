@@ -16,11 +16,13 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+
 public class NotRunningAgentStatusReport {
     private final String entity;
 
     public NotRunningAgentStatusReport(JobIdentifier jobIdentifier) {
-        this.entity = String.format("Job Identifier: %s", jobIdentifier.represent());
+        this.entity = String.format("Job Identifier: %s", jobIdentifier.getRepresentation());
     }
 
     public NotRunningAgentStatusReport(String elasticAgentId) {

@@ -35,32 +35,33 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class CreateAgentRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
+public abstract class AbstractCreateAgentRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
     @Expose
     @SerializedName("auto_register_key")
-    private String autoRegisterKey;
+    protected String autoRegisterKey;
 
     @Expose
     @SerializedName("elastic_agent_profile_properties")
-    private E elasticProfileConfiguration;
+    protected E elasticProfileConfiguration;
 
     @Expose
     @SerializedName("environment")
-    private String environment;
+    protected String environment;
 
     @Expose
     @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
+    protected JobIdentifier jobIdentifier;
 
     @Expose
     @SerializedName("cluster_profile_properties")
-    private C clusterProfileProperties;
+    protected C clusterProfileProperties;
 
-    public CreateAgentRequest() {
+    public AbstractCreateAgentRequest() {
     }
 
-    public static CreateAgentRequest fromJSON(String json) {
-        return fromJson(json, CreateAgentRequest.class);
+    public static <T extends AbstractCreateAgentRequest> T fromJSON(String json,
+                                                                    Class<T> type) {
+        return fromJson(json, type);
     }
 
     public Collection<String> autoregisterPropertiesAsEnvironmentVars(String elasticAgentId, String pluginId) {

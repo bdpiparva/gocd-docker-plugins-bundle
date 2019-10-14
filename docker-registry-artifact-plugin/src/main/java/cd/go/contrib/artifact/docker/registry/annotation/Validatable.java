@@ -17,12 +17,11 @@
 package cd.go.contrib.artifact.docker.registry.annotation;
 
 import cd.go.contrib.artifact.docker.registry.utils.Util;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public interface Validatable {
     default String toJSON() {
@@ -34,14 +33,13 @@ public interface Validatable {
         }.getType());
     }
 
-    default List<ValidationError> validateAllFieldsAsRequired() {
-        return toProperties().entrySet().stream()
-                .filter(entry -> StringUtils.isBlank(entry.getValue()))
-                .map(entry -> new ValidationError(entry.getKey(), entry.getKey() + " must not be blank."))
-                .collect(Collectors.toList());
-    }
-
     default ValidationResult validate() {
-        return new ValidationResult(validateAllFieldsAsRequired());
+        ValidationResult validationErrors = new ValidationResult();
+
+        toProperties().entrySet().stream()
+                .filter(entry -> StringUtils.isBlank(entry.getValue()))
+                .forEach(entry -> validationErrors.add(entry.getKey(), entry.getKey() + " must not be blank."));
+
+        return validationErrors;
     }
 }

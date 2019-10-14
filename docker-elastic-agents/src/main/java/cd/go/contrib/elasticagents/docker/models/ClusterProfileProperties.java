@@ -16,8 +16,8 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
+import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.utils.Util;
-import cd.go.plugin.base.GsonTransformer;
 import cd.go.plugin.base.annotations.Property;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -36,7 +36,7 @@ import static cd.go.plugin.base.GsonTransformer.fromJson;
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode(doNotUseGetters = true)
 @Accessors(chain = true)
-public class ClusterProfileProperties {
+public class ClusterProfileProperties implements ClusterProfileConfiguration {
     public static final String GO_SERVER_URL = "go_server_url";
     @Expose
     @SerializedName(GO_SERVER_URL)

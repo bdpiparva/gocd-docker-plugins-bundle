@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.dockerswarm.executors.*;
 import cd.go.contrib.elasticagents.dockerswarm.requests.*;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -32,15 +33,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static cd.go.contrib.elasticagents.dockerswarm.Constants.PLUGIN_IDENTIFIER;
+import static cd.go.contrib.elasticagents.dockerswarm.Constants.PROCESSOR_API_VERSION;
+
 @Extension
 public class DockerSwarmPlugin implements GoPlugin {
     public static final Logger LOG = Logger.getLoggerFor(DockerSwarmPlugin.class);
-    private PluginRequest pluginRequest;
+    private ElasticAgentRequestClient pluginRequest;
     private Map<String, DockerServices> clusterSpecificAgentInstances;
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor accessor) {
-        pluginRequest = new PluginRequest(accessor);
+        pluginRequest = new ElasticAgentRequestClient(accessor, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         clusterSpecificAgentInstances = new HashMap<>();
     }
 
@@ -62,7 +66,7 @@ public class DockerSwarmPlugin implements GoPlugin {
                 case REQUEST_SERVER_PING:
                     ServerPingRequest serverPingRequest = ServerPingRequest.fromJSON(request.requestBody());
                     List<ClusterProfileProperties> listOfClusterProfileProperties = serverPingRequest.allClusterProfileProperties();
-                    refreshInstancesForAllClusters(listOfClusterProfileProperties,true);
+                    refreshInstancesForAllClusters(listOfClusterProfileProperties, true);
                     return serverPingRequest.executor(clusterSpecificAgentInstances, pluginRequest).execute();
                 case REQUEST_GET_ELASTIC_AGENT_PROFILE_METADATA:
                     return new GetProfileMetadataExecutor().execute();
@@ -111,9 +115,10 @@ public class DockerSwarmPlugin implements GoPlugin {
         }
     }
 
-    private void refreshInstancesForAllClusters(List<ClusterProfileProperties> allClusterProfileProperties, boolean forceRefresh) throws Exception {
+    private void refreshInstancesForAllClusters(List<ClusterProfileProperties> allClusterProfileProperties,
+                                                boolean forceRefresh) throws Exception {
         for (ClusterProfileProperties clusterProfileProperties : allClusterProfileProperties) {
-            refreshInstancesForCluster(clusterProfileProperties,forceRefresh);
+            refreshInstancesForCluster(clusterProfileProperties, forceRefresh);
         }
     }
 
@@ -127,15 +132,16 @@ public class DockerSwarmPlugin implements GoPlugin {
         clusterSpecificAgentInstances.put(clusterProfileProperties.uuid(), dockerServices);
     }
 
-    private void refreshInstancesForCluster(ClusterProfileProperties clusterProfileProperties, boolean forceRefresh) throws Exception {
+    private void refreshInstancesForCluster(ClusterProfileProperties clusterProfileProperties,
+                                            boolean forceRefresh) throws Exception {
         DockerServices dockerServices = clusterSpecificAgentInstances.getOrDefault(clusterProfileProperties.uuid(), new DockerServices());
-        dockerServices.refreshAll(clusterProfileProperties,forceRefresh);
+        dockerServices.refreshAll(clusterProfileProperties, forceRefresh);
         clusterSpecificAgentInstances.put(clusterProfileProperties.uuid(), dockerServices);
     }
 
     @Override
     public GoPluginIdentifier pluginIdentifier() {
-        return Constants.PLUGIN_IDENTIFIER;
+        return PLUGIN_IDENTIFIER;
     }
 
 }

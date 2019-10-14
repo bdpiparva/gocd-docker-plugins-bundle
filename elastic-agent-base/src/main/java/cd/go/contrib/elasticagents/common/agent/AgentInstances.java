@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker;
+package cd.go.contrib.elasticagents.common.agent;
 
-import cd.go.contrib.elasticagents.common.agent.Agents;
-import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
+import cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 
 /**
  * Plugin implementors should implement these methods to interface to your cloud.
  * This interface is merely a suggestion for a very simple plugin. You may change it to your needs.
  */
-public interface AgentInstances<T> {
+public interface AgentInstances<T, E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
     /**
      * This message is sent to request creation of an agent instance.
      * Implementations may, at their discretion choose to not spin up an agent instance.
@@ -36,39 +38,39 @@ public interface AgentInstances<T> {
      * @param pluginRequest      the plugin request object
      * @param consoleLogAppender appender for console log
      */
-    T create(CreateAgentRequest request,
-             PluginRequest pluginRequest,
+    T create(AbstractCreateAgentRequest<E, C> request,
+             ElasticAgentRequestClient pluginRequest,
              ConsoleLogAppender consoleLogAppender) throws Exception;
 
     /**
      * This message is sent when the plugin needs to terminate the agent instance.
      *
-     * @param agentId                  the elastic agent id
-     * @param clusterProfileProperties the cluster profile properties object
+     * @param agentId                     the elastic agent id
+     * @param clusterProfileConfiguration the cluster profile properties object
      */
-    void terminate(String agentId, ClusterProfileProperties clusterProfileProperties) throws Exception;
+    void terminate(String agentId, C clusterProfileConfiguration) throws Exception;
 
     /**
-     * This message is sent from the {@link cd.go.contrib.elasticagents.docker.executors.ServerPingRequestExecutor}
-     * to terminate instances that did not register with the server after a timeout. The timeout may be configurable and
-     * set via the {@link PluginSettings} instance that is passed in.
+     * This message is to terminate instances that did not register with the server
+     * after a timeout. The timeout may be configurable and set via the
+     * {@link ElasticAgentRequestClient} instance that is passed in.
      *
-     * @param clusterProfileProperties the cluster profile properties object
-     * @param agents                   the list of all the agents
+     * @param clusterProfileConfiguration the cluster profile properties object
+     * @param agents                      the list of all the agents
      */
-    void terminateUnregisteredInstances(ClusterProfileProperties clusterProfileProperties,
+    void terminateUnregisteredInstances(C clusterProfileConfiguration,
                                         Agents agents) throws Exception;
 
     /**
-     * This message is sent from the {@link cd.go.contrib.elasticagents.docker.executors.ServerPingRequestExecutor}
-     * to filter out any new agents, that have registered before the timeout period. The timeout may be configurable and
-     * set via the {@link PluginSettings} instance that is passed in.
+     * This message to filter out any new agents, that have registered before the timeout period.
+     * The timeout may be configurable and set via the {@link ElasticAgentRequestClient} instance
+     * that is passed in.
      *
-     * @param clusterProfileProperties the cluster profile properties object
-     * @param agents                   the list of all the agents
-     * @return a list of agent instances which were created after {@link PluginSettings#getAutoRegisterPeriod()} ago.
+     * @param clusterProfileConfiguration the cluster profile properties object
+     * @param agents                      the list of all the agents
+     * @return a list of agent instances which were created after auto register period ago.
      */
-    Agents instancesCreatedAfterTimeout(ClusterProfileProperties clusterProfileProperties, Agents agents);
+    Agents instancesCreatedAfterTimeout(C clusterProfileConfiguration, Agents agents);
 
     /**
      * This message is sent after plugin initialization time so that the plugin may connect to the cloud provider
@@ -76,9 +78,9 @@ public interface AgentInstances<T> {
      * This call should be should ideally remember if the agent instances are refreshed from the cluster,
      * and do nothing if instances were previously refreshed.
      *
-     * @param clusterProfileProperties the list of cluster profile properties
+     * @param clusterProfileConfiguration the list of cluster profile properties
      */
-    void refreshAll(ClusterProfileProperties clusterProfileProperties) throws Exception;
+    void refreshAll(C clusterProfileConfiguration) throws Exception;
 
     /**
      * This

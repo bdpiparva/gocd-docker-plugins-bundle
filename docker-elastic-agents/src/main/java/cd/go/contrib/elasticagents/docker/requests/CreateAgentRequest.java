@@ -16,63 +16,13 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
-import cd.go.contrib.elasticagents.docker.Constants;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
-
-@Getter
 @Setter
 @Accessors(chain = true)
-public class CreateAgentRequest {
-    @Expose
-    @SerializedName("auto_register_key")
-    private String autoRegisterKey;
-
-    @Expose
-    @SerializedName("elastic_agent_profile_properties")
-    private ElasticProfileConfiguration elasticProfileConfiguration;
-
-    @Expose
-    @SerializedName("environment")
-    private String environment;
-
-    @Expose
-    @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
-
-    @Expose
-    @SerializedName("cluster_profile_properties")
-    private ClusterProfileProperties clusterProfileProperties;
-
-    public CreateAgentRequest() {
-    }
-
-    public static CreateAgentRequest fromJSON(String json) {
-        return fromJson(json, CreateAgentRequest.class);
-    }
-
-    public Collection<String> autoregisterPropertiesAsEnvironmentVars(String elasticAgentId) {
-        ArrayList<String> vars = new ArrayList<>();
-        if (isNotBlank(autoRegisterKey)) {
-            vars.add("GO_EA_AUTO_REGISTER_KEY=" + autoRegisterKey);
-        }
-        if (isNotBlank(environment)) {
-            vars.add("GO_EA_AUTO_REGISTER_ENVIRONMENT=" + environment);
-        }
-        vars.add("GO_EA_AUTO_REGISTER_ELASTIC_AGENT_ID=" + elasticAgentId);
-        vars.add("GO_EA_AUTO_REGISTER_ELASTIC_PLUGIN_ID=" + Constants.PLUGIN_ID);
-        return vars;
-    }
+public class CreateAgentRequest extends AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
 }

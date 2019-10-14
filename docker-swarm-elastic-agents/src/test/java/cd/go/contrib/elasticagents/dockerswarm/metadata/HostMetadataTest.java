@@ -16,34 +16,34 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.metadata;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationError;
+import cd.go.plugin.base.validation.ValidationResult;
 import org.junit.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class HostMetadataTest {
 
     @Test
     public void shouldValidateHostConfig() throws Exception {
-        assertNull(new HostMetadata("Hosts", false, false).validate("10.0.0.1 hostname"));
+        ValidationResult validationResult = new ValidationResult();
+        new HostMetadata("Hosts", false, false).validate("10.0.0.1 hostname", validationResult);
 
-        ValidationError validationError = new HostMetadata("Hosts", false, false)
-                .validate("some-config");
+        assertTrue(validationResult.isEmpty());
 
-        assertNotNull(validationError);
-        assertThat(validationError.key(), is("Hosts"));
-        assertThat(validationError.message(), is("Host entry `some-config` is invalid. Must be in `IP-ADDRESS HOST-1 HOST-2...` format."));
+        new HostMetadata("Hosts", false, false)
+                .validate("some-config", validationResult);
+
+        assertFalse(validationResult.isEmpty());
+        assertThat(validationResult.find("Hosts").get().getMessage(), is("Host entry `some-config` is invalid. Must be in `IP-ADDRESS HOST-1 HOST-2...` format."));
     }
 
     @Test
     public void shouldValidateHostConfigWhenRequireField() throws Exception {
-        ValidationError validationError = new HostMetadata("Hosts", true, false).validate(null);
+        ValidationResult validationResult = new ValidationResult();
+        new HostMetadata("Hosts", true, false).validate(null, validationResult);
 
-        assertNotNull(validationError);
-        assertThat(validationError.key(), is("Hosts"));
-        assertThat(validationError.message(), is("Hosts must not be blank."));
+        assertFalse(validationResult.isEmpty());
+        assertThat(validationResult.find("Hosts").get().getMessage(), is("Hosts must not be blank."));
     }
 }

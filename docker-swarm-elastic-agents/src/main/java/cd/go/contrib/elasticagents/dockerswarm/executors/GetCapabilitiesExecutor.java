@@ -35,6 +35,7 @@ public class GetCapabilitiesExecutor {
         CAPABILITIES_RESPONSE.put("supports_agent_status_report", true);
         CAPABILITIES_RESPONSE.put("supports_cluster_status_report", true);
     }
+
     public GoPluginApiResponse execute() {
         return DefaultGoPluginApiResponse.success(GSON.toJson(CAPABILITIES_RESPONSE));
     }

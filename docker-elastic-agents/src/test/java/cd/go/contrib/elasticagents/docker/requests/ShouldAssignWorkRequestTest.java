@@ -51,7 +51,7 @@ class ShouldAssignWorkRequestTest {
         json.add("elastic_agent_profile_properties", elasticProfileJson);
         json.add("cluster_profile_properties", clusterProfileJson);
 
-        ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString());
+        ShouldAssignWorkRequest request = ShouldAssignWorkRequest.fromJSON(json.toString(), ShouldAssignWorkRequest.class);
 
         assertThat(request.getEnvironment()).isEqualTo("prod");
         assertThat(request.getAgent()).isEqualTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled));

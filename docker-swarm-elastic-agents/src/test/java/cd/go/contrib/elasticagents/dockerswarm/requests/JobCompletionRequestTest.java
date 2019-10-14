@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;

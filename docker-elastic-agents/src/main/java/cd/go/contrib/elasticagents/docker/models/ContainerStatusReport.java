@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.annotations.Expose;
 
 public class ContainerStatusReport {

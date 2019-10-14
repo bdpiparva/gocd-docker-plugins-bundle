@@ -17,7 +17,12 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 public class PositiveNumberField extends Field {
-    public PositiveNumberField(String key, String displayName, String defaultValue, Boolean required, Boolean secure, String displayOrder) {
+    public PositiveNumberField(String key,
+                               String displayName,
+                               String defaultValue,
+                               Boolean required,
+                               Boolean secure,
+                               String displayOrder) {
         super(key, displayName, defaultValue, required, secure, displayOrder);
     }
 

@@ -16,7 +16,11 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.*;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.DockerService;
+import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import org.junit.Test;
 
@@ -27,7 +31,7 @@ public class CreateAgentRequestExecutorTest {
     public void shouldAskDockerContainersToCreateAnAgent() throws Exception {
         CreateAgentRequest request = mock(CreateAgentRequest.class);
         AgentInstances<DockerService> agentInstances = mock(DockerServices.class);
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         ClusterProfileProperties clusterProfileProperties = mock(ClusterProfileProperties.class);
         when(request.getClusterProfileProperties()).thenReturn(clusterProfileProperties);
         new CreateAgentRequestExecutor(request, agentInstances, pluginRequest).execute();

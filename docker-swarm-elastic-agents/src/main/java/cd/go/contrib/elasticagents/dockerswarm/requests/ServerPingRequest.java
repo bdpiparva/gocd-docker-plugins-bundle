@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
-import cd.go.contrib.elasticagents.dockerswarm.PluginRequest;
 import cd.go.contrib.elasticagents.dockerswarm.executors.ServerPingRequestExecutor;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -57,7 +57,8 @@ public class ServerPingRequest {
                 '}';
     }
 
-    public ServerPingRequestExecutor executor(Map<String, DockerServices> clusterSpecificAgentInstances, PluginRequest pluginRequest) {
+    public ServerPingRequestExecutor executor(Map<String, DockerServices> clusterSpecificAgentInstances,
+                                              ElasticAgentRequestClient pluginRequest) {
         return new ServerPingRequestExecutor(this, clusterSpecificAgentInstances, pluginRequest);
     }
 

@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,7 +45,7 @@ class JobCompletionRequestTest {
                 "  }\n" +
                 "}";
 
-        JobCompletionRequest request = JobCompletionRequest.fromJSON(json);
+        JobCompletionRequest request = JobCompletionRequest.fromJSON(json, JobCompletionRequest.class);
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
         JobIdentifier actualJobIdentifier = request.getJobIdentifier();
         assertThat(actualJobIdentifier).isEqualTo(expectedJobIdentifier);
@@ -55,6 +55,6 @@ class JobCompletionRequestTest {
 
         ClusterProfileProperties expectedClusterProfileProperties = new ClusterProfileProperties();
         expectedClusterProfileProperties.setGoServerUrl("https://example.com/go");
-        assertThat(request.getClusterProfileProperties()).isEqualTo(expectedClusterProfileProperties);
+        assertThat(request.getClusterProfileConfiguration()).isEqualTo(expectedClusterProfileProperties);
     }
 }

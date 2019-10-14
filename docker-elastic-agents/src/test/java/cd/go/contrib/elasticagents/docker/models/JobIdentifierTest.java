@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
 import org.junit.jupiter.api.Test;
 

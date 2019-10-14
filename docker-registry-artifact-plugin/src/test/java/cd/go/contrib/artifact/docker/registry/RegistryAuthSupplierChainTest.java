@@ -61,7 +61,7 @@ public class RegistryAuthSupplierChainTest {
         authorizationData.add(mockAuthorization);
         final ArtifactStoreConfig artifactStoreConfig = new ArtifactStoreConfig("https://12345.dkr.ecr.region.amazonaws.com", "ecr", "awsAccessKeyId", "awsSecretAccessKey", "awsRegion");
 
-        String usernameAndPassword="AWS:secretAuthorizationToken";
+        String usernameAndPassword = "AWS:secretAuthorizationToken";
         when(mockAmazonEcrClient.getAuthorizationToken(any(GetAuthorizationTokenRequest.class))).thenReturn(mockAuthorizationTokenResult);
         when(mockAuthorizationTokenResult.getAuthorizationData()).thenReturn(authorizationData);
         when(mockAuthorization.getAuthorizationToken()).thenReturn(Base64.getEncoder().encodeToString(usernameAndPassword.getBytes()));

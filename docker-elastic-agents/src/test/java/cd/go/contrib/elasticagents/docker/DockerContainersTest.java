@@ -16,9 +16,17 @@
 
 package cd.go.contrib.elasticagents.docker;
 
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
-import cd.go.contrib.elasticagents.docker.models.*;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
+import cd.go.contrib.elasticagents.docker.models.AgentStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.docker.models.StatusReport;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import org.joda.time.Period;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 class DockerContainersTest extends BaseTest {
-    private CreateAgentRequest request;
+    private AbstractCreateAgentRequest request;
     private DockerContainers dockerContainers;
     private ClusterProfileProperties clusterProfile;
     private final JobIdentifier jobIdentifier = new JobIdentifier("up42", 2L, "foo", "stage", "1", "job", 1L);
@@ -55,7 +63,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldCreateADockerInstance() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         DockerContainer container = dockerContainers.create(request, pluginRequest, consoleLogAppender);
         containers.add(container.name());
         assertContainerExist(container.name());
@@ -63,7 +71,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldUpdateServerHealthMessageWithEmptyListWhileCreatingADockerInstance() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         DockerContainer container = dockerContainers.create(request, pluginRequest, consoleLogAppender);
         containers.add(container.name());
 
@@ -73,7 +81,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldTerminateAnExistingContainer() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         DockerContainer container = dockerContainers.create(request, pluginRequest, consoleLogAppender);
         containers.add(container.name());
 
@@ -143,7 +151,7 @@ class DockerContainersTest extends BaseTest {
         // do not allow any containers
         clusterProfile.setMaxDockerContainers("0");
 
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
 
         DockerContainer dockerContainer = dockerContainers.create(request, pluginRequest, consoleLogAppender);
         if (dockerContainer != null) {
@@ -171,11 +179,11 @@ class DockerContainersTest extends BaseTest {
         // do not allow any containers
         clusterProfile.setMaxDockerContainers("0");
 
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
 
         dockerContainers.create(request, pluginRequest, consoleLogAppender);
 
-        CreateAgentRequest newRequest = new CreateAgentRequest()
+        AbstractCreateAgentRequest newRequest = new CreateAgentRequest()
                 .setAutoRegisterKey("key")
                 .setJobIdentifier(new JobIdentifier("up42", 2L, "foo", "stage", "1", "job2", 1L))
                 .setClusterProfileProperties(clusterProfile)
@@ -192,7 +200,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldTerminateUnregisteredContainersAfterTimeout() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         DockerContainer container = dockerContainers.create(request, pluginRequest, consoleLogAppender);
 
         assertThat(dockerContainers.hasInstance(container.name())).isTrue();
@@ -204,7 +212,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldNotTerminateUnregistredContainersBeforeTimeout() throws Exception {
-        DockerContainer container = dockerContainers.create(request, mock(PluginRequest.class), consoleLogAppender);
+        DockerContainer container = dockerContainers.create(request, mock(ElasticAgentRequestClient.class), consoleLogAppender);
         containers.add(container.name());
 
         assertThat(dockerContainers.hasInstance(container.name())).isTrue();
@@ -216,7 +224,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldGetStatusReport() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         DockerContainer container = dockerContainers.create(request, pluginRequest, consoleLogAppender);
         containers.add(container.name());
 
@@ -228,7 +236,7 @@ class DockerContainersTest extends BaseTest {
 
     @Test
     void shouldGetAgentStatusReportUsingDockerContainer() throws Exception {
-        PluginRequest pluginRequest = mock(PluginRequest.class);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
         DockerContainer container = dockerContainers.create(request, pluginRequest, consoleLogAppender);
         containers.add(container.name());
 

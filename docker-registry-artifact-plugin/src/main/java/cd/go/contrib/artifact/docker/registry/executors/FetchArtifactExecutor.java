@@ -47,7 +47,10 @@ public class FetchArtifactExecutor implements RequestExecutor {
         this(request, consoleLogger, new DockerProgressHandler(consoleLogger), DockerClientFactory.instance());
     }
 
-    FetchArtifactExecutor(GoPluginApiRequest request, ConsoleLogger consoleLogger, DockerProgressHandler dockerProgressHandler, DockerClientFactory clientFactory) {
+    FetchArtifactExecutor(GoPluginApiRequest request,
+                          ConsoleLogger consoleLogger,
+                          DockerProgressHandler dockerProgressHandler,
+                          DockerClientFactory clientFactory) {
         this.fetchArtifactRequest = FetchArtifactRequest.fromJSON(request.requestBody());
         this.consoleLogger = consoleLogger;
         this.clientFactory = clientFactory;
@@ -130,7 +133,9 @@ public class FetchArtifactExecutor implements RequestExecutor {
         public FetchArtifactRequest() {
         }
 
-        public FetchArtifactRequest(ArtifactStoreConfig artifactStoreConfig, Map<String, String> metadata, FetchArtifactConfig fetchArtifactConfig) {
+        public FetchArtifactRequest(ArtifactStoreConfig artifactStoreConfig,
+                                    Map<String, String> metadata,
+                                    FetchArtifactConfig fetchArtifactConfig) {
             this.artifactStoreConfig = artifactStoreConfig;
             this.metadata = metadata;
             this.fetchArtifactConfig = fetchArtifactConfig;

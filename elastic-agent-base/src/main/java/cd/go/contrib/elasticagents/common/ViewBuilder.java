@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker.views;
+package cd.go.contrib.elasticagents.common;
 
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;

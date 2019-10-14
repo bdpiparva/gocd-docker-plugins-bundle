@@ -16,7 +16,13 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import cd.go.contrib.elasticagents.docker.models.*;
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
+import cd.go.contrib.elasticagents.docker.models.AgentStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.ContainerStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import com.google.common.collect.ImmutableList;
 import com.spotify.docker.client.DockerClient;
@@ -33,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.Mockito.mock;
 
 class DockerContainerTest extends BaseTest {
-    private CreateAgentRequest request;
+    private AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request;
     private JobIdentifier jobIdentifier;
     private ConsoleLogAppender consoleLogAppender;
 

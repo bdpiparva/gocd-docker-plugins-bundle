@@ -46,7 +46,12 @@ public class Field {
     @SerializedName("display-order")
     protected String displayOrder;
 
-    public Field(String key, String displayName, String defaultValue, Boolean required, Boolean secure, String displayOrder) {
+    public Field(String key,
+                 String displayName,
+                 String defaultValue,
+                 Boolean required,
+                 Boolean secure,
+                 String displayOrder) {
         this.key = key;
         this.displayName = displayName;
         this.defaultValue = defaultValue;

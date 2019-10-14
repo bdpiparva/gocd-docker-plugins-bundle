@@ -16,8 +16,8 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.model.reports;
 
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.Constants;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import com.spotify.docker.client.messages.swarm.Service;
 import com.spotify.docker.client.messages.swarm.Task;
 

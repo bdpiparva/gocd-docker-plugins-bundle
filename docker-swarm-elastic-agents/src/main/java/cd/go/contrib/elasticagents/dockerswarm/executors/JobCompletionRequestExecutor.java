@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
@@ -31,9 +32,11 @@ import static java.text.MessageFormat.format;
 public class JobCompletionRequestExecutor implements RequestExecutor {
     private final JobCompletionRequest jobCompletionRequest;
     private final AgentInstances<DockerService> agentInstances;
-    private final PluginRequest pluginRequest;
+    private final ElasticAgentRequestClient pluginRequest;
 
-    public JobCompletionRequestExecutor(JobCompletionRequest jobCompletionRequest, AgentInstances<DockerService> agentInstances, PluginRequest pluginRequest) {
+    public JobCompletionRequestExecutor(JobCompletionRequest jobCompletionRequest,
+                                        AgentInstances<DockerService> agentInstances,
+                                        ElasticAgentRequestClient pluginRequest) {
         this.jobCompletionRequest = jobCompletionRequest;
         this.agentInstances = agentInstances;
         this.pluginRequest = pluginRequest;

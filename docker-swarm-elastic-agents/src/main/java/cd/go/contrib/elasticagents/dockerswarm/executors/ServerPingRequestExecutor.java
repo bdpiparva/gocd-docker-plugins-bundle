@@ -16,9 +16,13 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
-import cd.go.contrib.elasticagents.dockerswarm.*;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
+import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ServerPingRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -35,9 +39,11 @@ public class ServerPingRequestExecutor implements RequestExecutor {
 
     private final ServerPingRequest serverPingRequest;
     private final Map<String, DockerServices> clusterSpecificAgentInstances;
-    private final PluginRequest pluginRequest;
+    private final ElasticAgentRequestClient pluginRequest;
 
-    public ServerPingRequestExecutor(ServerPingRequest serverPingRequest, Map<String, DockerServices> clusterSpecificAgentInstances, PluginRequest pluginRequest) {
+    public ServerPingRequestExecutor(ServerPingRequest serverPingRequest,
+                                     Map<String, DockerServices> clusterSpecificAgentInstances,
+                                     ElasticAgentRequestClient pluginRequest) {
         this.serverPingRequest = serverPingRequest;
         this.clusterSpecificAgentInstances = clusterSpecificAgentInstances;
         this.pluginRequest = pluginRequest;
@@ -56,7 +62,8 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         return DefaultGoPluginApiResponse.success("");
     }
 
-    private void performCleanupForACluster(ClusterProfileProperties clusterProfileProperties, DockerServices dockerServices) throws Exception {
+    private void performCleanupForACluster(ClusterProfileProperties clusterProfileProperties,
+                                           DockerServices dockerServices) throws Exception {
         Agents allAgents = pluginRequest.listAgents();
         Agents agentsToDisable = dockerServices.instancesCreatedAfterTimeout(clusterProfileProperties, allAgents);
         disableIdleAgents(agentsToDisable);
@@ -67,7 +74,9 @@ public class ServerPingRequestExecutor implements RequestExecutor {
         dockerServices.terminateUnregisteredInstances(clusterProfileProperties, allAgents);
     }
 
-    private void terminateDisabledAgents(Agents agents, ClusterProfileProperties clusterProfileProperties, DockerServices dockerServices) throws Exception {
+    private void terminateDisabledAgents(Agents agents,
+                                         ClusterProfileProperties clusterProfileProperties,
+                                         DockerServices dockerServices) throws Exception {
         Collection<Agent> toBeDeleted = agents.findInstancesToTerminate();
 
         for (Agent agent : toBeDeleted) {

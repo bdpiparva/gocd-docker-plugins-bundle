@@ -47,7 +47,7 @@ class ClusterProfilePropertiesTest {
                 "  \"environment\": \"prod\"\n" +
                 "}";
 
-        CreateAgentRequest createAgentRequest = CreateAgentRequest.fromJSON(createAgentRequestJSON);
+        CreateAgentRequest createAgentRequest = CreateAgentRequest.fromJSON(createAgentRequestJSON, CreateAgentRequest.class);
 
         String jobCompletionRequestJSON = "{\n" +
                 "  \"elastic_agent_id\": \"ea1\",\n" +
@@ -69,8 +69,8 @@ class ClusterProfilePropertiesTest {
                 "  }\n" +
                 "}";
 
-        JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(jobCompletionRequestJSON);
-        assertThat(jobCompletionRequest.getClusterProfileProperties().uuid()).isEqualTo(createAgentRequest.getClusterProfileProperties().uuid());
+        JobCompletionRequest jobCompletionRequest = JobCompletionRequest.fromJSON(jobCompletionRequestJSON, JobCompletionRequest.class);
+        assertThat(jobCompletionRequest.getClusterProfileConfiguration().uuid()).isEqualTo(createAgentRequest.getClusterProfileProperties().uuid());
 
     }
 }

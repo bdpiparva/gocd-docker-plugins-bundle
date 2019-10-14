@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
-import cd.go.contrib.elasticagents.dockerswarm.builders.PluginStatusReportViewBuilder;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.SwarmCluster;
 import cd.go.contrib.elasticagents.dockerswarm.reports.StatusReportGenerationErrorHandler;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ClusterStatusReportRequest;
@@ -37,13 +37,17 @@ public class ClusterStatusReportExecutor {
     private final ClusterStatusReportRequest clusterStatusReportRequest;
     private final DockerServices agentInstances;
     private final DockerClientFactory dockerClientFactory;
-    private PluginStatusReportViewBuilder viewBuilder;
+    private ViewBuilder viewBuilder;
 
-    public ClusterStatusReportExecutor(ClusterStatusReportRequest clusterStatusReportRequest, DockerServices agentInstances) throws IOException {
-        this(clusterStatusReportRequest, agentInstances, DockerClientFactory.instance(), PluginStatusReportViewBuilder.instance());
+    public ClusterStatusReportExecutor(ClusterStatusReportRequest clusterStatusReportRequest,
+                                       DockerServices agentInstances) throws IOException {
+        this(clusterStatusReportRequest, agentInstances, DockerClientFactory.instance(), ViewBuilder.instance());
     }
 
-    ClusterStatusReportExecutor(ClusterStatusReportRequest clusterStatusReportRequest, DockerServices agentInstances, DockerClientFactory dockerClientFactory, PluginStatusReportViewBuilder viewBuilder) {
+    ClusterStatusReportExecutor(ClusterStatusReportRequest clusterStatusReportRequest,
+                                DockerServices agentInstances,
+                                DockerClientFactory dockerClientFactory,
+                                ViewBuilder viewBuilder) {
         this.clusterStatusReportRequest = clusterStatusReportRequest;
         this.agentInstances = agentInstances;
         this.dockerClientFactory = dockerClientFactory;

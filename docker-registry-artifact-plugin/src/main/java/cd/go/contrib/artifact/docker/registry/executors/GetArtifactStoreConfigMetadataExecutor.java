@@ -29,6 +29,6 @@ public class GetArtifactStoreConfigMetadataExecutor implements RequestExecutor {
 
     public GoPluginApiResponse execute() {
         final List<ConfigMetadata> storeConfigMetadata = MetadataHelper.getMetadata(ArtifactStoreConfig.class);
-        return DefaultGoPluginApiResponse.success( Util.GSON.toJson(storeConfigMetadata));
+        return DefaultGoPluginApiResponse.success(Util.GSON.toJson(storeConfigMetadata));
     }
 }

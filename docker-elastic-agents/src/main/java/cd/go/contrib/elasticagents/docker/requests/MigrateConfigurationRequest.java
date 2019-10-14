@@ -16,48 +16,13 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
+import cd.go.contrib.elasticagents.common.requests.AbstractMigrateConfigurationRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfile;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticAgentProfile;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static cd.go.plugin.base.GsonTransformer.toJson;
-
-@Getter
-@Setter
-@ToString
-@EqualsAndHashCode
-@Accessors(chain = true)
-public class MigrateConfigurationRequest {
-    @Expose
-    @SerializedName("plugin_settings")
-    private ClusterProfileProperties pluginSettings;
-
-    @Expose
-    @SerializedName("cluster_profiles")
-    private List<ClusterProfile> clusterProfiles;
-
-    @Expose
-    @SerializedName("elastic_agent_profiles")
-    private List<ElasticAgentProfile> elasticAgentProfiles;
-
-    public MigrateConfigurationRequest() {
-    }
-
-    public static MigrateConfigurationRequest fromJSON(String requestBody) {
-        return fromJson(requestBody, MigrateConfigurationRequest.class);
-    }
-
-    public String toJSON() {
-        return toJson(this);
-    }
+public class MigrateConfigurationRequest extends AbstractMigrateConfigurationRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
 }

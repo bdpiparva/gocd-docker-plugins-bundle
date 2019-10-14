@@ -42,7 +42,10 @@ public class PublishArtifactExecutor implements RequestExecutor {
         this(request, consoleLogger, new DockerProgressHandler(consoleLogger), DockerClientFactory.instance());
     }
 
-    PublishArtifactExecutor(GoPluginApiRequest request, ConsoleLogger consoleLogger, DockerProgressHandler progressHandler, DockerClientFactory clientFactory) {
+    PublishArtifactExecutor(GoPluginApiRequest request,
+                            ConsoleLogger consoleLogger,
+                            DockerProgressHandler progressHandler,
+                            DockerClientFactory clientFactory) {
         this.publishArtifactRequest = PublishArtifactRequest.fromJSON(request.requestBody());
         this.consoleLogger = consoleLogger;
         this.progressHandler = progressHandler;

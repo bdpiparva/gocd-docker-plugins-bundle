@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.PluginRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -30,10 +30,10 @@ import java.util.Map;
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
 
 public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequest> {
-    private final PluginRequest pluginRequest;
+    private final ElasticAgentRequestClient pluginRequest;
 
     public JobCompletionRequestExecutor(Map<String, DockerContainers> clusterToContainersMap,
-                                        PluginRequest pluginRequest) {
+                                        ElasticAgentRequestClient pluginRequest) {
         super(clusterToContainersMap);
         this.pluginRequest = pluginRequest;
     }
@@ -41,9 +41,9 @@ public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequ
     @Override
     protected GoPluginApiResponse execute(JobCompletionRequest request) {
         try {
-            refreshInstancesForCluster(request.getClusterProfileProperties());
-            DockerContainers dockerContainers = this.clusterToContainersMap.get(request.getClusterProfileProperties().uuid());
-            ClusterProfileProperties clusterProfileProperties = request.getClusterProfileProperties();
+            refreshInstancesForCluster(request.getClusterProfileConfiguration());
+            DockerContainers dockerContainers = this.clusterToContainersMap.get(request.getClusterProfileConfiguration().uuid());
+            ClusterProfileProperties clusterProfileProperties = request.getClusterProfileConfiguration();
             String elasticAgentId = request.getElasticAgentId();
             Agent agent = new Agent(elasticAgentId);
             LOG.info("[Job Completion] Terminating elastic agent with id {} on job completion {} in cluster {}.", agent.elasticAgentId(), request.getJobIdentifier(), clusterProfileProperties);
@@ -60,6 +60,6 @@ public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequ
 
     @Override
     protected JobCompletionRequest parseRequest(String requestBody) {
-        return JobCompletionRequest.fromJSON(requestBody);
+        return JobCompletionRequest.fromJSON(requestBody, JobCompletionRequest.class);
     }
 }

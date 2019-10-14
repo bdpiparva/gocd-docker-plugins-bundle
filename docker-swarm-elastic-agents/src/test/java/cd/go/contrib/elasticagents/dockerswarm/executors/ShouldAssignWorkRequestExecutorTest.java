@@ -16,9 +16,10 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -48,7 +49,7 @@ public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         ClusterProfileProperties clusterProfiles = createClusterProfiles();
         properties.put("foo", "bar");
         properties.put("Image", "alpine:latest");
-        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, jobIdentifier, clusterProfiles), mock(PluginRequest.class));
+        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, jobIdentifier, clusterProfiles), mock(ElasticAgentRequestClient.class));
         services.add(instance.name());
     }
 

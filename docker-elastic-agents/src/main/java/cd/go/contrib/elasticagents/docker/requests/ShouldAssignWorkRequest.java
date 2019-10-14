@@ -16,50 +16,13 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
-import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.requests.AbstractShouldAssignWorkRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-
-/**
- * Represents the {@link cd.go.contrib.elasticagents.docker.Request#REQUEST_SHOULD_ASSIGN_WORK} message.
- */
-@Getter
 @Setter
 @Accessors(chain = true)
-@EqualsAndHashCode
-@ToString
-public class ShouldAssignWorkRequest {
-    @Expose
-    @SerializedName("agent")
-    private Agent agent;
-    @Expose
-    @SerializedName("environment")
-    private String environment;
-    @Expose
-    @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
-    @Expose
-    @SerializedName("elastic_agent_profile_properties")
-    private ElasticProfileConfiguration elasticProfileConfiguration;
-    @Expose
-    @SerializedName("cluster_profile_properties")
-    private ClusterProfileProperties clusterProfileProperties;
-
-    public ShouldAssignWorkRequest() {
-    }
-
-
-    public static ShouldAssignWorkRequest fromJSON(String json) {
-        return fromJson(json, ShouldAssignWorkRequest.class);
-    }
+public class ShouldAssignWorkRequest extends AbstractShouldAssignWorkRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
 }

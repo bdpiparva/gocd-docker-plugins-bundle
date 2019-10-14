@@ -16,9 +16,12 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
-import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.DockerService;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.junit.Before;
@@ -37,7 +40,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 public class JobCompletionRequestExecutorTest {
     @Mock
-    private PluginRequest mockPluginRequest;
+    private ElasticAgentRequestClient mockPluginRequest;
     @Mock
     private AgentInstances<DockerService> mockAgentInstances;
 

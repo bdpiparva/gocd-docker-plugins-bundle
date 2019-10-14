@@ -16,9 +16,12 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.SetupSemaphore;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import com.google.common.collect.ImmutableMap;
 import com.spotify.docker.client.DockerClient;
@@ -35,7 +38,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 public class DockerServices implements AgentInstances<DockerService> {
-
     private final ConcurrentHashMap<String, DockerService> services = new ConcurrentHashMap<>();
     private boolean refreshed;
     private List<JobIdentifier> jobsWaitingForAgentCreation = new ArrayList<>();
@@ -45,7 +47,7 @@ public class DockerServices implements AgentInstances<DockerService> {
 
 
     @Override
-    public DockerService create(CreateAgentRequest request, PluginRequest pluginRequest) throws Exception {
+    public DockerService create(CreateAgentRequest request, ElasticAgentRequestClient pluginRequest) throws Exception {
         ClusterProfileProperties clusterProfileProperties = request.getClusterProfileProperties();
         final Integer maxAllowedContainers = clusterProfileProperties.getMaxDockerContainers();
         synchronized (services) {
@@ -102,7 +104,8 @@ public class DockerServices implements AgentInstances<DockerService> {
     }
 
     @Override
-    public void terminateUnregisteredInstances(ClusterProfileProperties clusterProfileProperties, Agents agents) throws Exception {
+    public void terminateUnregisteredInstances(ClusterProfileProperties clusterProfileProperties,
+                                               Agents agents) throws Exception {
         DockerServices toTerminate = unregisteredAfterTimeout(clusterProfileProperties, agents);
         if (toTerminate.services.isEmpty()) {
             return;
@@ -165,7 +168,8 @@ public class DockerServices implements AgentInstances<DockerService> {
         return DockerClientFactory.instance().docker(clusterProfileProperties);
     }
 
-    private DockerServices unregisteredAfterTimeout(ClusterProfileProperties clusterProfileProperties, Agents knownAgents) throws Exception {
+    private DockerServices unregisteredAfterTimeout(ClusterProfileProperties clusterProfileProperties,
+                                                    Agents knownAgents) throws Exception {
         Period period = clusterProfileProperties.getAutoRegisterPeriod();
         DockerServices unregisteredContainers = new DockerServices();
 

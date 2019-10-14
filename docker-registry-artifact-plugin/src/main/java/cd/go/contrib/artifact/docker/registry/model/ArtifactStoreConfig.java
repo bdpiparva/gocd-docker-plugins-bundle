@@ -18,8 +18,8 @@ package cd.go.contrib.artifact.docker.registry.model;
 
 import cd.go.contrib.artifact.docker.registry.annotation.FieldMetadata;
 import cd.go.contrib.artifact.docker.registry.annotation.Validatable;
-import cd.go.contrib.artifact.docker.registry.annotation.ValidationResult;
 import cd.go.contrib.artifact.docker.registry.utils.Util;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +79,11 @@ public class ArtifactStoreConfig implements Validatable {
         this.password = password;
     }
 
-    public ArtifactStoreConfig(String registryId, String registryType, String awsAccessKeyId, String awsSecretAccessKey, String awsRegion) {
+    public ArtifactStoreConfig(String registryId,
+                               String registryType,
+                               String awsAccessKeyId,
+                               String awsSecretAccessKey,
+                               String awsRegion) {
         this(registryType);
         this.registryId = registryId;
         this.awsAccessKeyId = awsAccessKeyId;
@@ -133,8 +137,10 @@ public class ArtifactStoreConfig implements Validatable {
         if (registryUrl != null ? !registryUrl.equals(that.registryUrl) : that.registryUrl != null) return false;
         if (username != null ? !username.equals(that.username) : that.username != null) return false;
         if (registryType != null ? !registryType.equals(that.registryType) : that.registryType != null) return false;
-        if (awsAccessKeyId != null ? !awsAccessKeyId.equals(that.awsAccessKeyId) : that.awsAccessKeyId != null) return false;
-        if (awsSecretAccessKey != null ? !awsSecretAccessKey.equals(that.awsSecretAccessKey) : that.awsSecretAccessKey != null) return false;
+        if (awsAccessKeyId != null ? !awsAccessKeyId.equals(that.awsAccessKeyId) : that.awsAccessKeyId != null)
+            return false;
+        if (awsSecretAccessKey != null ? !awsSecretAccessKey.equals(that.awsSecretAccessKey) : that.awsSecretAccessKey != null)
+            return false;
         if (awsRegion != null ? !awsRegion.equals(that.awsRegion) : that.awsRegion != null) return false;
         if (registryId != null ? !registryId.equals(that.registryId) : that.registryId != null) return false;
         return password != null ? password.equals(that.password) : that.password == null;
@@ -162,28 +168,27 @@ public class ArtifactStoreConfig implements Validatable {
     public ValidationResult validate() {
         ValidationResult validationResult = new ValidationResult();
         if (StringUtils.isBlank(registryType)) {
-            validationResult.addError("RegistryType", "RegistryType must not be blank.");
-        }
-        else if (!"other".equals(registryType) && !"ecr".equals(registryType)) {
-            validationResult.addError("RegistryType", "RegistryType must either be `ecr` or `other`.");
+            validationResult.add("RegistryType", "RegistryType must not be blank.");
+        } else if (!"other".equals(registryType) && !"ecr".equals(registryType)) {
+            validationResult.add("RegistryType", "RegistryType must either be `ecr` or `other`.");
         }
         if ("other".equals(registryType)) {
-            if(StringUtils.isBlank(username)) {
-                validationResult.addError("Username", "Username must not be blank.");
+            if (StringUtils.isBlank(username)) {
+                validationResult.add("Username", "Username must not be blank.");
             }
-            if(StringUtils.isBlank(password)) {
-                validationResult.addError("Password", "Password must not be blank.");
+            if (StringUtils.isBlank(password)) {
+                validationResult.add("Password", "Password must not be blank.");
             }
             if (StringUtils.isBlank(registryUrl)) {
-                validationResult.addError("RegistryURL", "RegistryURL must not be blank.");
+                validationResult.add("RegistryURL", "RegistryURL must not be blank.");
             }
         }
         if ("ecr".equals(registryType)) {
-            if(StringUtils.isBlank(awsRegion)) {
-                validationResult.addError("AWSRegion", "AWSRegion must not be blank.");
+            if (StringUtils.isBlank(awsRegion)) {
+                validationResult.add("AWSRegion", "AWSRegion must not be blank.");
             }
             if (StringUtils.isBlank(registryId)) {
-                validationResult.addError("RegistryID", "RegistryID must not be blank.");
+                validationResult.add("RegistryID", "RegistryID must not be blank.");
             }
         }
         return validationResult;

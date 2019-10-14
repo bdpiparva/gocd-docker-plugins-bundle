@@ -16,15 +16,16 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
 import cd.go.contrib.elasticagents.dockerswarm.DockerService;
-import cd.go.contrib.elasticagents.dockerswarm.PluginRequest;
 import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.validator.DockerMountsValidator;
 import cd.go.contrib.elasticagents.dockerswarm.validator.DockerSecretValidator;
 import cd.go.contrib.elasticagents.dockerswarm.validator.Validatable;
+import cd.go.plugin.base.GsonTransformer;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
@@ -38,11 +39,13 @@ import static java.text.MessageFormat.format;
 
 public class CreateAgentRequestExecutor implements RequestExecutor {
     private final AgentInstances<DockerService> agentInstances;
-    private final PluginRequest pluginRequest;
+    private final ElasticAgentRequestClient pluginRequest;
     private final CreateAgentRequest request;
     private List<Validatable> validators = new ArrayList<>();
 
-    public CreateAgentRequestExecutor(CreateAgentRequest request, AgentInstances<DockerService> agentInstances, PluginRequest pluginRequest) {
+    public CreateAgentRequestExecutor(CreateAgentRequest request,
+                                      AgentInstances<DockerService> agentInstances,
+                                      ElasticAgentRequestClient pluginRequest) {
         this.request = request;
         this.agentInstances = agentInstances;
         this.pluginRequest = pluginRequest;
@@ -57,11 +60,11 @@ public class CreateAgentRequestExecutor implements RequestExecutor {
         List<Map<String, String>> messages = new ArrayList<>();
         for (Validatable validatable : validators) {
             ValidationResult validationResult = validatable.validate(request.properties());
-            if (validationResult.hasErrors()) {
+            if (!validationResult.isEmpty()) {
                 hasError = true;
                 Map<String, String> messageToBeAdded = new HashMap<>();
                 messageToBeAdded.put("type", "warning");
-                messageToBeAdded.put("message", validationResult.toJSON());
+                messageToBeAdded.put("message", GsonTransformer.toJson(validationResult));
                 messages.add(messageToBeAdded);
             }
         }

@@ -16,8 +16,10 @@
 
 package cd.go.contrib.elasticagents.common.requests;
 
+import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
 import cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
@@ -26,37 +28,35 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static cd.go.plugin.base.GsonTransformer.toJson;
 
 @Getter
 @Setter
-@ToString
-@EqualsAndHashCode
 @Accessors(chain = true)
-public class MigrateConfigurationRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
+@EqualsAndHashCode
+@ToString
+public abstract class AbstractShouldAssignWorkRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
     @Expose
-    @SerializedName("plugin_settings")
-    private C pluginSettings;
-
+    @SerializedName("agent")
+    private Agent agent;
     @Expose
-    @SerializedName("cluster_profiles")
-    private List<C> clusterProfileConfigurations;
-
+    @SerializedName("environment")
+    private String environment;
     @Expose
-    @SerializedName("elastic_agent_profiles")
-    private List<E> elasticProfileConfiguration;
+    @SerializedName("job_identifier")
+    private JobIdentifier jobIdentifier;
+    @Expose
+    @SerializedName("elastic_agent_profile_properties")
+    private E elasticProfileConfiguration;
+    @Expose
+    @SerializedName("cluster_profile_properties")
+    private C clusterProfileProperties;
 
-    public MigrateConfigurationRequest() {
+    public AbstractShouldAssignWorkRequest() {
     }
 
-    public static MigrateConfigurationRequest fromJSON(String requestBody) {
-        return fromJson(requestBody, MigrateConfigurationRequest.class);
-    }
-
-    public String toJSON() {
-        return toJson(this);
+    public static <T extends AbstractShouldAssignWorkRequest> T fromJSON(String json,
+                                                                         Class<T> type) {
+        return fromJson(json, type);
     }
 }

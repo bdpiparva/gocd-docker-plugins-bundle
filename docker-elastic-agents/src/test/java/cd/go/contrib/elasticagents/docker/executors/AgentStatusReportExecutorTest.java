@@ -16,11 +16,15 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ViewBuilder;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.DockerContainer;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.models.*;
+import cd.go.contrib.elasticagents.docker.models.AgentStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.docker.models.NotRunningAgentStatusReport;
 import cd.go.contrib.elasticagents.docker.requests.AgentStatusReportRequest;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
@@ -59,9 +63,9 @@ class AgentStatusReportExecutorTest {
     @Test
     void shouldGetAgentStatusReportWithElasticAgentId() throws Exception {
         String agentId = "elastic-agent-id";
-        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
-                .setElasticAgentId(agentId)
-                .setClusterProfile(clusterProfileProperties);
+        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest();
+        agentStatusReportRequest.setElasticAgentId(agentId)
+                .setClusterProfileConfiguration(clusterProfileProperties);
         AgentStatusReport agentStatusReport = new AgentStatusReport(null, agentId, null, null, null, null, null, new HashMap<>(), new ArrayList<>());
 
         DockerContainer dockerContainer = new DockerContainer("id", "name", new JobIdentifier(), new Date(), new ElasticProfileConfiguration(), null);
@@ -81,8 +85,8 @@ class AgentStatusReportExecutorTest {
     @Test
     void shouldGetAgentStatusReportWithJobIdentifier() throws Exception {
         JobIdentifier jobIdentifier = new JobIdentifier("up42", 2L, "label", "stage1", "1", "job", 1L);
-        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
-                .setClusterProfile(clusterProfileProperties)
+        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest();
+        agentStatusReportRequest.setClusterProfileConfiguration(clusterProfileProperties)
                 .setJobIdentifier(jobIdentifier);
 
         AgentStatusReport agentStatusReport = new AgentStatusReport(jobIdentifier, "elastic-agent-id", null, null, null, null, null, new HashMap<>(), new ArrayList<>());
@@ -105,8 +109,8 @@ class AgentStatusReportExecutorTest {
     void shouldRenderContainerNotFoundAgentStatusReportViewWhenNoContainerIsRunningForProvidedJobIdentifier() throws Exception {
         JobIdentifier jobIdentifier = new JobIdentifier("up42", 2L, "label", "stage1", "1", "job", 1L);
 
-        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
-                .setClusterProfile(clusterProfileProperties)
+        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest();
+        agentStatusReportRequest.setClusterProfileConfiguration(clusterProfileProperties)
                 .setJobIdentifier(jobIdentifier);
 
         when(dockerContainers.find(jobIdentifier)).thenReturn(Optional.empty());
@@ -124,9 +128,9 @@ class AgentStatusReportExecutorTest {
     @Test
     void shouldRenderContainerNotFoundAgentStatusReportViewWhenNoContainerIsRunningForProvidedElasticAgentId() throws Exception {
         String elasticAgentId = "elastic-agent-id";
-        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest()
-                .setElasticAgentId(elasticAgentId)
-                .setClusterProfile(clusterProfileProperties);
+        AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest();
+        agentStatusReportRequest.setElasticAgentId(elasticAgentId)
+                .setClusterProfileConfiguration(clusterProfileProperties);
 
         when(dockerContainers.find(elasticAgentId)).thenReturn(null);
         when(viewBuilder.getTemplate("docker/not-running-agent-status-report.template.ftlh")).thenReturn(template);

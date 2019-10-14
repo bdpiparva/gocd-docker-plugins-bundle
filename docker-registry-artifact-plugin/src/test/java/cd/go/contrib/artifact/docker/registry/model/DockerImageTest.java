@@ -86,6 +86,6 @@ public class DockerImageTest {
         thrown.expect(FileNotFoundException.class);
         thrown.expectMessage(String.format("%s/random.json (No such file or directory)", agentWorkingDir.getAbsolutePath()));
 
-        DockerImage.fromFile(new File(agentWorkingDir,"random.json"));
+        DockerImage.fromFile(new File(agentWorkingDir, "random.json"));
     }
 }

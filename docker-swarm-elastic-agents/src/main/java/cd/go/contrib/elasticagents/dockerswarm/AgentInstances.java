@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.dockerswarm.executors.ServerPingRequestExecutor;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
@@ -32,16 +33,16 @@ public interface AgentInstances<T> {
      * <p>
      * So that instances created are auto-registered with the server, the agent instance MUST have an
      * <code>autoregister.properties</code> file.
-     * @param request   the request object
-     * @param pluginRequest
      *
+     * @param request       the request object
+     * @param pluginRequest
      */
-    T create(CreateAgentRequest request, PluginRequest pluginRequest) throws Exception;
+    T create(CreateAgentRequest request, ElasticAgentRequestClient pluginRequest) throws Exception;
 
     /**
      * This message is sent when the plugin needs to terminate the agent instance.
      *
-     * @param agentId  the elastic agent id
+     * @param agentId                  the elastic agent id
      * @param clusterProfileProperties the cluster profile properties object
      */
     void terminate(String agentId, ClusterProfileProperties clusterProfileProperties) throws Exception;
@@ -52,9 +53,10 @@ public interface AgentInstances<T> {
      * set via the {@link PluginSettings} instance that is passed in.
      *
      * @param clusterProfileProperties the cluster profile properties object
-     * @param agents   the list of all the agents
+     * @param agents                   the list of all the agents
      */
-    void terminateUnregisteredInstances(ClusterProfileProperties clusterProfileProperties, Agents agents) throws Exception;
+    void terminateUnregisteredInstances(ClusterProfileProperties clusterProfileProperties,
+                                        Agents agents) throws Exception;
 
     /**
      * This message is sent from the {@link ServerPingRequestExecutor}
@@ -84,7 +86,7 @@ public interface AgentInstances<T> {
      * were previously refreshed.
      *
      * @param pluginSettings the list of cluster profile properties
-     * @param forceRefresh for forcefully refreshing the agent instances
+     * @param forceRefresh   for forcefully refreshing the agent instances
      */
     void refreshAll(ClusterProfileProperties pluginSettings, boolean forceRefresh) throws Exception;
 

@@ -27,7 +27,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClusterProfileValidateRequest extends HashMap<String, String>{
+public class ClusterProfileValidateRequest extends HashMap<String, String> {
     public static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     private Map<String, String> properties;
 
@@ -48,4 +48,5 @@ public class ClusterProfileValidateRequest extends HashMap<String, String>{
 
     public RequestExecutor executor() {
         return new ClusterProfileValidateRequestExecutor(this);
-    }}
+    }
+}

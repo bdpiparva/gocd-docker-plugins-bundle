@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+
 import java.util.List;
 import java.util.Map;
 

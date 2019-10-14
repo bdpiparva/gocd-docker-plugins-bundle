@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.validator;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
+import cd.go.plugin.base.validation.ValidationResult;
 
 import java.util.Map;
 

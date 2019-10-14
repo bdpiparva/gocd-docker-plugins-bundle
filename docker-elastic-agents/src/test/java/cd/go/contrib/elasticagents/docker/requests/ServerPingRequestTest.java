@@ -42,7 +42,7 @@ class ServerPingRequestTest {
                 "   ]" +
                 "\n}";
 
-        List<ClusterProfileProperties> allClusterProfileProperties = ServerPingRequest.fromJSON(requestBody).getAllClusterProfileProperties();
+        List<ClusterProfileProperties> allClusterProfileProperties = ServerPingRequest.fromJSON(requestBody, ServerPingRequest.class).getAllClusterProfileConfigurations();
         assertThat(allClusterProfileProperties).hasSize(1);
     }
 }

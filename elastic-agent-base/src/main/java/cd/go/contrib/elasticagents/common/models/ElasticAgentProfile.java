@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.common.requests;
+package cd.go.contrib.elasticagents.common.models;
 
-import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
-import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.plugin.base.GsonTransformer;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
@@ -26,27 +25,29 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-
 @Setter
 @Getter
 @ToString
 @EqualsAndHashCode
 @Accessors(chain = true)
-public class AgentStatusReportRequest<C extends ClusterProfileConfiguration> {
+public class ElasticAgentProfile<T extends ElasticProfileConfiguration> {
     @Expose
-    @SerializedName("elastic_agent_id")
-    private String elasticAgentId;
+    @SerializedName("id")
+    private String id;
 
     @Expose
-    @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
+    @SerializedName("plugin_id")
+    private String pluginId;
 
     @Expose
-    @SerializedName("cluster_profile_properties")
-    private C clusterProfileConfiguration;
+    @SerializedName("cluster_profile_id")
+    private String clusterProfileId;
 
-    public static AgentStatusReportRequest fromJSON(String json) {
-        return fromJson(json, AgentStatusReportRequest.class);
+    @Expose
+    @SerializedName("properties")
+    private T elasticProfileConfiguration;
+
+    public static ElasticAgentProfile fromJSON(String json) {
+        return GsonTransformer.fromJson(json, ElasticAgentProfile.class);
     }
 }

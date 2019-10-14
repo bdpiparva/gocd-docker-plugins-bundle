@@ -42,7 +42,8 @@ public class ImageTagArtifactPlanConfig extends ArtifactPlanConfig {
     }
 
     @Override
-    public DockerImage imageToPush(String agentWorkingDirectory, Map<String, String> environmentVariables) throws UnresolvedPropertyException {
+    public DockerImage imageToPush(String agentWorkingDirectory,
+                                   Map<String, String> environmentVariables) throws UnresolvedPropertyException {
         String evaluatedTag = evaluate(tag, environmentVariables, "tag");
         String evaluatedImage = evaluate(image, environmentVariables, "image");
         return new DockerImage(evaluatedImage, evaluatedTag);
@@ -56,7 +57,9 @@ public class ImageTagArtifactPlanConfig extends ArtifactPlanConfig {
         return tag;
     }
 
-    private String evaluate(String property, Map<String, String> environmentVariables, String propertyName) throws UnresolvedPropertyException {
+    private String evaluate(String property,
+                            Map<String, String> environmentVariables,
+                            String propertyName) throws UnresolvedPropertyException {
         return new EnvironmentVariableResolver(property, propertyName).resolve(environmentVariables);
     }
 

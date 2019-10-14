@@ -54,7 +54,7 @@ public class MigrateConfigurationRequestExecutor implements RequestExecutor {
             LOG.info("[Migrate Config] Did not find any Cluster Profile. Possibly, user just have configured plugin settings and haven't define any elastic agent profiles.");
             String newClusterId = UUID.randomUUID().toString();
             LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile '{}'", newClusterId);
-            LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile with plugin'{}'", Constants.PLUGIN_ID );
+            LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile with plugin'{}'", Constants.PLUGIN_ID);
             ClusterProfile clusterProfile = new ClusterProfile(newClusterId, Constants.PLUGIN_ID, pluginSettings);
 
             return getGoPluginApiResponse(pluginSettings, Arrays.asList(clusterProfile), existingElasticAgentProfiles);
@@ -82,7 +82,9 @@ public class MigrateConfigurationRequestExecutor implements RequestExecutor {
     }
 
     //this is responsible to copy over plugin settings configurations to cluster profile and if required rename no op cluster
-    private void migrateConfigForCluster(PluginSettings pluginSettings, List<ElasticAgentProfile> associatedElasticAgentProfiles, ClusterProfile clusterProfile) {
+    private void migrateConfigForCluster(PluginSettings pluginSettings,
+                                         List<ElasticAgentProfile> associatedElasticAgentProfiles,
+                                         ClusterProfile clusterProfile) {
         LOG.info("[Migrate Config] Coping over existing plugin settings configurations to '{}' cluster profile.", clusterProfile.getId());
         clusterProfile.setClusterProfileProperties(pluginSettings);
 
@@ -96,11 +98,14 @@ public class MigrateConfigurationRequestExecutor implements RequestExecutor {
         }
     }
 
-    private List<ElasticAgentProfile> findAssociatedElasticAgentProfiles(ClusterProfile clusterProfile, List<ElasticAgentProfile> elasticAgentProfiles) {
+    private List<ElasticAgentProfile> findAssociatedElasticAgentProfiles(ClusterProfile clusterProfile,
+                                                                         List<ElasticAgentProfile> elasticAgentProfiles) {
         return elasticAgentProfiles.stream().filter(profile -> Objects.equals(profile.getClusterProfileId(), clusterProfile.getId())).collect(Collectors.toList());
     }
 
-    private GoPluginApiResponse getGoPluginApiResponse(PluginSettings pluginSettings, List<ClusterProfile> clusterProfiles, List<ElasticAgentProfile> elasticAgentProfiles) {
+    private GoPluginApiResponse getGoPluginApiResponse(PluginSettings pluginSettings,
+                                                       List<ClusterProfile> clusterProfiles,
+                                                       List<ElasticAgentProfile> elasticAgentProfiles) {
         MigrateConfigurationRequest response = new MigrateConfigurationRequest();
 
         response.setPluginSettings(pluginSettings);

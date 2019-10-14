@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker.utils;
+package cd.go.contrib.elasticagents.common;
 
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.JsonObject;

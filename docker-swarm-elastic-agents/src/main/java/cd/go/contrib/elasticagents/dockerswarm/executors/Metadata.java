@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationError;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang.StringUtils;
@@ -44,12 +44,11 @@ public class Metadata {
         this.metadata = metadata;
     }
 
-    public ValidationError validate(String input) {
+    public void validate(String input, ValidationResult validationResult) {
         String errorMessage = doValidate(input);
         if (StringUtils.isNotBlank(errorMessage)) {
-            return new ValidationError(key, errorMessage);
+            validationResult.add(key, errorMessage);
         }
-        return null;
     }
 
     protected String doValidate(String input) {

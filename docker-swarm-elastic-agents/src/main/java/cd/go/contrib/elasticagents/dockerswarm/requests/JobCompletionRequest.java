@@ -16,9 +16,10 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.executors.JobCompletionRequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -40,13 +41,17 @@ public class JobCompletionRequest {
     public JobCompletionRequest() {
     }
 
-    public JobCompletionRequest(String elasticAgentId, JobIdentifier jobIdentifier, Map<String, String> clusterProfile) {
+    public JobCompletionRequest(String elasticAgentId,
+                                JobIdentifier jobIdentifier,
+                                Map<String, String> clusterProfile) {
         this.elasticAgentId = elasticAgentId;
         this.jobIdentifier = jobIdentifier;
         this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfile);
     }
 
-    public  JobCompletionRequest(String elasticAgentId, JobIdentifier jobIdentifier, ClusterProfileProperties profileProperties) {
+    public JobCompletionRequest(String elasticAgentId,
+                                JobIdentifier jobIdentifier,
+                                ClusterProfileProperties profileProperties) {
         this.elasticAgentId = elasticAgentId;
         this.jobIdentifier = jobIdentifier;
         this.clusterProfileProperties = profileProperties;
@@ -65,7 +70,7 @@ public class JobCompletionRequest {
         return jobIdentifier;
     }
 
-    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, PluginRequest pluginRequest) {
+    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, ElasticAgentRequestClient pluginRequest) {
         return new JobCompletionRequestExecutor(this, agentInstances, pluginRequest);
     }
 

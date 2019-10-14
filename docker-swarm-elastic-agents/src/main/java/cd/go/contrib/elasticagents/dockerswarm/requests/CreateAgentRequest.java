@@ -16,9 +16,10 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.executors.CreateAgentRequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -40,7 +41,11 @@ public class CreateAgentRequest {
     public CreateAgentRequest() {
     }
 
-    public CreateAgentRequest(String autoRegisterKey, Map<String, String> elasticAgentProfileProperties, String environment, JobIdentifier jobIdentifier, Map<String, String> clusterProfileProperties) {
+    public CreateAgentRequest(String autoRegisterKey,
+                              Map<String, String> elasticAgentProfileProperties,
+                              String environment,
+                              JobIdentifier jobIdentifier,
+                              Map<String, String> clusterProfileProperties) {
         this.autoRegisterKey = autoRegisterKey;
         this.elasticAgentProfileProperties = elasticAgentProfileProperties;
         this.environment = environment;
@@ -48,7 +53,11 @@ public class CreateAgentRequest {
         this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileProperties);
     }
 
-    public CreateAgentRequest(String autoRegisterKey, Map<String, String> elasticAgentProfileProperties, String environment, JobIdentifier jobIdentifier, ClusterProfileProperties clusterProfileProperties) {
+    public CreateAgentRequest(String autoRegisterKey,
+                              Map<String, String> elasticAgentProfileProperties,
+                              String environment,
+                              JobIdentifier jobIdentifier,
+                              ClusterProfileProperties clusterProfileProperties) {
         this.autoRegisterKey = autoRegisterKey;
         this.elasticAgentProfileProperties = elasticAgentProfileProperties;
         this.environment = environment;
@@ -76,7 +85,8 @@ public class CreateAgentRequest {
         return GSON.fromJson(json, CreateAgentRequest.class);
     }
 
-    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, PluginRequest pluginRequest) {
+    public RequestExecutor executor(AgentInstances<DockerService> agentInstances,
+                                    ElasticAgentRequestClient pluginRequest) {
         return new CreateAgentRequestExecutor(this, agentInstances, pluginRequest);
     }
 

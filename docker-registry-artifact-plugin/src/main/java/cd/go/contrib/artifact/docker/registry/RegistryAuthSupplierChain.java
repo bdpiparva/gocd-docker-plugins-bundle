@@ -32,8 +32,7 @@ public class RegistryAuthSupplierChain implements RegistryAuthSupplier {
             String[] usernameAndPassword = tokenRequestGenerator.getUsernameAndPasswordFromECRToken(artifactStoreConfig);
             username = usernameAndPassword[0];
             password = usernameAndPassword[1];
-        }
-        else {
+        } else {
             username = artifactStoreConfig.getUsername();
             password = artifactStoreConfig.getPassword();
         }

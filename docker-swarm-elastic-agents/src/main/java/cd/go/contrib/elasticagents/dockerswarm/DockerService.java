@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Size;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
@@ -44,7 +44,11 @@ public class DockerService {
     private JobIdentifier jobIdentifier;
     private String name;
 
-    public DockerService(String name, Date createdAt, Map<String, String> properties, String environment, JobIdentifier jobIdentifier) {
+    public DockerService(String name,
+                         Date createdAt,
+                         Map<String, String> properties,
+                         String environment,
+                         JobIdentifier jobIdentifier) {
         this.name = name;
         this.createdAt = new DateTime(createdAt);
         this.properties = properties;
@@ -92,7 +96,9 @@ public class DockerService {
                 JobIdentifier.fromJson(labels.get(JOB_IDENTIFIER_LABEL_KEY)));
     }
 
-    public static DockerService create(CreateAgentRequest request, PluginSettings settings, DockerClient docker) throws InterruptedException, DockerException {
+    public static DockerService create(CreateAgentRequest request,
+                                       PluginSettings settings,
+                                       DockerClient docker) throws InterruptedException, DockerException {
         String serviceName = UUID.randomUUID().toString();
 
         HashMap<String, String> labels = labelsFrom(request);

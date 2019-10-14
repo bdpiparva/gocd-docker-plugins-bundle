@@ -17,6 +17,7 @@
 package cd.go.contrib.artifact.docker.registry.executors;
 
 import cd.go.contrib.artifact.docker.registry.model.FetchArtifactConfig;
+import cd.go.plugin.base.GsonTransformer;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -31,6 +32,6 @@ public class ValidateFetchArtifactConfigExecutor implements RequestExecutor {
 
     @Override
     public GoPluginApiResponse execute() {
-        return DefaultGoPluginApiResponse.success(fetchArtifactConfig.validate().toJSON());
+        return DefaultGoPluginApiResponse.success(GsonTransformer.toJson(fetchArtifactConfig.validate()));
     }
 }

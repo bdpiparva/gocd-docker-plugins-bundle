@@ -16,33 +16,35 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationError;
+import cd.go.plugin.base.validation.ValidationResult;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class MemoryMetadataTest {
 
     @Test
     public void shouldValidateMemoryBytes() throws Exception {
-        assertNull(new MemoryMetadata("Disk", false).validate("100mb"));
+        ValidationResult validationResult = new ValidationResult();
+        new MemoryMetadata("Disk", false).validate("100mb", validationResult);
 
-        ValidationError validationError = new MemoryMetadata("Disk", false).validate("xxx");
+        assertTrue(validationResult.isEmpty());
 
-        assertNotNull(validationError);
-        assertThat(validationError.key(), is("Disk"));
-        assertThat(validationError.message(), is("Invalid size: xxx"));
+        new MemoryMetadata("Disk", false).validate("xxx", validationResult);
+
+        assertThat(validationResult.size(), is(1));
+        assertThat(validationResult.find("Disk").get().getMessage(), is("Invalid size: xxx"));
     }
 
     @Test
     public void shouldValidateMemoryBytesWhenRequireField() throws Exception {
-        ValidationError validationError = new MemoryMetadata("Disk", true).validate(null);
+        ValidationResult validationResult = new ValidationResult();
 
-        assertNotNull(validationError);
-        assertThat(validationError.key(), is("Disk"));
-        assertThat(validationError.message(), is("Disk must not be blank."));
+        new MemoryMetadata("Disk", true).validate(null, validationResult);
+
+        assertThat(validationResult.size(), is(1));
+        assertThat(validationResult.find("Disk").get().getMessage(), is("Disk must not be blank."));
     }
 }

@@ -61,8 +61,7 @@ class AWSTokenRequestGenerator {
             AWSStaticCredentialsProvider awsStaticCredentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials(artifactStoreConfig.getAwsAccessKeyId(), artifactStoreConfig.getAwsSecretAccessKey()));
             builder.setCredentials(awsStaticCredentialsProvider);
             LOG.debug("Using the AWS keys configured in the specified artifact store.");
-        }
-        else {
+        } else {
             builder.setCredentials(new DefaultAWSCredentialsProviderChain());
             LOG.debug("Setting the default aws credentials chain provider. This happens if the specified artifact store does not have aws keys configured. The default chain checks for environment variables, system properties, credentials profile, instance profile.");
         }

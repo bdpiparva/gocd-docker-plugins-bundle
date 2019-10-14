@@ -33,7 +33,8 @@ public class GetProfileMetadataExecutorTest {
     @Test
     public void shouldSerializeAllFields() throws Exception {
         GoPluginApiResponse response = new GetProfileMetadataExecutor().execute();
-        List<Field> list = new Gson().fromJson(response.responseBody(), new TypeToken<List<Field>>(){}.getType());
+        List<Field> list = new Gson().fromJson(response.responseBody(), new TypeToken<List<Field>>() {
+        }.getType());
         assertEquals(list.size(), GetProfileMetadataExecutor.FIELDS.size());
     }
 

@@ -27,7 +27,7 @@ public class ClusterProfileValidateRequestTest {
     @Test
     public void shouldDeserializeFromJSON() throws Exception {
 
-        String json ="{" +
+        String json = "{" +
                 "   \"go_server_url\":\"http://localhost\"," +
                 "   \"auto_register_timeout\":\"10\"," +
                 "   \"username\":\"Bob\"," +

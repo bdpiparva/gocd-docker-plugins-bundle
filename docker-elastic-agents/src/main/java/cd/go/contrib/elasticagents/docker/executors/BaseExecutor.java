@@ -16,8 +16,6 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
-import cd.go.contrib.elasticagents.docker.AgentInstances;
-import cd.go.contrib.elasticagents.docker.DockerContainer;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.plugin.base.executors.AbstractExecutor;
@@ -38,7 +36,8 @@ public abstract class BaseExecutor<T> extends AbstractExecutor<T> {
         }
     }
 
-    protected AgentInstances<DockerContainer> getAgentInstancesFor(ClusterProfileProperties clusterProfileProperties) {
+    protected DockerContainers getAgentInstancesFor(
+            ClusterProfileProperties clusterProfileProperties) {
         return clusterToContainersMap.get(clusterProfileProperties.uuid());
     }
 

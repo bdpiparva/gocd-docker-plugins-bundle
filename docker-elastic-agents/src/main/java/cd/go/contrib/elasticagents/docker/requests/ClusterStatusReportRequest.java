@@ -16,31 +16,12 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
+import cd.go.contrib.elasticagents.common.requests.AbstractClusterStatusReportRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-
-@Getter
 @Setter
 @Accessors(chain = true)
-@ToString
-@EqualsAndHashCode
-public class ClusterStatusReportRequest {
-    @Expose
-    @SerializedName("cluster_profile_properties")
-    private ClusterProfileProperties clusterProfile;
-
-    public ClusterStatusReportRequest() {
-    }
-
-    public static ClusterStatusReportRequest fromJSON(String json) {
-        return fromJson(json, ClusterStatusReportRequest.class);
-    }
+public class ClusterStatusReportRequest extends AbstractClusterStatusReportRequest<ClusterProfileProperties> {
 }

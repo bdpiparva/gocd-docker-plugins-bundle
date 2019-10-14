@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.utils;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.JsonObject;
 
 public class JobIdentifierMother {

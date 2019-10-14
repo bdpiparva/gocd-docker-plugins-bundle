@@ -67,7 +67,8 @@ public class Util {
                 .collect(Collectors.toMap(e -> e[0].trim(), e -> e[1].trim()));
     }
 
-    public static boolean dockerApiVersionAtLeast(DockerClient docker, final String expected) throws DockerException, InterruptedException {
+    public static boolean dockerApiVersionAtLeast(DockerClient docker,
+                                                  final String expected) throws DockerException, InterruptedException {
         return compareVersion(docker.version().apiVersion(), expected) >= 0;
     }
 

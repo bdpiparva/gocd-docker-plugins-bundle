@@ -100,6 +100,7 @@ public class ClusterProfile {
     public void setPluginId(String pluginId) {
         this.pluginId = pluginId;
     }
+
     public void setClusterProfileProperties(ClusterProfileProperties clusterProfileProperties) {
         this.clusterProfileProperties = clusterProfileProperties;
     }

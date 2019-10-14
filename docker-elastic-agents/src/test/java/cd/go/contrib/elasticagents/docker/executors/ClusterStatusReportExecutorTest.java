@@ -16,11 +16,11 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.StatusReport;
 import cd.go.contrib.elasticagents.docker.requests.ClusterStatusReportRequest;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;
@@ -65,8 +65,8 @@ class ClusterStatusReportExecutorTest {
         when(viewBuilder.getTemplate("docker/cluster-status-report.template.ftlh")).thenReturn(template);
         when(viewBuilder.build(template, statusReport)).thenReturn("statusReportView");
 
-        ClusterStatusReportRequest request = new ClusterStatusReportRequest()
-                .setClusterProfile(clusterProfile);
+        ClusterStatusReportRequest request = new ClusterStatusReportRequest();
+        request.setClusterProfileConfiguration(clusterProfile);
 
         GoPluginApiResponse goPluginApiResponse = executor.execute(request);
 

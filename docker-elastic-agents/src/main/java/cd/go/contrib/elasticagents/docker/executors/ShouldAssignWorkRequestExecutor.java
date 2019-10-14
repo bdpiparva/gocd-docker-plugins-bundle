@@ -57,6 +57,6 @@ public class ShouldAssignWorkRequestExecutor extends BaseExecutor<ShouldAssignWo
 
     @Override
     protected ShouldAssignWorkRequest parseRequest(String requestBody) {
-        return ShouldAssignWorkRequest.fromJSON(requestBody);
+        return ShouldAssignWorkRequest.fromJSON(requestBody,ShouldAssignWorkRequest.class);
     }
 }

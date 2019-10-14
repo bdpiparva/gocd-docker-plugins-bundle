@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.common.requests;
+package cd.go.contrib.elasticagents.common.models;
 
-
-import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
-import cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
@@ -30,32 +26,35 @@ import lombok.experimental.Accessors;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
 
-@Setter
 @Getter
+@Setter
 @ToString
 @EqualsAndHashCode
 @Accessors(chain = true)
-public class JobCompletionRequest<E extends ElasticProfileConfiguration, C extends ClusterProfileConfiguration> {
+public class ClusterProfile<T extends ClusterProfileConfiguration> {
     @Expose
-    @SerializedName("elastic_agent_id")
-    private String elasticAgentId;
+    @SerializedName("id")
+    private String id;
 
     @Expose
-    @SerializedName("job_identifier")
-    private JobIdentifier jobIdentifier;
+    @SerializedName("plugin_id")
+    private String pluginId;
 
     @Expose
-    @SerializedName("elastic_agent_profile_properties")
-    private E elasticProfileConfiguration;
+    @SerializedName("properties")
+    private T clusterProfileProperties;
 
-    @Expose
-    @SerializedName("cluster_profile_properties")
-    private C clusterProfileConfiguration;
 
-    public JobCompletionRequest() {
+    public ClusterProfile() {
     }
 
-    public static JobCompletionRequest fromJSON(String json) {
-        return fromJson(json, JobCompletionRequest.class);
+    public ClusterProfile(String id, String pluginId, T clusterProfileProperties) {
+        this.id = id;
+        this.pluginId = pluginId;
+        this.clusterProfileProperties = clusterProfileProperties;
+    }
+
+    public static ClusterProfile fromJSON(String json) {
+        return fromJson(json, ClusterProfile.class);
     }
 }

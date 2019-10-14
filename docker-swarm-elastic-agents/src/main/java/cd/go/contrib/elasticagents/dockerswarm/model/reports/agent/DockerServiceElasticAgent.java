@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.model.reports.agent;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogStream;
@@ -108,7 +108,8 @@ public class DockerServiceElasticAgent {
         return tasksStatus;
     }
 
-    public static DockerServiceElasticAgent fromService(Service service, DockerClient client) throws DockerException, InterruptedException {
+    public static DockerServiceElasticAgent fromService(Service service,
+                                                        DockerClient client) throws DockerException, InterruptedException {
         DockerServiceElasticAgent agent = new DockerServiceElasticAgent();
 
         agent.id = service.id();
@@ -148,7 +149,7 @@ public class DockerServiceElasticAgent {
         if (envFromTask != null) {
             for (String env : envFromTask) {
                 final String[] parts = env.split("=", 2);
-                
+
                 if ("GO_EA_AUTO_REGISTER_KEY".equals(parts[0])) {
                     continue;
                 }

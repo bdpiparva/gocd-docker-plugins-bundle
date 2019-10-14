@@ -31,7 +31,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode
 @Accessors(chain = true)
 public
-class ElasticProfileConfiguration {
+class ElasticProfileConfiguration implements cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration {
     public static final String IMAGE = "Image";
     public static final String COMMAND = "Command";
     public static final String ENVIRONMENT = "Environment";

@@ -16,10 +16,11 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.executors.ShouldAssignWorkRequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -37,7 +38,11 @@ public class ShouldAssignWorkRequest {
     private JobIdentifier jobIdentifier;
     private ClusterProfileProperties clusterProfileProperties;
 
-    public ShouldAssignWorkRequest(Agent agent, String environment, Map<String, String> properties, JobIdentifier jobIdentifier, Map<String, String> clusterProfileProperties) {
+    public ShouldAssignWorkRequest(Agent agent,
+                                   String environment,
+                                   Map<String, String> properties,
+                                   JobIdentifier jobIdentifier,
+                                   Map<String, String> clusterProfileProperties) {
         this.agent = agent;
         this.environment = environment;
         this.properties = properties;
@@ -68,7 +73,7 @@ public class ShouldAssignWorkRequest {
         return GSON.fromJson(json, ShouldAssignWorkRequest.class);
     }
 
-    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, PluginRequest pluginRequest) {
+    public RequestExecutor executor(AgentInstances<DockerService> agentInstances, ElasticAgentRequestClient client) {
         return new ShouldAssignWorkRequestExecutor(this, agentInstances);
     }
 

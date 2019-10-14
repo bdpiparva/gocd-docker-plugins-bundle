@@ -37,9 +37,10 @@ public class ClusterProfileValidateRequestExecutorTest {
         assertThat(response.responseCode(), is(200));
         String expectedJSON = "[" +
                 "{\"key\":\"go_server_url\",\"message\":\"Go Server URL must not be blank.\"}," +
-                "{\"key\":\"auto_register_timeout\",\"message\":\"auto_register_timeout must not be blank.\"}," +
+                "{\"key\":\"max_docker_containers\",\"message\":\"max_docker_containers must not be blank.\"}," +
                 "{\"key\":\"docker_uri\",\"message\":\"docker_uri must not be blank.\"}," +
-                "{\"key\":\"max_docker_containers\",\"message\":\"max_docker_containers must not be blank.\"}]";
+                "{\"key\":\"auto_register_timeout\",\"message\":\"auto_register_timeout must not be blank.\"}" +
+                "]";
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);
     }
 
@@ -102,8 +103,8 @@ public class ClusterProfileValidateRequestExecutorTest {
         GoPluginApiResponse response = new ClusterProfileValidateRequestExecutor(request).execute();
         String expectedJSON = "[" +
                 "{\"key\":\"private_registry_server\",\"message\":\"private_registry_server must not be blank.\"}," +
-                "{\"key\":\"private_registry_password\",\"message\":\"private_registry_password must not be blank.\"}," +
-                "{\"key\":\"private_registry_username\",\"message\":\"private_registry_username must not be blank.\"}" +
+                "{\"key\":\"private_registry_username\",\"message\":\"private_registry_username must not be blank.\"}," +
+                "{\"key\":\"private_registry_password\",\"message\":\"private_registry_password must not be blank.\"}" +
                 "]";
         assertThat(response.responseCode(), is(200));
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);

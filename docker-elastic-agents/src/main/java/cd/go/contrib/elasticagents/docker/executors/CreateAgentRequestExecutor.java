@@ -16,9 +16,10 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
-import cd.go.contrib.elasticagents.docker.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.PluginRequest;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -31,10 +32,10 @@ import java.util.Map;
 
 public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest> {
     private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormat.forPattern("'##|'HH:mm:ss.SSS '[go]'");
-    private final PluginRequest pluginRequest;
+    private final ElasticAgentRequestClient pluginRequest;
 
     public CreateAgentRequestExecutor(Map<String, DockerContainers> clusterToContainerMap,
-                                      PluginRequest pluginRequest) {
+                                      ElasticAgentRequestClient pluginRequest) {
         super(clusterToContainerMap);
         this.pluginRequest = pluginRequest;
     }
@@ -62,6 +63,6 @@ public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest>
 
     @Override
     protected CreateAgentRequest parseRequest(String requestBody) {
-        return CreateAgentRequest.fromJSON(requestBody);
+        return CreateAgentRequest.fromJSON(requestBody, CreateAgentRequest.class);
     }
 }

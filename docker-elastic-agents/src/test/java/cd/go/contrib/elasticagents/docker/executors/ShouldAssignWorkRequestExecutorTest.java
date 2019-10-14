@@ -16,11 +16,15 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
-import cd.go.contrib.elasticagents.docker.*;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.docker.BaseTest;
+import cd.go.contrib.elasticagents.docker.DockerContainer;
+import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -45,9 +49,9 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @BeforeEach
     void setUp() throws Exception {
         clusterProfileProperties = createClusterProfiles();
-        PluginRequest pluginRequest = mock(PluginRequest.class);
-        CreateAgentRequest request = new CreateAgentRequest()
-                .setAutoRegisterKey(UUID.randomUUID().toString())
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
+        CreateAgentRequest request = new CreateAgentRequest();
+        request.setAutoRegisterKey(UUID.randomUUID().toString())
                 .setJobIdentifier(jobIdentifier)
                 .setEnvironment(environment)
                 .setClusterProfileProperties(clusterProfileProperties)
@@ -61,8 +65,8 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
 
     @Test
     void shouldAssignWorkToContainerWithSameJobIdentifier() {
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest()
-                .setAgent(new Agent(instance.name(), null, null, null))
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest();
+        request.setAgent(new Agent(instance.name(), null, null, null))
                 .setEnvironment(environment)
                 .setJobIdentifier(jobIdentifier)
                 .setClusterProfileProperties(clusterProfileProperties);
@@ -74,8 +78,8 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     @Test
     void shouldNotAssignWorkToContainerWithDifferentJobIdentifier() {
         JobIdentifier otherJobId = new JobIdentifier("up42", 2L, "foo", "stage", "1", "job", 2L);
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest()
-                .setAgent(new Agent(instance.name(), null, null, null))
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest();
+        request.setAgent(new Agent(instance.name(), null, null, null))
                 .setEnvironment(environment)
                 .setJobIdentifier(otherJobId)
                 .setClusterProfileProperties(clusterProfileProperties);
@@ -86,8 +90,8 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
 
     @Test
     void shouldNotAssignWorkIfInstanceIsNotFound() {
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest()
-                .setAgent(new Agent("unknown-name", null, null, null))
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest();
+        request.setAgent(new Agent("unknown-name", null, null, null))
                 .setEnvironment(environment)
                 .setJobIdentifier(jobIdentifier)
                 .setClusterProfileProperties(clusterProfileProperties);

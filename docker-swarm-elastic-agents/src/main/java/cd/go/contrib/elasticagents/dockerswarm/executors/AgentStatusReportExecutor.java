@@ -16,9 +16,10 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.*;
-import cd.go.contrib.elasticagents.dockerswarm.builders.PluginStatusReportViewBuilder;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.dockerswarm.Constants;
+import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.agent.DockerServiceElasticAgent;
 import cd.go.contrib.elasticagents.dockerswarm.reports.StatusReportGenerationErrorHandler;
 import cd.go.contrib.elasticagents.dockerswarm.reports.StatusReportGenerationException;
@@ -38,13 +39,15 @@ import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 public class AgentStatusReportExecutor {
     private final AgentStatusReportRequest request;
     private final DockerClientFactory dockerClientFactory;
-    private final PluginStatusReportViewBuilder builder;
+    private final ViewBuilder builder;
 
     public AgentStatusReportExecutor(AgentStatusReportRequest request) throws IOException {
-        this(request, DockerClientFactory.instance(), PluginStatusReportViewBuilder.instance());
+        this(request, DockerClientFactory.instance(), ViewBuilder.instance());
     }
 
-    public AgentStatusReportExecutor(AgentStatusReportRequest request, DockerClientFactory dockerClientFactory, PluginStatusReportViewBuilder builder) {
+    public AgentStatusReportExecutor(AgentStatusReportRequest request,
+                                     DockerClientFactory dockerClientFactory,
+                                     ViewBuilder builder) {
         this.request = request;
         this.dockerClientFactory = dockerClientFactory;
         this.builder = builder;
@@ -71,7 +74,9 @@ public class AgentStatusReportExecutor {
         }
     }
 
-    private Service findService(String elasticAgentId, JobIdentifier jobIdentifier, DockerClient dockerClient) throws Exception {
+    private Service findService(String elasticAgentId,
+                                JobIdentifier jobIdentifier,
+                                DockerClient dockerClient) throws Exception {
         Service dockerService;
         if (StringUtils.isNotBlank(elasticAgentId)) {
             dockerService = findServiceUsingElasticAgentId(elasticAgentId, dockerClient);

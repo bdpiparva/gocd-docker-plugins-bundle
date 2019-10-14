@@ -16,9 +16,11 @@
 
 package cd.go.contrib.elasticagents.dockerswarm;
 
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import org.hamcrest.Matchers;
 import org.joda.time.Period;
@@ -40,11 +42,11 @@ public class DockerServicesTestElasticAgent extends BaseTest {
     private DockerServices dockerServices;
     private ClusterProfileProperties clusterProfile;
     private JobIdentifier jobIdentifier;
-    private PluginRequest pluginRequest;
+    private ElasticAgentRequestClient pluginRequest;
 
     @Before
     public void setUp() throws Exception {
-        pluginRequest = mock(PluginRequest.class);
+        pluginRequest = mock(ElasticAgentRequestClient.class);
         jobIdentifier = new JobIdentifier(100L);
         HashMap<String, String> elasticAgentProperties = new HashMap<>();
         elasticAgentProperties.put("Image", "alpine:latest");

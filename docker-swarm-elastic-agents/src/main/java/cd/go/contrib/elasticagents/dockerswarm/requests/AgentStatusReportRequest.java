@@ -16,12 +16,12 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerService;
-import cd.go.contrib.elasticagents.dockerswarm.PluginRequest;
 import cd.go.contrib.elasticagents.dockerswarm.executors.AgentStatusReportExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -46,7 +46,9 @@ public class AgentStatusReportRequest {
     public AgentStatusReportRequest() {
     }
 
-    public AgentStatusReportRequest(String elasticAgentId, JobIdentifier jobIdentifier, Map<String, String> clusterProfileProperties) {
+    public AgentStatusReportRequest(String elasticAgentId,
+                                    JobIdentifier jobIdentifier,
+                                    Map<String, String> clusterProfileProperties) {
         this.elasticAgentId = elasticAgentId;
         this.jobIdentifier = jobIdentifier;
         this.clusterProfileProperties = ClusterProfileProperties.fromConfiguration(clusterProfileProperties);
@@ -68,7 +70,8 @@ public class AgentStatusReportRequest {
         return jobIdentifier;
     }
 
-    public AgentStatusReportExecutor executor(PluginRequest pluginRequest, AgentInstances<DockerService> agentInstances) throws IOException {
+    public AgentStatusReportExecutor executor(ElasticAgentRequestClient pluginRequest,
+                                              AgentInstances<DockerService> agentInstances) throws IOException {
         return new AgentStatusReportExecutor(this);
     }
 

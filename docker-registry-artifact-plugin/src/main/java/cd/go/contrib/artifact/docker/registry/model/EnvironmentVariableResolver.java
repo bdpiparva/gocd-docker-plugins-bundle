@@ -34,7 +34,7 @@ public class EnvironmentVariableResolver {
 
     public String resolve(Map<String, String> environmentVariables) throws UnresolvedPropertyException {
         String evaluatedProperty = StrSubstitutor.replace(property, environmentVariables);
-        if(ENVIRONMENT_VARIABLE_PATTERN.matcher(evaluatedProperty).find()) {
+        if (ENVIRONMENT_VARIABLE_PATTERN.matcher(evaluatedProperty).find()) {
             throw new UnresolvedPropertyException(evaluatedProperty, propertyName);
         }
         return evaluatedProperty;

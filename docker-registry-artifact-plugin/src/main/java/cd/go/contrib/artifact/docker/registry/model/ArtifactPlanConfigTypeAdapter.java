@@ -25,7 +25,9 @@ import java.util.Optional;
 public class ArtifactPlanConfigTypeAdapter implements JsonDeserializer<ArtifactPlanConfig>, JsonSerializer<ArtifactPlanConfig> {
 
     @Override
-    public ArtifactPlanConfig deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+    public ArtifactPlanConfig deserialize(JsonElement json,
+                                          Type typeOfT,
+                                          JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
         if (isImageTagConfig(jsonObject)) {
             return new ImageTagArtifactPlanConfig(jsonObject.get("Image").getAsString(), parseTag(jsonObject));

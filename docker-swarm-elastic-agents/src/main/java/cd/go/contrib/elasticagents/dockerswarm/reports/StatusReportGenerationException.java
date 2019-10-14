@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.reports;
 
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 
 import static java.lang.String.format;
 

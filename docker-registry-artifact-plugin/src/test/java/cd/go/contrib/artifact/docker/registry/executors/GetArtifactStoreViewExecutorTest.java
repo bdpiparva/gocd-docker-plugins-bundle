@@ -31,7 +31,8 @@ public class GetArtifactStoreViewExecutorTest {
     public void shouldRenderTheTemplateInJSON() throws Exception {
         GoPluginApiResponse response = new GetArtifactStoreViewExecutor().execute();
 
-        Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
+        Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
+        }.getType());
 
         assertThat(response.responseCode()).isEqualTo(200);
         assertThat(responseHash).containsEntry("template", readResource("/docker-registry/artifact-store.template.html"));

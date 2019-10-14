@@ -16,6 +16,8 @@
 
 package cd.go.contrib.elasticagents.docker;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.docker.executors.*;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
@@ -23,7 +25,6 @@ import cd.go.contrib.elasticagents.docker.validator.ContainerMemorySettingsValid
 import cd.go.contrib.elasticagents.docker.validator.CpusMetadataValidator;
 import cd.go.contrib.elasticagents.docker.validator.GoServerURLValidator;
 import cd.go.contrib.elasticagents.docker.validator.HostsValidator;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
 import cd.go.plugin.base.dispatcher.BaseBuilder;
 import cd.go.plugin.base.dispatcher.RequestDispatcher;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -38,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.docker.Constants.PLUGIN_IDENTIFIER;
+import static cd.go.contrib.elasticagents.docker.Constants.PROCESSOR_API_VERSION;
 
 @Extension
 public class DockerPlugin implements GoPlugin {
@@ -48,7 +50,7 @@ public class DockerPlugin implements GoPlugin {
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor accessor) {
-        final PluginRequest pluginRequest = new PluginRequest(accessor);
+        final ElasticAgentRequestClient pluginRequest = new ElasticAgentRequestClient(accessor, PROCESSOR_API_VERSION, PLUGIN_IDENTIFIER);
         final Map<String, DockerContainers> clusterSpecificAgentInstances = new HashMap<>();
         requestDispatcher = BaseBuilder
                 .forElastic()

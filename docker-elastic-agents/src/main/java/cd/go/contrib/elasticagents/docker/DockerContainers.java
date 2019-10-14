@@ -16,10 +16,16 @@
 
 package cd.go.contrib.elasticagents.docker;
 
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.SetupSemaphore;
 import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.agent.AgentInstances;
 import cd.go.contrib.elasticagents.common.agent.Agents;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.models.*;
-import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.messages.Container;
@@ -36,7 +42,7 @@ import java.util.stream.Collectors;
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
 import static cd.go.contrib.elasticagents.docker.utils.Util.readableSize;
 
-public class DockerContainers implements AgentInstances<DockerContainer> {
+public class DockerContainers implements AgentInstances<DockerContainer, ElasticProfileConfiguration, ClusterProfileProperties> {
     private final Map<String, DockerContainer> instances = new ConcurrentHashMap<>();
     private List<JobIdentifier> jobsWaitingForAgentCreation = new ArrayList<>();
     private boolean refreshed;
@@ -45,8 +51,8 @@ public class DockerContainers implements AgentInstances<DockerContainer> {
     final Semaphore semaphore = new Semaphore(0, true);
 
     @Override
-    public DockerContainer create(CreateAgentRequest request,
-                                  PluginRequest pluginRequest,
+    public DockerContainer create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
+                                  ElasticAgentRequestClient pluginRequest,
                                   ConsoleLogAppender consoleLogAppender) throws Exception {
         LOG.info(String.format("[Create Agent] Processing create agent request for %s", request.getJobIdentifier()));
         ClusterProfileProperties clusterProfile = request.getClusterProfileProperties();

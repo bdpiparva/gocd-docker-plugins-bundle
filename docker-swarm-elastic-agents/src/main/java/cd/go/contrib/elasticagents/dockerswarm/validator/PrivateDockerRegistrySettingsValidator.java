@@ -31,7 +31,7 @@ public class PrivateDockerRegistrySettingsValidator {
 
     public List<Map<String, String>> validate(ClusterProfileValidateRequest request) {
         final List<Map<String, String>> result = new ArrayList<>();
-        final boolean useDockerAuthInfo = Boolean.valueOf(request.getProperties().get(GetClusterProfileMetadataExecutor.ENABLE_PRIVATE_REGISTRY_AUTHENTICATION.getKey()));
+        final boolean useDockerAuthInfo = Boolean.parseBoolean(request.getProperties().get(GetClusterProfileMetadataExecutor.ENABLE_PRIVATE_REGISTRY_AUTHENTICATION.getKey()));
         if (!useDockerAuthInfo) {
             return result;
         }
@@ -42,11 +42,13 @@ public class PrivateDockerRegistrySettingsValidator {
         return result;
     }
 
-    private void validate(Metadata field, ClusterProfileValidateRequest request, List<Map<String, String>> errorResult) {
+    private void validate(Metadata field,
+                          ClusterProfileValidateRequest request,
+                          List<Map<String, String>> errorResult) {
         if (isBlank(request.getProperties().get(field.getKey()))) {
             Map<String, String> result = new HashMap<>();
             result.put("key", field.getKey());
-            result.put("message", field.getKey()+ " must not be blank.");
+            result.put("message", field.getKey() + " must not be blank.");
             errorResult.add(result);
         }
     }

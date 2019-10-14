@@ -16,11 +16,11 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.PluginRequest;
-import cd.go.contrib.elasticagents.docker.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.requests.ServerPingRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -31,10 +31,10 @@ import java.util.*;
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
 
 public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
-    private final PluginRequest pluginRequest;
+    private final ElasticAgentRequestClient pluginRequest;
 
     public ServerPingRequestExecutor(Map<String, DockerContainers> clusterToContainersMap,
-                                     PluginRequest pluginRequest) {
+                                     ElasticAgentRequestClient pluginRequest) {
         super(clusterToContainersMap);
         this.pluginRequest = pluginRequest;
     }
@@ -43,9 +43,9 @@ public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
     protected GoPluginApiResponse execute(ServerPingRequest request) {
         //todo: remove possiblyMissingAgents, refer to ecs/kubernetes server ping implementation
         try {
-            refreshInstancesForAllClusters(request.getAllClusterProfileProperties());
+            refreshInstancesForAllClusters(request.getAllClusterProfileConfigurations());
             Set<Agent> possiblyMissingAgents = new HashSet<>();
-            List<ClusterProfileProperties> allClusterProfileProperties = request.getAllClusterProfileProperties();
+            List<ClusterProfileProperties> allClusterProfileProperties = request.getAllClusterProfileConfigurations();
 
             for (ClusterProfileProperties clusterProfileProperties : allClusterProfileProperties) {
                 performCleanupForACluster(clusterProfileProperties, clusterToContainersMap.get(clusterProfileProperties.uuid()), possiblyMissingAgents);
@@ -117,6 +117,6 @@ public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
 
     @Override
     protected ServerPingRequest parseRequest(String requestBody) {
-        return ServerPingRequest.fromJSON(requestBody);
+        return ServerPingRequest.fromJSON(requestBody, ServerPingRequest.class);
     }
 }

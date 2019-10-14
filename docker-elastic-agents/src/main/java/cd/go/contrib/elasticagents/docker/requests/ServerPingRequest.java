@@ -16,35 +16,12 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
+import cd.go.contrib.elasticagents.common.requests.AbstractServerPingRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-
-@Getter
 @Setter
-@ToString
 @Accessors(chain = true)
-@EqualsAndHashCode
-public class ServerPingRequest {
-    @Expose
-    @SerializedName("all_cluster_profile_properties")
-    private List<ClusterProfileProperties> allClusterProfileProperties = new ArrayList<>();
-
-    public ServerPingRequest() {
-    }
-
-
-    public static ServerPingRequest fromJSON(String json) {
-        return fromJson(json, ServerPingRequest.class);
-    }
+public class ServerPingRequest extends AbstractServerPingRequest<ClusterProfileProperties> {
 }

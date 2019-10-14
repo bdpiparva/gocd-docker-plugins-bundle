@@ -23,7 +23,12 @@ import java.net.URISyntaxException;
 
 public class GoServerURLField extends Field {
 
-    public GoServerURLField(String key, String displayName, String defaultValue, Boolean required, Boolean secure, String displayOrder) {
+    public GoServerURLField(String key,
+                            String displayName,
+                            String defaultValue,
+                            Boolean required,
+                            Boolean secure,
+                            String displayOrder) {
         super(key, displayName, defaultValue, required, secure, displayOrder);
     }
 

@@ -16,11 +16,11 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
+import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.PluginRequest;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
 import cd.go.contrib.elasticagents.docker.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ import static org.mockito.MockitoAnnotations.initMocks;
 
 class JobCompletionRequestExecutorTest {
     @Mock
-    private PluginRequest mockPluginRequest;
+    private ElasticAgentRequestClient mockPluginRequest;
     @Mock
     private DockerContainers mockAgentInstances;
     @Captor
@@ -62,8 +62,8 @@ class JobCompletionRequestExecutorTest {
     void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
         JobIdentifier jobIdentifier = new JobIdentifier(100L);
         String elasticAgentId = "agent-1";
-        JobCompletionRequest request = new JobCompletionRequest()
-                .setClusterProfileProperties(clusterProfileProperties)
+        JobCompletionRequest request = new JobCompletionRequest();
+        request.setClusterProfileConfiguration(clusterProfileProperties)
                 .setElasticAgentId(elasticAgentId)
                 .setJobIdentifier(jobIdentifier)
                 .setElasticProfileConfiguration(null);

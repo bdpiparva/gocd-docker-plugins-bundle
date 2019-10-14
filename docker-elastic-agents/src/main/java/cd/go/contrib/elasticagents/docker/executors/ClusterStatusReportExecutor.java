@@ -16,11 +16,11 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.DockerPlugin;
 import cd.go.contrib.elasticagents.docker.models.StatusReport;
 import cd.go.contrib.elasticagents.docker.requests.ClusterStatusReportRequest;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -40,10 +40,10 @@ public class ClusterStatusReportExecutor extends BaseExecutor<ClusterStatusRepor
     @Override
     protected GoPluginApiResponse execute(ClusterStatusReportRequest request) {
         try {
-            refreshInstancesForCluster(request.getClusterProfile());
+            refreshInstancesForCluster(request.getClusterProfileConfiguration());
             DockerPlugin.LOG.info("[status-report] Generating status report");
-            DockerContainers dockerContainers = this.clusterToContainersMap.get(request.getClusterProfile().uuid());
-            StatusReport statusReport = dockerContainers.getStatusReport(request.getClusterProfile());
+            DockerContainers dockerContainers = this.clusterToContainersMap.get(request.getClusterProfileConfiguration().uuid());
+            StatusReport statusReport = dockerContainers.getStatusReport(request.getClusterProfileConfiguration());
 
             final Template template = viewBuilder.getTemplate("docker/cluster-status-report.template.ftlh");
             final String statusReportView = viewBuilder.build(template, statusReport);
@@ -59,6 +59,6 @@ public class ClusterStatusReportExecutor extends BaseExecutor<ClusterStatusRepor
 
     @Override
     protected ClusterStatusReportRequest parseRequest(String requestBody) {
-        return ClusterStatusReportRequest.fromJSON(requestBody);
+        return ClusterStatusReportRequest.fromJSON(requestBody, ClusterStatusReportRequest.class);
     }
 }

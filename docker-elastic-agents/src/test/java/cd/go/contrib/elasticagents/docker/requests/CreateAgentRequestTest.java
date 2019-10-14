@@ -37,7 +37,7 @@ class CreateAgentRequestTest {
                 "  \"environment\": \"prod\"\n" +
                 "}";
 
-        CreateAgentRequest request = CreateAgentRequest.fromJSON(json);
+        CreateAgentRequest request = CreateAgentRequest.fromJSON(json, CreateAgentRequest.class);
         assertThat(request.getAutoRegisterKey()).isEqualTo("secret-key");
         assertThat(request.getEnvironment()).isEqualTo("prod");
         assertThat(request.getElasticProfileConfiguration().getImage()).isEqualTo("alpine");

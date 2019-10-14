@@ -49,7 +49,9 @@ public class MigrateConfigurationRequest {
     public MigrateConfigurationRequest() {
     }
 
-    public MigrateConfigurationRequest(PluginSettings pluginSettings, List<ClusterProfile> clusterProfiles, List<ElasticAgentProfile> elasticAgentProfiles) {
+    public MigrateConfigurationRequest(PluginSettings pluginSettings,
+                                       List<ClusterProfile> clusterProfiles,
+                                       List<ElasticAgentProfile> elasticAgentProfiles) {
         this.pluginSettings = pluginSettings;
         this.clusterProfiles = clusterProfiles;
         this.elasticAgentProfiles = elasticAgentProfiles;

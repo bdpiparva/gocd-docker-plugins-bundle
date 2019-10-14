@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.docker.requests;
 
-import cd.go.contrib.elasticagents.docker.models.ClusterProfile;
+import cd.go.contrib.elasticagents.common.models.ClusterProfile;
+import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.docker.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -58,19 +58,19 @@ class MigrateConfigurationRequestTest {
                 "    ]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody);
+        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody, MigrateConfigurationRequest.class);
 
         ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
-        ClusterProfile clusterProfile = new ClusterProfile();
+        ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
         clusterProfile.setClusterProfileProperties(pluginSettings);
 
-        ElasticAgentProfile elasticAgentProfile = new ElasticAgentProfile()
-                .setId("profile_id")
+        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
+        elasticAgentProfile.setId("profile_id")
                 .setPluginId("plugin_id")
                 .setClusterProfileId("cluster_profile_id")
                 .setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine:latest"));
@@ -88,7 +88,7 @@ class MigrateConfigurationRequestTest {
                 "    \"elastic_agent_profiles\":[]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody);
+        MigrateConfigurationRequest request = MigrateConfigurationRequest.fromJSON(requestBody, MigrateConfigurationRequest.class);
 
         assertThat(new ClusterProfileProperties()).isEqualTo(request.getPluginSettings());
         assertThat(of()).isEqualTo(request.getClusterProfiles());
@@ -101,19 +101,19 @@ class MigrateConfigurationRequestTest {
         clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
         clusterProfileProperties.setAutoRegisterTimeout("20");
 
-        ClusterProfile clusterProfile = new ClusterProfile();
+        ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
         clusterProfile.setClusterProfileProperties(clusterProfileProperties);
 
-        ElasticAgentProfile elasticAgentProfile = new ElasticAgentProfile();
+        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
         elasticAgentProfile.setId("profile_id");
         elasticAgentProfile.setPluginId("plugin_id");
         elasticAgentProfile.setClusterProfileId("cluster_profile_id");
         elasticAgentProfile.setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine:latest"));
 
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest()
-                .setPluginSettings(clusterProfileProperties)
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setPluginSettings(clusterProfileProperties)
                 .setClusterProfiles(of(clusterProfile))
                 .setElasticAgentProfiles(of(elasticAgentProfile));
 

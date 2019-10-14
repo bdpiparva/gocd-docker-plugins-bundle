@@ -16,10 +16,11 @@
 
 package cd.go.contrib.elasticagents.docker.executors;
 
+import cd.go.contrib.elasticagents.common.models.ClusterProfile;
+import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.Constants;
-import cd.go.contrib.elasticagents.docker.models.ClusterProfile;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.docker.models.ElasticAgentProfile;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.requests.MigrateConfigurationRequest;
 import cd.go.plugin.base.executors.AbstractExecutor;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -37,7 +38,7 @@ import static java.util.List.of;
 public class MigrateConfigurationRequestExecutor extends AbstractExecutor<MigrateConfigurationRequest> {
     @Override
     protected MigrateConfigurationRequest parseRequest(String requestBody) {
-        return MigrateConfigurationRequest.fromJSON(requestBody);
+        return MigrateConfigurationRequest.fromJSON(requestBody, MigrateConfigurationRequest.class);
     }
 
     @Override
@@ -45,8 +46,8 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
         LOG.info("[Migrate Config] Request for Config Migration Started...");
 
         ClusterProfileProperties clusterProfileProperties = request.getPluginSettings();
-        List<ClusterProfile> existingClusterProfiles = request.getClusterProfiles();
-        List<ElasticAgentProfile> existingElasticAgentProfiles = request.getElasticAgentProfiles();
+        List<ClusterProfile<ClusterProfileProperties>> existingClusterProfiles = request.getClusterProfiles();
+        List<ElasticAgentProfile<ElasticProfileConfiguration>> existingElasticAgentProfiles = request.getElasticAgentProfiles();
 
         if (!arePluginSettingsConfigured(clusterProfileProperties)) {
             LOG.info("[Migrate Config] No Plugin Settings are configured. Skipping Config Migration...");
@@ -57,15 +58,15 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
             LOG.info("[Migrate Config] Did not find any Cluster Profile. Possibly, user just have configured plugin settings and haven't define any elastic agent profiles.");
             String newClusterId = UUID.randomUUID().toString();
             LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile '{}'", newClusterId);
-            ClusterProfile clusterProfile = new ClusterProfile(newClusterId, Constants.PLUGIN_ID, clusterProfileProperties);
+            ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile(newClusterId, Constants.PLUGIN_ID, clusterProfileProperties);
 
             return getGoPluginApiResponse(clusterProfileProperties, of(clusterProfile), existingElasticAgentProfiles);
         }
 
         LOG.info("[Migrate Config] Checking to perform migrations on Cluster Profiles '{}'.", existingClusterProfiles.stream().map(ClusterProfile::getId).collect(Collectors.toList()));
 
-        for (ClusterProfile clusterProfile : existingClusterProfiles) {
-            List<ElasticAgentProfile> associatedElasticAgentProfiles = findAssociatedElasticAgentProfiles(clusterProfile, existingElasticAgentProfiles);
+        for (ClusterProfile<ClusterProfileProperties> clusterProfile : existingClusterProfiles) {
+            List<ElasticAgentProfile<ElasticProfileConfiguration>> associatedElasticAgentProfiles = findAssociatedElasticAgentProfiles(clusterProfile, existingElasticAgentProfiles);
             if (associatedElasticAgentProfiles.size() == 0) {
                 LOG.info("[Migrate Config] Skipping migration for the cluster '{}' as no Elastic Agent Profiles are associated with it.", clusterProfile.getId());
                 continue;
@@ -85,7 +86,7 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
 
     //this is responsible to copy over plugin settings configurations to cluster profile and if required rename no op cluster
     private void migrateConfigForCluster(ClusterProfileProperties clusterProfileProperties,
-                                         List<ElasticAgentProfile> associatedElasticAgentProfiles,
+                                         List<ElasticAgentProfile<ElasticProfileConfiguration>> associatedElasticAgentProfiles,
                                          ClusterProfile clusterProfile) {
         LOG.info("[Migrate Config] Coping over existing plugin settings configurations to '{}' cluster profile.", clusterProfile.getId());
         clusterProfile.setClusterProfileProperties(clusterProfileProperties);
@@ -100,16 +101,15 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
         }
     }
 
-    private List<ElasticAgentProfile> findAssociatedElasticAgentProfiles(ClusterProfile clusterProfile,
-                                                                         List<ElasticAgentProfile> elasticAgentProfiles) {
+    private List<ElasticAgentProfile<ElasticProfileConfiguration>> findAssociatedElasticAgentProfiles(ClusterProfile<ClusterProfileProperties> clusterProfile,
+                                                                                                      List<ElasticAgentProfile<ElasticProfileConfiguration>> elasticAgentProfiles) {
         return elasticAgentProfiles.stream().filter(profile -> Objects.equals(profile.getClusterProfileId(), clusterProfile.getId())).collect(Collectors.toList());
     }
 
     private GoPluginApiResponse getGoPluginApiResponse(ClusterProfileProperties clusterProfileProperties,
-                                                       List<ClusterProfile> clusterProfiles,
-                                                       List<ElasticAgentProfile> elasticAgentProfiles) {
+                                                       List<ClusterProfile<ClusterProfileProperties>> clusterProfiles,
+                                                       List<ElasticAgentProfile<ElasticProfileConfiguration>> elasticAgentProfiles) {
         MigrateConfigurationRequest response = new MigrateConfigurationRequest();
-
         response.setPluginSettings(clusterProfileProperties);
         response.setClusterProfiles(clusterProfiles);
         response.setElasticAgentProfiles(elasticAgentProfiles);
