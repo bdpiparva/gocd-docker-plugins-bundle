@@ -17,10 +17,10 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationError;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ClusterProfileValidateRequest;
 import cd.go.contrib.elasticagents.dockerswarm.validator.PrivateDockerRegistrySettingsValidator;
+import cd.go.plugin.base.GsonTransformer;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
@@ -39,19 +39,19 @@ public class ClusterProfileValidateRequestExecutor implements RequestExecutor {
 
         for (Metadata field : GetClusterProfileMetadataExecutor.FIELDS) {
             knownFields.add(field.getKey());
-            validationResult.addError(field.validate(request.getProperties().get(field.getKey())));
+            field.validate(request.getProperties().get(field.getKey()), validationResult);
         }
         final Set<String> set = new HashSet<>(request.getProperties().keySet());
         set.removeAll(knownFields);
 
         if (!set.isEmpty()) {
             for (String key : set) {
-                validationResult.addError(key, "Is an unknown property.");
+                validationResult.add(key, "Is an unknown property.");
             }
         }
         List<Map<String, String>> validateErrors = new PrivateDockerRegistrySettingsValidator().validate(request);
-        validateErrors.forEach(error -> validationResult.addError(new ValidationError(error.get("key"), error.get("message"))));
-        return DefaultGoPluginApiResponse.success(validationResult.toJSON());
+        validateErrors.forEach(error -> validationResult.add(error.get("key"), error.get("message")));
+        return DefaultGoPluginApiResponse.success(GsonTransformer.toJson(validationResult));
     }
 
 }

@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse;
 import org.junit.jupiter.api.Test;

@@ -17,8 +17,9 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ProfileValidateRequest;
+import cd.go.plugin.base.GsonTransformer;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
@@ -41,7 +42,7 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
 
         for (Metadata field : GetProfileMetadataExecutor.FIELDS) {
             knownFields.add(field.getKey());
-            validationResult.addError(field.validate(request.getProperties().get(field.getKey())));
+            field.validate(request.getProperties().get(field.getKey()), validationResult);
         }
 
         final Set<String> set = new HashSet<>(request.getProperties().keySet());
@@ -49,10 +50,10 @@ public class ProfileValidateRequestExecutor implements RequestExecutor {
 
         if (!set.isEmpty()) {
             for (String key : set) {
-                validationResult.addError(key, "Is an unknown property.");
+                validationResult.add(key, "Is an unknown property.");
             }
         }
 
-        return DefaultGoPluginApiResponse.success(validationResult.toJSON());
+        return DefaultGoPluginApiResponse.success(GsonTransformer.toJson(validationResult));
     }
 }

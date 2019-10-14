@@ -18,8 +18,8 @@ package cd.go.contrib.elasticagents.dockerswarm.validator;
 
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.DockerMounts;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 
 import java.util.Map;
@@ -56,7 +56,7 @@ public class DockerMountsValidator implements Validatable {
                 dockerMounts.toMount();
             }
         } catch (Exception e) {
-            validationResult.addError("Mounts", e.getMessage());
+            validationResult.add("Mounts", e.getMessage());
         }
 
         return validationResult;

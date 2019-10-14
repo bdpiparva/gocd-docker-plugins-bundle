@@ -16,8 +16,9 @@
 
 package cd.go.contrib.artifact.docker.registry.executors;
 
-import cd.go.contrib.artifact.docker.registry.annotation.ValidationResult;
 import cd.go.contrib.artifact.docker.registry.model.ArtifactStoreConfig;
+import cd.go.plugin.base.GsonTransformer;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -32,6 +33,6 @@ public class ValidateArtifactStoreConfigExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() {
         final ValidationResult validationResult = artifactStoreConfig.validate();
-        return DefaultGoPluginApiResponse.success(validationResult.toJSON());
+        return DefaultGoPluginApiResponse.success(GsonTransformer.toJson(validationResult));
     }
 }

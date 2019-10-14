@@ -18,8 +18,11 @@ package cd.go.contrib.elasticagents.docker;
 
 import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.common.Agents;
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.SetupSemaphore;
 import cd.go.contrib.elasticagents.docker.models.*;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.ContainerNotFoundException;
 import com.spotify.docker.client.messages.Container;

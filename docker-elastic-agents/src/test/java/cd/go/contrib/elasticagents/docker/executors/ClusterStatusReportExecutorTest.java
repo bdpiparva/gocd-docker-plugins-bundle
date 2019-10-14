@@ -20,7 +20,7 @@ import cd.go.contrib.elasticagents.docker.DockerContainers;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.StatusReport;
 import cd.go.contrib.elasticagents.docker.requests.ClusterStatusReportRequest;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;

@@ -21,7 +21,7 @@ import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerService;
 import cd.go.contrib.elasticagents.dockerswarm.PluginRequest;
 import cd.go.contrib.elasticagents.dockerswarm.executors.AgentStatusReportExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

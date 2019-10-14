@@ -19,9 +19,8 @@ package cd.go.contrib.elasticagents.dockerswarm.validator;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.PluginSettingsNotConfiguredException;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationError;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.common.collect.ImmutableList;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.messages.Version;
@@ -32,7 +31,7 @@ import org.junit.Test;
 
 import java.util.HashMap;
 
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -68,7 +67,7 @@ public class DockerSecretValidatorTest {
 
         ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
 
-        assertFalse(validationResult.hasErrors());
+        assertTrue(validationResult.isEmpty());
     }
 
     @Test
@@ -83,8 +82,8 @@ public class DockerSecretValidatorTest {
 
         ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
 
-        assertTrue(validationResult.hasErrors());
-        assertThat(validationResult.allErrors(), contains(new ValidationError("Mounts", "Docker volume mount requires api version 1.26 or higher.")));
+        assertFalse(validationResult.isEmpty());
+        assertThat(validationResult.find("Mounts").get().getMessage(), is("Docker volume mount requires api version 1.26 or higher."));
     }
 
     @Test
@@ -102,8 +101,8 @@ public class DockerSecretValidatorTest {
 
         ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
 
-        assertTrue(validationResult.hasErrors());
-        assertThat(validationResult.allErrors(), contains(new ValidationError("Mounts", "Invalid mount target specification `src=Foo`. `target` has to be specified.")));
+        assertFalse(validationResult.isEmpty());
+        assertThat(validationResult.find("Mounts").get().getMessage(), is("Invalid mount target specification `src=Foo`. `target` has to be specified."));
     }
 
     @Test
@@ -116,7 +115,7 @@ public class DockerSecretValidatorTest {
 
         ValidationResult validationResult = new DockerMountsValidator(createAgentRequest, dockerClientFactory).validate(properties);
 
-        assertTrue(validationResult.hasErrors());
-        assertThat(validationResult.allErrors(), contains(new ValidationError("Mounts", "Plugin settings is not configured.")));
+        assertFalse(validationResult.isEmpty());
+        assertThat(validationResult.find("Mounts").get().getMessage(), is("Plugin settings is not configured."));
     }
 }

@@ -31,7 +31,7 @@ public class PrivateDockerRegistrySettingsValidator {
 
     public List<Map<String, String>> validate(ClusterProfileValidateRequest request) {
         final List<Map<String, String>> result = new ArrayList<>();
-        final boolean useDockerAuthInfo = Boolean.valueOf(request.getProperties().get(GetClusterProfileMetadataExecutor.ENABLE_PRIVATE_REGISTRY_AUTHENTICATION.getKey()));
+        final boolean useDockerAuthInfo = Boolean.parseBoolean(request.getProperties().get(GetClusterProfileMetadataExecutor.ENABLE_PRIVATE_REGISTRY_AUTHENTICATION.getKey()));
         if (!useDockerAuthInfo) {
             return result;
         }

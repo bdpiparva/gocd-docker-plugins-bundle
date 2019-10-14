@@ -18,8 +18,8 @@ package cd.go.contrib.elasticagents.dockerswarm.validator;
 
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.DockerSecrets;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 
 import java.util.Map;
@@ -52,7 +52,7 @@ public class DockerSecretValidator implements Validatable {
                 dockerSecrets.toSecretBind(dockerClient.listSecrets());
             }
         } catch (Exception e) {
-            validationResult.addError("Secrets", e.getMessage());
+            validationResult.add("Secrets", e.getMessage());
         }
 
         return validationResult;

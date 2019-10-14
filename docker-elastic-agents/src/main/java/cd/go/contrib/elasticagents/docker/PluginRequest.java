@@ -18,7 +18,8 @@ package cd.go.contrib.elasticagents.docker;
 
 import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.common.Agents;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.ServerRequestFailedException;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -112,7 +113,7 @@ public class PluginRequest {
         GoApiResponse response = accessor.submit(request);
 
         if (response.responseCode() != 200) {
-            LOG.error("Failed to append to console log for " + jobIdentifier.represent() + " with text: " + text);
+            LOG.error("Failed to append to console log for " + jobIdentifier.getRepresentation() + " with text: " + text);
         }
     }
 }

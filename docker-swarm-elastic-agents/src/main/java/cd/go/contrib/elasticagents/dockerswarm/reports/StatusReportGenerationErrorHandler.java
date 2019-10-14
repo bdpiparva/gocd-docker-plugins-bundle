@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.reports;
 
-import cd.go.contrib.elasticagents.dockerswarm.builders.PluginStatusReportViewBuilder;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.StatusReportGenerationError;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -28,7 +28,7 @@ import static java.text.MessageFormat.format;
 
 public class StatusReportGenerationErrorHandler {
 
-    public static GoPluginApiResponse handle(PluginStatusReportViewBuilder builder, Exception e) {
+    public static GoPluginApiResponse handle(ViewBuilder builder, Exception e) {
         try {
             LOG.error(format("Error while generating status report: {0}", e.getMessage()), e);
             final Template template = builder.getTemplate("error.template.ftlh");

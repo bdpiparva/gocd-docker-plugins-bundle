@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagents.docker.models;
 
 import cd.go.contrib.elasticagents.docker.utils.JobIdentifierMother;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import org.junit.jupiter.api.Test;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;

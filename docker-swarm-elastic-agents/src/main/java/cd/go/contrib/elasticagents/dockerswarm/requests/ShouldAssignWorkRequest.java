@@ -19,7 +19,7 @@ package cd.go.contrib.elasticagents.dockerswarm.requests;
 import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.executors.ShouldAssignWorkRequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

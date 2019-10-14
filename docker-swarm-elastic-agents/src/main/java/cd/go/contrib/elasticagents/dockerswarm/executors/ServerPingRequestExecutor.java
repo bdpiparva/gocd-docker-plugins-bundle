@@ -18,7 +18,11 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.common.Agents;
-import cd.go.contrib.elasticagents.dockerswarm.*;
+import cd.go.contrib.elasticagents.common.ServerRequestFailedException;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
+import cd.go.contrib.elasticagents.dockerswarm.PluginRequest;
+import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ServerPingRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;

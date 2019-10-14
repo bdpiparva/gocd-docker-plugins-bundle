@@ -19,7 +19,7 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
-import cd.go.contrib.elasticagents.dockerswarm.builders.PluginStatusReportViewBuilder;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.SwarmCluster;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ClusterStatusReportRequest;
 import com.spotify.docker.client.DockerClient;
@@ -56,7 +56,7 @@ public class ClusterStatusReportExecutorTest {
 
     @Test
     public void shouldBuildStatusReportView() throws Exception {
-        final PluginStatusReportViewBuilder builder = mock(PluginStatusReportViewBuilder.class);
+        final ViewBuilder builder = mock(ViewBuilder.class);
         final Template template = mock(Template.class);
 
         when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);

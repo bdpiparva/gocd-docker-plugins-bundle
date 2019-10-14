@@ -20,8 +20,8 @@ import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.PluginRequest;
-import cd.go.contrib.elasticagents.dockerswarm.builders.PluginStatusReportViewBuilder;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.AgentStatusReportRequest;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import com.google.gson.reflect.TypeToken;
@@ -74,7 +74,7 @@ public class AgentStatusReportExecutorTest {
     @Before
     public void setUp() throws Exception {
         initMocks(this);
-        executor = new AgentStatusReportExecutor(statusReportRequest, dockerClientFactory, PluginStatusReportViewBuilder.instance());
+        executor = new AgentStatusReportExecutor(statusReportRequest, dockerClientFactory, ViewBuilder.instance());
         clusterProfileProperties = new ClusterProfileProperties();
         when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(client);
         when(statusReportRequest.getClusterProfileProperties()).thenReturn(clusterProfileProperties);

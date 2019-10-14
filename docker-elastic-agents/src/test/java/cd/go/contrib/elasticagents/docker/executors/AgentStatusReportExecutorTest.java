@@ -18,9 +18,13 @@ package cd.go.contrib.elasticagents.docker.executors;
 
 import cd.go.contrib.elasticagents.docker.DockerContainer;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.models.*;
+import cd.go.contrib.elasticagents.docker.models.AgentStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.docker.models.NotRunningAgentStatusReport;
 import cd.go.contrib.elasticagents.docker.requests.AgentStatusReportRequest;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import freemarker.template.Template;

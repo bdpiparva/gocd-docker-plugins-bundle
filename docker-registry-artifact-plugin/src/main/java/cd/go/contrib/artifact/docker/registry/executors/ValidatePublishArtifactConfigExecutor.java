@@ -16,9 +16,9 @@
 
 package cd.go.contrib.artifact.docker.registry.executors;
 
-import cd.go.contrib.artifact.docker.registry.annotation.ValidationError;
-import cd.go.contrib.artifact.docker.registry.annotation.ValidationResult;
 import cd.go.contrib.artifact.docker.registry.model.ArtifactPlanConfig;
+import cd.go.plugin.base.GsonTransformer;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.gson.JsonParseException;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -36,12 +36,12 @@ public class ValidatePublishArtifactConfigExecutor implements RequestExecutor {
         try {
             ArtifactPlanConfig artifactPlanConfig = ArtifactPlanConfig.fromJSON(artifactPlanConfigJSON);
             ValidationResult validationResult = artifactPlanConfig.validate();
-            return DefaultGoPluginApiResponse.success(validationResult.toJSON());
+            return DefaultGoPluginApiResponse.success(GsonTransformer.toJson(validationResult));
         } catch (JsonParseException e) {
-            ValidationResult validationResult = new ValidationResult(
-                    new ValidationError("Image", "Either `Image` or `BuildFile` should be specified."),
-                    new ValidationError("BuildFile", "Either `Image` or `BuildFile` should be specified."));
-            return DefaultGoPluginApiResponse.success(validationResult.toJSON());
+            ValidationResult validationResult = new ValidationResult();
+            validationResult.add("Image", "Either `Image` or `BuildFile` should be specified.");
+            validationResult.add("BuildFile", "Either `Image` or `BuildFile` should be specified.");
+            return DefaultGoPluginApiResponse.success(GsonTransformer.toJson(validationResult));
         }
     }
 }

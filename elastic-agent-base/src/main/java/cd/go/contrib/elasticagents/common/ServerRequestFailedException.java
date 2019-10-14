@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.dockerswarm;
+package cd.go.contrib.elasticagents.common;
 
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 
-import static java.lang.String.format;
-
-public class ServerRequestFailedException extends Exception {
+public class ServerRequestFailedException extends RuntimeException {
 
     private ServerRequestFailedException(GoApiResponse response, String request) {
-        super(format(
+        super(String.format(
                 "The server sent an unexpected status code %d with the response body %s when it was sent a %s message",
                 response.responseCode(), response.responseBody(), request
         ));
@@ -43,5 +41,9 @@ public class ServerRequestFailedException extends Exception {
 
     public static ServerRequestFailedException getPluginSettings(GoApiResponse response) {
         return new ServerRequestFailedException(response, "get plugin settings");
+    }
+
+    public static ServerRequestFailedException appendToConsoleLog(GoApiResponse response) {
+        return new ServerRequestFailedException(response, "append to console log");
     }
 }

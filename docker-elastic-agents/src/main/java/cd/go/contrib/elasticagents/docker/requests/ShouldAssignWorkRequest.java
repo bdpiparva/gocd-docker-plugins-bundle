@@ -19,7 +19,7 @@ package cd.go.contrib.elasticagents.docker.requests;
 import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;

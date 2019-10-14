@@ -16,8 +16,12 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import cd.go.contrib.elasticagents.docker.models.*;
+import cd.go.contrib.elasticagents.docker.models.AgentStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.ContainerStatusReport;
+import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.requests.CreateAgentRequest;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.google.common.collect.ImmutableList;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.ImageNotFoundException;

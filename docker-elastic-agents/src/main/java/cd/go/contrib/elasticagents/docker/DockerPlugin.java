@@ -23,7 +23,7 @@ import cd.go.contrib.elasticagents.docker.validator.ContainerMemorySettingsValid
 import cd.go.contrib.elasticagents.docker.validator.CpusMetadataValidator;
 import cd.go.contrib.elasticagents.docker.validator.GoServerURLValidator;
 import cd.go.contrib.elasticagents.docker.validator.HostsValidator;
-import cd.go.contrib.elasticagents.docker.views.ViewBuilder;
+import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.plugin.base.dispatcher.BaseBuilder;
 import cd.go.plugin.base.dispatcher.RequestDispatcher;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;

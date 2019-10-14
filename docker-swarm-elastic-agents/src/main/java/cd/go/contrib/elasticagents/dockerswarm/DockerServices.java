@@ -18,7 +18,9 @@ package cd.go.contrib.elasticagents.dockerswarm;
 
 import cd.go.contrib.elasticagents.common.Agent;
 import cd.go.contrib.elasticagents.common.Agents;
-import cd.go.contrib.elasticagents.dockerswarm.model.JobIdentifier;
+import cd.go.contrib.elasticagents.common.Clock;
+import cd.go.contrib.elasticagents.common.SetupSemaphore;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import com.google.common.collect.ImmutableMap;
 import com.spotify.docker.client.DockerClient;

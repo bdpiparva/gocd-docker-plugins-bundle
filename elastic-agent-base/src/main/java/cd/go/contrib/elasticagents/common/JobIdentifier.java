@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.dockerswarm.model;
+package cd.go.contrib.elasticagents.common;
 
-import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
+import cd.go.plugin.base.GsonTransformer;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -159,10 +159,10 @@ public class JobIdentifier {
     }
 
     public String toJson() {
-        return Util.GSON.toJson(this);
+        return GsonTransformer.toJson(this);
     }
 
     public static JobIdentifier fromJson(String json) {
-        return Util.GSON.fromJson(json, JobIdentifier.class);
+        return GsonTransformer.fromJson(json, JobIdentifier.class);
     }
 }

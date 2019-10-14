@@ -18,9 +18,8 @@ package cd.go.contrib.elasticagents.dockerswarm.validator;
 
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationError;
-import cd.go.contrib.elasticagents.dockerswarm.model.ValidationResult;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.messages.Version;
 import com.spotify.docker.client.messages.swarm.Secret;
@@ -31,7 +30,7 @@ import org.junit.Test;
 import java.util.HashMap;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -70,7 +69,7 @@ public class DockerMountsValidatorTest {
 
         ValidationResult validationResult = new DockerSecretValidator(createAgentRequest, dockerClientFactory).validate(properties);
 
-        assertFalse(validationResult.hasErrors());
+        assertTrue(validationResult.isEmpty());
     }
 
     @Test
@@ -86,8 +85,8 @@ public class DockerMountsValidatorTest {
 
         ValidationResult validationResult = new DockerSecretValidator(createAgentRequest, null).validate(properties);
 
-        assertTrue(validationResult.hasErrors());
-        assertThat(validationResult.allErrors(), contains(new ValidationError("Secrets", "Invalid secret specification `Foo`. Must specify property `src` with value.")));
+        assertFalse(validationResult.isEmpty());
+        assertThat(validationResult.find("Secrets").get().getMessage(), is("Invalid secret specification `Foo`. Must specify property `src` with value."));
     }
 
 }

@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.docker.utils;
 
-import cd.go.contrib.elasticagents.docker.models.JobIdentifier;
+import cd.go.contrib.elasticagents.common.JobIdentifier;
 import com.google.gson.JsonObject;
 
 public class JobIdentifierMother {

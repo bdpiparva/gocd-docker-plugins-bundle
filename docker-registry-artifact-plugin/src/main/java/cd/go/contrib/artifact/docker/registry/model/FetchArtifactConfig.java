@@ -18,9 +18,8 @@ package cd.go.contrib.artifact.docker.registry.model;
 
 import cd.go.contrib.artifact.docker.registry.annotation.FieldMetadata;
 import cd.go.contrib.artifact.docker.registry.annotation.Validatable;
-import cd.go.contrib.artifact.docker.registry.annotation.ValidationError;
-import cd.go.contrib.artifact.docker.registry.annotation.ValidationResult;
 import cd.go.contrib.artifact.docker.registry.utils.Util;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +59,7 @@ public class FetchArtifactConfig implements Validatable {
     public ValidationResult validate() {
         ValidationResult validationResult = new ValidationResult();
         if (StringUtils.isNotBlank(environmentVariablePrefix) && !environmentVariablePrefix.matches("(?i)[a-z][a-z0-9_]*")) {
-            validationResult.addError(new ValidationError("EnvironmentVariablePrefix", "Invalid environment name prefix. Valid prefixes contain characters, numbers, and underscore; and can't start with a number."));
+            validationResult.add("EnvironmentVariablePrefix", "Invalid environment name prefix. Valid prefixes contain characters, numbers, and underscore; and can't start with a number.");
         }
         return validationResult;
     }
