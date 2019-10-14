@@ -16,11 +16,12 @@
 
 package cd.go.contrib.artifact.docker.registry.executors;
 
-import cd.go.contrib.artifact.docker.registry.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+
+import static cd.go.plugin.base.ResourceReader.readResource;
 
 public class GetArtifactStoreViewExecutor implements RequestExecutor {
     private static final Gson GSON = new Gson();
@@ -28,7 +29,7 @@ public class GetArtifactStoreViewExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("template", Util.readResource("/artifact-store.template.html"));
+        jsonObject.addProperty("template", readResource("/artifact-store.template.html"));
         DefaultGoPluginApiResponse defaultGoPluginApiResponse = DefaultGoPluginApiResponse.success( GSON.toJson(jsonObject));
         return defaultGoPluginApiResponse;
     }

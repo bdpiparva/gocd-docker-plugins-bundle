@@ -17,19 +17,14 @@
 package cd.go.contrib.artifact.docker.registry;
 
 import cd.go.contrib.artifact.docker.registry.executors.*;
-import cd.go.contrib.artifact.docker.registry.utils.Util;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 import com.thoughtworks.go.plugin.api.annotation.Extension;
-import com.thoughtworks.go.plugin.api.annotation.Load;
 import com.thoughtworks.go.plugin.api.exceptions.UnhandledRequestTypeException;
-import com.thoughtworks.go.plugin.api.info.PluginContext;
 import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-
-import java.util.Properties;
 
 import static cd.go.contrib.artifact.docker.registry.Constants.PLUGIN_IDENTIFIER;
 
@@ -37,12 +32,6 @@ import static cd.go.contrib.artifact.docker.registry.Constants.PLUGIN_IDENTIFIER
 public class DockerRegistryArtifactPlugin implements GoPlugin {
     public static final Logger LOG = Logger.getLoggerFor(DockerRegistryArtifactPlugin.class);
     private ConsoleLogger consoleLogger;
-
-    @Load
-    public void onLoad(PluginContext ctx) {
-        final Properties properties = Util.getPluginProperties();
-        LOG.info(String.format("Loading plugin %s[%s].", properties.getProperty("name"), properties.getProperty("pluginId")));
-    }
 
     @Override
     public void initializeGoApplicationAccessor(GoApplicationAccessor accessor) {

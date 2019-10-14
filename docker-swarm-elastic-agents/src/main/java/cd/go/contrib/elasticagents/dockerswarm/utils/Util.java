@@ -16,20 +16,12 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.utils;
 
-import cd.go.contrib.elasticagents.dockerswarm.executors.GetClusterProfileViewRequestExecutor;
 import com.google.common.collect.Collections2;
-import com.google.common.io.ByteStreams;
-import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.exceptions.DockerException;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -41,32 +33,21 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class Util {
     public static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
-    public static String readResource(String resourceFile) {
-        try (InputStreamReader reader = new InputStreamReader(GetClusterProfileViewRequestExecutor.class.getResourceAsStream(resourceFile), StandardCharsets.UTF_8)) {
-            return CharStreams.toString(reader);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find resource " + resourceFile, e);
-        }
-    }
+//    public static String readResource(String resourceFile) {
+//        try (InputStreamReader reader = new InputStreamReader(GetClusterProfileViewRequestExecutor.class.getResourceAsStream(resourceFile), StandardCharsets.UTF_8)) {
+//            return CharStreams.toString(reader);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not find resource " + resourceFile, e);
+//        }
+//    }
 
-    public static byte[] readResourceBytes(String resourceFile) {
-        try (InputStream in = GetClusterProfileViewRequestExecutor.class.getResourceAsStream(resourceFile)) {
-            return ByteStreams.toByteArray(in);
-        } catch (IOException e) {
-            throw new RuntimeException("Could not find resource " + resourceFile, e);
-        }
-    }
-
-    public static String pluginId() {
-        String s = readResource("/plugin.properties");
-        try {
-            Properties properties = new Properties();
-            properties.load(new StringReader(s));
-            return (String) properties.get("id");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    public static byte[] readResourceBytes(String resourceFile) {
+//        try (InputStream in = GetClusterProfileViewRequestExecutor.class.getResourceAsStream(resourceFile)) {
+//            return ByteStreams.toByteArray(in);
+//        } catch (IOException e) {
+//            throw new RuntimeException("Could not find resource " + resourceFile, e);
+//        }
+//    }
 
     public static Collection<String> splitIntoLinesAndTrimSpaces(String lines) {
         if (isBlank(lines)) {

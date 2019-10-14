@@ -20,7 +20,6 @@ import cd.go.contrib.artifact.docker.registry.annotation.ConfigMetadata;
 import cd.go.contrib.artifact.docker.registry.annotation.MetadataHelper;
 import cd.go.contrib.artifact.docker.registry.model.BuildFileArtifactPlanConfig;
 import cd.go.contrib.artifact.docker.registry.model.ImageTagArtifactPlanConfig;
-import cd.go.contrib.artifact.docker.registry.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -30,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static cd.go.plugin.base.ResourceReader.readResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetPublishArtifactViewExecutorTest extends ViewTest {
@@ -40,7 +40,7 @@ public class GetPublishArtifactViewExecutorTest extends ViewTest {
         Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(responseHash).containsEntry("template", Util.readResource("/publish-artifact.template.html"));
+        assertThat(responseHash).containsEntry("template", readResource("/publish-artifact.template.html"));
     }
 
 

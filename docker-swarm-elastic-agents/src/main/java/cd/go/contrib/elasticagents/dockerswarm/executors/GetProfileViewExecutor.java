@@ -17,11 +17,12 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+
+import static cd.go.plugin.base.ResourceReader.readResource;
 
 public class GetProfileViewExecutor implements RequestExecutor {
     private static final Gson GSON = new Gson();
@@ -29,7 +30,7 @@ public class GetProfileViewExecutor implements RequestExecutor {
     @Override
     public GoPluginApiResponse execute() throws Exception {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty("template", Util.readResource("/profile.template.html"));
+        jsonObject.addProperty("template", readResource("/profile.template.html"));
         DefaultGoPluginApiResponse defaultGoPluginApiResponse = new DefaultGoPluginApiResponse(200, GSON.toJson(jsonObject));
         return defaultGoPluginApiResponse;
     }

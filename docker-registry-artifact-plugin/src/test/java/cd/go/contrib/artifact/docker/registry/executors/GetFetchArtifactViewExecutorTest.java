@@ -16,7 +16,6 @@
 
 package cd.go.contrib.artifact.docker.registry.executors;
 
-import cd.go.contrib.artifact.docker.registry.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -24,6 +23,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static cd.go.plugin.base.ResourceReader.readResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetFetchArtifactViewExecutorTest {
@@ -35,6 +35,6 @@ public class GetFetchArtifactViewExecutorTest {
         Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String,String>>(){}.getType());
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(responseHash).containsEntry("template", Util.readResource("/fetch-artifact.template.html"));
+        assertThat(responseHash).containsEntry("template", readResource("/fetch-artifact.template.html"));
     }
 }

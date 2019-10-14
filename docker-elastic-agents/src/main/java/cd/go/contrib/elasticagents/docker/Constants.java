@@ -16,13 +16,12 @@
 
 package cd.go.contrib.elasticagents.docker;
 
-import cd.go.contrib.elasticagents.docker.utils.Util;
 import com.thoughtworks.go.plugin.api.GoPluginIdentifier;
 
 import java.util.Collections;
 
 public interface Constants {
-    String PLUGIN_ID = Util.pluginId();
+    String PLUGIN_ID = "cd.go.contrib.elastic-agent.docker";
 
     // The type of this extension
     String EXTENSION_TYPE = "elastic-agent";

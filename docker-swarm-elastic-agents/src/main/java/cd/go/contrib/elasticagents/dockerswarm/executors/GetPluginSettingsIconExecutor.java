@@ -17,12 +17,13 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.dockerswarm.RequestExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.commons.codec.binary.Base64;
+
+import static cd.go.plugin.base.ResourceReader.readResourceBytes;
 
 public class GetPluginSettingsIconExecutor implements RequestExecutor {
     private static final Gson GSON = new Gson();
@@ -31,7 +32,7 @@ public class GetPluginSettingsIconExecutor implements RequestExecutor {
     public GoPluginApiResponse execute() throws Exception {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("content_type", "image/png");
-        jsonObject.addProperty("data", Base64.encodeBase64String(Util.readResourceBytes("/docker-swarm.png")));
+        jsonObject.addProperty("data", Base64.encodeBase64String(readResourceBytes("/docker-swarm.png")));
         DefaultGoPluginApiResponse defaultGoPluginApiResponse = new DefaultGoPluginApiResponse(200, GSON.toJson(jsonObject));
         return defaultGoPluginApiResponse;
 

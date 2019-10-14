@@ -17,13 +17,14 @@
 package cd.go.contrib.artifact.docker.registry.executors;
 
 
-import cd.go.contrib.artifact.docker.registry.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
 import java.util.Base64;
+
+import static cd.go.plugin.base.ResourceReader.readResourceBytes;
 
 public class GetPluginIconExecutor implements RequestExecutor {
     private static final Gson GSON = new Gson();
@@ -32,7 +33,7 @@ public class GetPluginIconExecutor implements RequestExecutor {
     public GoPluginApiResponse execute() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("content_type", getContentType());
-        jsonObject.addProperty("data", Base64.getEncoder().encodeToString(Util.readResourceBytes(getIcon())));
+        jsonObject.addProperty("data", Base64.getEncoder().encodeToString(readResourceBytes(getIcon())));
         return DefaultGoPluginApiResponse.success(GSON.toJson(jsonObject));
     }
 

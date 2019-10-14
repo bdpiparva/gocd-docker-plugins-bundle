@@ -16,7 +16,6 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -25,6 +24,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static cd.go.plugin.base.ResourceReader.readResourceBytes;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -37,6 +37,6 @@ public class GetPluginSettingsIconExecutorTest {
         }.getType());
         assertThat(hashMap.size(), is(2));
         assertThat(hashMap.get("content_type"), is("image/png"));
-        assertThat(Util.readResourceBytes("/docker-swarm.png"), is(Base64.decodeBase64(hashMap.get("data"))));
+        assertThat(readResourceBytes("/docker-swarm.png"), is(Base64.decodeBase64(hashMap.get("data"))));
     }
 }

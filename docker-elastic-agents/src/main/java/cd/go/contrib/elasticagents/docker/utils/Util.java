@@ -19,28 +19,14 @@ package cd.go.contrib.elasticagents.docker.utils;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Properties;
 
-import static cd.go.plugin.base.ResourceReader.readResource;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class Util {
-    public static String pluginId() {
-        String s = readResource("/docker/plugin.properties");
-        try {
-            Properties properties = new Properties();
-            properties.load(new StringReader(s));
-            return (String) properties.get("id");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public static Collection<String> splitIntoLinesAndTrimSpaces(String lines) {
         if (isBlank(lines)) {

@@ -16,7 +16,6 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -28,6 +27,7 @@ import org.junit.Test;
 
 import java.util.Map;
 
+import static cd.go.plugin.base.ResourceReader.readResource;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -38,12 +38,12 @@ public class GetProfileViewExecutorTest {
         assertThat(response.responseCode(), is(200));
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertThat(hashSet, hasEntry("template", Util.readResource("/profile.template.html")));
+        assertThat(hashSet, hasEntry("template", readResource("/profile.template.html")));
     }
 
     @Test
     public void allFieldsShouldBePresentInView() throws Exception {
-        String template = Util.readResource("/profile.template.html");
+        String template = readResource("/profile.template.html");
         final Document document = Jsoup.parse(template);
 
         for (Metadata field : GetProfileMetadataExecutor.FIELDS) {
