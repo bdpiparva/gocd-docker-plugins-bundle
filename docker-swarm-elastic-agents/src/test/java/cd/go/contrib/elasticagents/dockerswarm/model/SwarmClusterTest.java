@@ -21,22 +21,20 @@ import cd.go.contrib.elasticagents.dockerswarm.Constants;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.SwarmCluster;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.messages.swarm.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static cd.go.contrib.elasticagents.dockerswarm.Constants.JOB_IDENTIFIER_LABEL_KEY;
 import static com.spotify.docker.client.DockerClient.ListContainersParam.withStatusCreated;
 import static com.spotify.docker.client.DockerClient.ListContainersParam.withStatusRunning;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-public class SwarmClusterTest {
+class SwarmClusterTest {
 
     @Test
-    public void shouldCreateSwarmClusterObject() throws Exception {
+    void shouldCreateSwarmClusterObject() throws Exception {
         final DockerClient dockerClient = mock(DockerClient.class);
         final Node node = mockNode("node-id", "manager", true);
         final List<Node> nodeList = Arrays.asList(node);
@@ -62,12 +60,12 @@ public class SwarmClusterTest {
         verify(dockerClient, times(1)).listNodes();
         verify(dockerClient, times(1)).listTasks();
 
-        assertThat(swarmCluster.getNodes(), hasSize(1));
-        assertThat(swarmCluster.getNodes().get(0).getTasks(), hasSize(1));
+        assertThat(swarmCluster.getNodes()).hasSize(1);
+        assertThat(swarmCluster.getNodes().get(0).getTasks()).hasSize(1);
     }
 
     @Test
-    public void shouldSkipServicesNotCreatedByPlugin() throws Exception {
+    void shouldSkipServicesNotCreatedByPlugin() throws Exception {
         final DockerClient dockerClient = mock(DockerClient.class);
         final Node node = mockNode("node-id", "manager", true);
         final List<Node> nodeList = Arrays.asList(node);
@@ -102,12 +100,12 @@ public class SwarmClusterTest {
         verify(dockerClient, times(1)).listNodes();
         verify(dockerClient, times(1)).listTasks();
 
-        assertThat(swarmCluster.getNodes(), hasSize(1));
-        assertThat(swarmCluster.getNodes().get(0).getTasks(), hasSize(1));
+        assertThat(swarmCluster.getNodes()).hasSize(1);
+        assertThat(swarmCluster.getNodes().get(0).getTasks()).hasSize(1);
     }
 
     @Test
-    public void shouldSortNodesBasedOnLeaderRoleAndHostName() throws Exception {
+    void shouldSortNodesBasedOnLeaderRoleAndHostName() throws Exception {
         final DockerClient dockerClient = mock(DockerClient.class);
         final Node nodeA = mockNode("A", "worker", false);
         final Node nodeB = mockNode("B", "manager", false);
@@ -125,13 +123,13 @@ public class SwarmClusterTest {
 
         final SwarmCluster swarmCluster = new SwarmCluster(dockerClient);
 
-        assertThat(swarmCluster.getNodes().get(0).getHostname(), is(leaderNode.description().hostname()));
-        assertThat(swarmCluster.getNodes().get(1).getHostname(), is(nodeB.description().hostname()));
-        assertThat(swarmCluster.getNodes().get(2).getHostname(), is(nodeC.description().hostname()));
-        assertThat(swarmCluster.getNodes().get(3).getHostname(), is(nodeG.description().hostname()));
-        assertThat(swarmCluster.getNodes().get(4).getHostname(), is(nodeA.description().hostname()));
-        assertThat(swarmCluster.getNodes().get(5).getHostname(), is(nodeD.description().hostname()));
-        assertThat(swarmCluster.getNodes().get(6).getHostname(), is(nodeF.description().hostname()));
+        assertThat(swarmCluster.getNodes().get(0).getHostname()).isEqualTo(leaderNode.description().hostname());
+        assertThat(swarmCluster.getNodes().get(1).getHostname()).isEqualTo(nodeB.description().hostname());
+        assertThat(swarmCluster.getNodes().get(2).getHostname()).isEqualTo(nodeC.description().hostname());
+        assertThat(swarmCluster.getNodes().get(3).getHostname()).isEqualTo(nodeG.description().hostname());
+        assertThat(swarmCluster.getNodes().get(4).getHostname()).isEqualTo(nodeA.description().hostname());
+        assertThat(swarmCluster.getNodes().get(5).getHostname()).isEqualTo(nodeD.description().hostname());
+        assertThat(swarmCluster.getNodes().get(6).getHostname()).isEqualTo(nodeF.description().hostname());
     }
 
     private Node mockNode(String hostname, String role, boolean leader) {

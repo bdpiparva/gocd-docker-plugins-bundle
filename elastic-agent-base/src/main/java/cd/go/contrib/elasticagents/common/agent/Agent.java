@@ -30,8 +30,8 @@ import java.util.List;
 import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static cd.go.plugin.base.GsonTransformer.toJson;
 
-@ToString
-@EqualsAndHashCode
+@ToString(doNotUseGetters = true)
+@EqualsAndHashCode(doNotUseGetters = true)
 public class Agent {
     private static final Type AGENT_METADATA_LIST_TYPE = new TypeToken<ArrayList<Agent>>() {
     }.getType();

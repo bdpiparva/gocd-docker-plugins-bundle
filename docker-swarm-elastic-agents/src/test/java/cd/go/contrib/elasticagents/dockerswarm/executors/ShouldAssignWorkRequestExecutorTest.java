@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
@@ -23,50 +24,81 @@ import cd.go.contrib.elasticagents.dockerswarm.*;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ShouldAssignWorkRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ShouldAssignWorkRequestExecutorTest extends BaseTest {
-
-    private DockerServices agentInstances;
+class ShouldAssignWorkRequestExecutorTest extends BaseTest {
+    @Mock
+    private ElasticAgentRequestClient elasticAgentRequestClient;
+    @Mock
+    private ConsoleLogAppender consoleLogAppender;
+    private DockerServices dockerServices;
     private DockerService instance;
     private final String environment = "production";
-    private Map<String, String> properties = new HashMap<>();
     private JobIdentifier jobIdentifier;
+    private ElasticProfileConfiguration properties;
+    private ShouldAssignWorkRequestExecutor executor;
+    private ClusterProfileProperties clusterProfileProperties;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
+        initMocks(this);
+        clusterProfileProperties = createClusterProfiles();
         jobIdentifier = new JobIdentifier("up42", 98765L, "foo", "stage_1", "30000", "job_1", 876578L);
-        agentInstances = new DockerServices();
-        ClusterProfileProperties clusterProfiles = createClusterProfiles();
-        properties.put("foo", "bar");
-        properties.put("Image", "alpine:latest");
-        instance = agentInstances.create(new CreateAgentRequest(UUID.randomUUID().toString(), properties, environment, jobIdentifier, clusterProfiles), mock(ElasticAgentRequestClient.class));
+        dockerServices = new DockerServices();
+        properties = new ElasticProfileConfiguration();
+        properties.setImage("alpine:latest");
+
+        CreateAgentRequest createAgentRequest = new CreateAgentRequest();
+        createAgentRequest.setAutoRegisterKey(UUID.randomUUID().toString())
+                .setElasticProfileConfiguration(properties)
+                .setEnvironment(environment)
+                .setJobIdentifier(jobIdentifier)
+                .setClusterProfileProperties(clusterProfileProperties);
+
+        instance = dockerServices.create(createAgentRequest, elasticAgentRequestClient, consoleLogAppender);
         services.add(instance.name());
+
+        Map<String, DockerServices> clusterToServicesMap = new HashMap<>();
+        clusterToServicesMap.put(clusterProfileProperties.uuid(), dockerServices);
+        executor = new ShouldAssignWorkRequestExecutor(clusterToServicesMap);
     }
 
     @Test
-    public void shouldAssignWorkToContainerWithMatchingJobId() {
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), environment, properties, jobIdentifier, null);
-        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToServicesMap).execute();
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("true"));
+    void shouldAssignWorkToContainerWithMatchingJobId() {
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest();
+        request.setAgent(new Agent(instance.name(), null, null, null))
+                .setEnvironment(environment)
+                .setElasticProfileConfiguration(properties)
+                .setJobIdentifier(jobIdentifier)
+                .setClusterProfileProperties(clusterProfileProperties);
+
+        GoPluginApiResponse response = executor.execute(request);
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("true");
     }
 
     @Test
-    public void shouldNotAssignWorkToContainerWithNotMatchingJobId() {
+    void shouldNotAssignWorkToContainerWithNotMatchingJobId() {
         JobIdentifier mismatchingJobIdentifier = new JobIdentifier("up42", 98765L, "foo", "stage_1", "30000", "job_1", 999999L);
-        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest(new Agent(instance.name(), null, null, null), "FooEnv", properties, mismatchingJobIdentifier, null);
-        GoPluginApiResponse response = new ShouldAssignWorkRequestExecutor(clusterToServicesMap).execute();
-        assertThat(response.responseCode(), is(200));
-        assertThat(response.responseBody(), is("false"));
+        ShouldAssignWorkRequest request = new ShouldAssignWorkRequest();
+        request.setAgent(new Agent(instance.name(), null, null, null))
+                .setEnvironment(environment)
+                .setElasticProfileConfiguration(properties)
+                .setClusterProfileProperties(clusterProfileProperties)
+                .setJobIdentifier(mismatchingJobIdentifier);
+
+        GoPluginApiResponse response = executor.execute(request);
+
+        assertThat(response.responseCode()).isEqualTo(200);
+        assertThat(response.responseBody()).isEqualTo("false");
     }
 }

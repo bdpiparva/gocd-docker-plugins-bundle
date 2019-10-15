@@ -16,18 +16,16 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.utils;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 
-import static org.hamcrest.Matchers.hasItems;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class UtilTest {
+class UtilTest {
 
     @Test
-    public void shouldSplitIntoLinesAndTrimSpaces() throws Exception {
+    void shouldSplitIntoLinesAndTrimSpaces() {
         Collection<String> strings = Util.splitIntoLinesAndTrimSpaces("FOO=BAR\n" +
                 "  X=Y\n" +
                 "\n" +
@@ -35,7 +33,7 @@ public class UtilTest {
                 "\n" +
                 "W=1");
 
-        assertThat(strings.size(), is(4));
-        assertThat(strings, hasItems("FOO=BAR", "X=Y", "A=B", "W=1"));
+        assertThat(strings.size()).isEqualTo(4);
+        assertThat(strings).contains("FOO=BAR", "X=Y", "A=B", "W=1");
     }
 }

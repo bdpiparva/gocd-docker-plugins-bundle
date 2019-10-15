@@ -18,75 +18,92 @@ package cd.go.contrib.elasticagents.dockerswarm.validator;
 
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.plugin.base.validation.ValidationResult;
+import com.google.common.collect.ImmutableList;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.messages.Version;
-import com.spotify.docker.client.messages.swarm.Secret;
-import com.spotify.docker.client.messages.swarm.SecretSpec;
-import org.junit.Before;
-import org.junit.Test;
+import com.spotify.docker.client.messages.Volume;
+import com.spotify.docker.client.messages.VolumeList;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
-import java.util.HashMap;
-
-import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
-public class DockerMountsValidatorTest {
-
+class DockerMountsValidatorTest {
+    @Mock
     private DockerClientFactory dockerClientFactory;
-    private CreateAgentRequest createAgentRequest;
+    @Mock
     private DockerClient dockerClient;
 
-    @Before
-    public void setUp() throws Exception {
-        dockerClientFactory = mock(DockerClientFactory.class);
-        createAgentRequest = mock(CreateAgentRequest.class);
-        ClusterProfileProperties clusterProfileProperties = mock(ClusterProfileProperties.class);
-        dockerClient = mock(DockerClient.class);
+    private CreateAgentRequest createAgentRequest;
+    private DockerMountsValidator validator;
+    private ElasticProfileConfiguration elasticProfileConfiguration;
 
-        when(createAgentRequest.getClusterProfileProperties()).thenReturn(clusterProfileProperties);
+    @BeforeEach
+    void setUp() throws Exception {
+        initMocks(this);
+
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
         when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(dockerClient);
+
+        elasticProfileConfiguration = new ElasticProfileConfiguration()
+                .setImage("alpine:latest")
+                .setMounts("src=Foo, target=Bar");
+
+        createAgentRequest = new CreateAgentRequest();
+        createAgentRequest.setClusterProfileProperties(clusterProfileProperties)
+                .setElasticProfileConfiguration(elasticProfileConfiguration);
+        validator = new DockerMountsValidator(dockerClientFactory);
     }
 
     @Test
-    public void shouldValidateValidSecretConfiguration() throws Exception {
+    void shouldValidateValidVolumeMountConfiguration() throws Exception {
         final Version version = mock(Version.class);
-        final HashMap<String, String> properties = new HashMap<>();
-        final Secret secret = mock(Secret.class);
-        properties.put("Image", "alpine");
-        properties.put("Secrets", "src=Foo");
+        final VolumeList volumeList = mock(VolumeList.class);
 
         when(version.apiVersion()).thenReturn("1.27");
         when(dockerClient.version()).thenReturn(version);
-        when(dockerClient.listSecrets()).thenReturn(asList(secret));
-        when(secret.secretSpec()).thenReturn(SecretSpec.builder().name("Foo").build());
-        when(secret.id()).thenReturn("service-id");
+        when(dockerClient.listVolumes()).thenReturn(volumeList);
+        when(volumeList.volumes()).thenReturn(new ImmutableList.Builder<Volume>().add(Volume.builder().name("Foo").build()).build());
 
-        ValidationResult validationResult = new DockerSecretValidator(dockerClientFactory).validate(properties);
+        ValidationResult validationResult = validator.validate(createAgentRequest);
 
-        assertTrue(validationResult.isEmpty());
+        assertThat(validationResult.isEmpty()).isTrue();
     }
 
     @Test
-    public void shouldValidateInvalidDockerSecretsConfiguration() throws Exception {
+    void shouldValidateDockerApiVersionForDockerMountSupport() throws Exception {
         final Version version = mock(Version.class);
-        final HashMap<String, String> properties = new HashMap<>();
-        properties.put("Image", "alpine");
-        properties.put("Secrets", "Foo");
+
+        when(version.apiVersion()).thenReturn("1.25");
+        when(dockerClient.version()).thenReturn(version);
+
+        ValidationResult validationResult = validator.validate(createAgentRequest);
+
+        assertThat(validationResult.isEmpty()).isFalse();
+        assertThat(validationResult.find("Mounts").get().getMessage()).isEqualTo("Docker volume mount requires api version 1.26 or higher.");
+    }
+
+    @Test
+    void shouldValidateInvalidDockerSecretsConfiguration() throws Exception {
+        final Version version = mock(Version.class);
+        final VolumeList volumeList = mock(VolumeList.class);
+        elasticProfileConfiguration.setMounts("src=Foo");
 
         when(version.apiVersion()).thenReturn("1.27");
         when(dockerClient.version()).thenReturn(version);
-        when(dockerClientFactory.docker(any(ClusterProfileProperties.class))).thenReturn(dockerClient);
+        when(dockerClient.listVolumes()).thenReturn(volumeList);
+        when(volumeList.volumes()).thenReturn(new ImmutableList.Builder<Volume>().add(Volume.builder().name("Foo").build()).build());
 
-        ValidationResult validationResult = new DockerSecretValidator(null).validate(properties);
+        ValidationResult validationResult = validator.validate(createAgentRequest);
 
-        assertFalse(validationResult.isEmpty());
-        assertThat(validationResult.find("Secrets").get().getMessage(), is("Invalid secret specification `Foo`. Must specify property `src` with value."));
+        assertThat(validationResult.isEmpty()).isFalse();
+        assertThat(validationResult.find("Mounts").get().getMessage()).isEqualTo("Invalid mount target specification `src=Foo`. `target` has to be specified.");
     }
-
 }

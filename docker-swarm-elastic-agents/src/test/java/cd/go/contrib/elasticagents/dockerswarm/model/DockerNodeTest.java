@@ -18,17 +18,16 @@ package cd.go.contrib.elasticagents.dockerswarm.model;
 
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.DockerNode;
 import com.spotify.docker.client.messages.swarm.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DockerNodeTest {
+class DockerNodeTest {
 
     @Test
-    public void shouldCreateDockerNodeFromNodeObject() throws Exception {
+    void shouldCreateDockerNodeFromNodeObject() throws Exception {
         final Node node = mock(Node.class);
 
         when(node.id()).thenReturn("node-id");
@@ -50,19 +49,19 @@ public class DockerNodeTest {
 
         final DockerNode dockerNode = new DockerNode(node);
 
-        assertThat(dockerNode.getId(), is("node-id"));
-        assertThat(dockerNode.getRole(), is("Manager"));
-        assertThat(dockerNode.getAvailability(), is("Active"));
+        assertThat(dockerNode.getId()).isEqualTo("node-id");
+        assertThat(dockerNode.getRole()).isEqualTo("Manager");
+        assertThat(dockerNode.getAvailability()).isEqualTo("Active");
 
-        assertThat(dockerNode.getState(), is("Ready"));
-        assertThat(dockerNode.getNodeIP(), is("192.168.65.2"));
+        assertThat(dockerNode.getState()).isEqualTo("Ready");
+        assertThat(dockerNode.getNodeIP()).isEqualTo("192.168.65.2");
 
-        assertThat(dockerNode.getHostname(), is("moby"));
-        assertThat(dockerNode.getEngineVersion(), is("17.09.0-ce-rc1"));
-        assertThat(dockerNode.getArchitecture(), is("x86_64"));
-        assertThat(dockerNode.getOs(), is("linux"));
-        assertThat(dockerNode.getCpus(), is(4L));
-        assertThat(dockerNode.getMemory(), is("1.95 GB"));
+        assertThat(dockerNode.getHostname()).isEqualTo("moby");
+        assertThat(dockerNode.getEngineVersion()).isEqualTo("17.09.0-ce-rc1");
+        assertThat(dockerNode.getArchitecture()).isEqualTo("x86_64");
+        assertThat(dockerNode.getOs()).isEqualTo("linux");
+        assertThat(dockerNode.getCpus()).isEqualTo(4L);
+        assertThat(dockerNode.getMemory()).isEqualTo("1.95 GB");
     }
 
     private void mockNodeDescription(Node node, String hostname, String dockerVersion, String architecture, String os) {

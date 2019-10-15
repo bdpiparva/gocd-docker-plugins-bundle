@@ -23,6 +23,7 @@ import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.dockerApiVersionAtLeast;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class DockerSecretValidator implements Validatable<CreateAgentRequest> {
     private final DockerClientFactory dockerClientFactory;
@@ -36,21 +37,26 @@ public class DockerSecretValidator implements Validatable<CreateAgentRequest> {
     }
 
     @Override
-    public ValidationResult validate(CreateAgentRequest createAgentRequest) {
-        final ValidationResult validationResult = new ValidationResult();
+    public ValidationResult validate(CreateAgentRequest request) {
+        final ValidationResult result = new ValidationResult();
         try {
-            final DockerSecrets dockerSecrets = DockerSecrets.fromString(createAgentRequest.getElasticProfileConfiguration().getSecrets());
+            String secrets = request.getElasticProfileConfiguration().getSecrets();
+            if (isBlank(secrets)) {
+                return result;
+            }
+
+            final DockerSecrets dockerSecrets = DockerSecrets.fromString(request.getElasticProfileConfiguration().getSecrets());
             if (!dockerSecrets.isEmpty()) {
-                DockerClient dockerClient = dockerClientFactory.docker(createAgentRequest.getClusterProfileProperties());
+                DockerClient dockerClient = dockerClientFactory.docker(request.getClusterProfileProperties());
                 if (!dockerApiVersionAtLeast(dockerClient, "1.26")) {
                     throw new RuntimeException("Docker secret requires api version 1.26 or higher.");
                 }
                 dockerSecrets.toSecretBind(dockerClient.listSecrets());
             }
         } catch (Exception e) {
-            validationResult.add("Secrets", e.getMessage());
+            result.add("Secrets", e.getMessage());
         }
 
-        return validationResult;
+        return result;
     }
 }

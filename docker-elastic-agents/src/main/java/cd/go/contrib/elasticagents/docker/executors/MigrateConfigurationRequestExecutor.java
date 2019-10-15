@@ -20,12 +20,12 @@ import cd.go.contrib.elasticagents.common.models.ClusterProfile;
 import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.Constants;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.DockerPluginSettings;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.docker.requests.MigrateConfigurationRequest;
 import cd.go.plugin.base.executors.AbstractExecutor;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +35,8 @@ import java.util.stream.Collectors;
 import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
 import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static java.util.List.of;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class MigrateConfigurationRequestExecutor extends AbstractExecutor<MigrateConfigurationRequest> {
     @Override
@@ -46,11 +48,11 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
     protected GoPluginApiResponse execute(MigrateConfigurationRequest request) {
         LOG.info("[Migrate Config] Request for Config Migration Started...");
 
-        ClusterProfileProperties clusterProfileProperties = request.getPluginSettings();
+        DockerPluginSettings pluginSettings = request.getPluginSettings();
         List<ClusterProfile<ClusterProfileProperties>> existingClusterProfiles = request.getClusterProfiles();
         List<ElasticAgentProfile<ElasticProfileConfiguration>> existingElasticAgentProfiles = request.getElasticAgentProfiles();
 
-        if (!arePluginSettingsConfigured(clusterProfileProperties)) {
+        if (!arePluginSettingsConfigured(pluginSettings)) {
             LOG.info("[Migrate Config] No Plugin Settings are configured. Skipping Config Migration...");
             return new DefaultGoPluginApiResponse(200, request.toJSON());
         }
@@ -59,9 +61,9 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
             LOG.info("[Migrate Config] Did not find any Cluster Profile. Possibly, user just have configured plugin settings and haven't define any elastic agent profiles.");
             String newClusterId = UUID.randomUUID().toString();
             LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile '{}'", newClusterId);
-            ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile(newClusterId, Constants.PLUGIN_ID, clusterProfileProperties);
+            ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>(newClusterId, Constants.PLUGIN_ID, pluginSettings.toClusterProfileConfig());
 
-            return getGoPluginApiResponse(clusterProfileProperties, of(clusterProfile), existingElasticAgentProfiles);
+            return getGoPluginApiResponse(pluginSettings, of(clusterProfile), existingElasticAgentProfiles);
         }
 
         LOG.info("[Migrate Config] Checking to perform migrations on Cluster Profiles '{}'.", existingClusterProfiles.stream().map(ClusterProfile::getId).collect(Collectors.toList()));
@@ -73,10 +75,10 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
                 continue;
             }
 
-            if (!arePluginSettingsConfigured(clusterProfile.getClusterProfileProperties())) {
+            if (isBlank(clusterProfile.getClusterProfileProperties().getGoServerUrl())) {
                 List<String> associatedProfileIds = associatedElasticAgentProfiles.stream().map(ElasticAgentProfile::getId).collect(Collectors.toList());
                 LOG.info("[Migrate Config] Found an empty cluster profile '{}' associated with '{}' elastic agent profiles.", clusterProfile.getId(), associatedProfileIds);
-                migrateConfigForCluster(clusterProfileProperties, associatedElasticAgentProfiles, clusterProfile);
+                migrateConfigForCluster(pluginSettings, associatedElasticAgentProfiles, clusterProfile);
             } else {
                 LOG.info("[Migrate Config] Skipping migration for the cluster '{}' as cluster has already been configured.", clusterProfile.getId());
             }
@@ -86,11 +88,11 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
     }
 
     //this is responsible to copy over plugin settings configurations to cluster profile and if required rename no op cluster
-    private void migrateConfigForCluster(ClusterProfileProperties clusterProfileProperties,
+    private void migrateConfigForCluster(DockerPluginSettings dockerPluginSettings,
                                          List<ElasticAgentProfile<ElasticProfileConfiguration>> associatedElasticAgentProfiles,
-                                         ClusterProfile clusterProfile) {
+                                         ClusterProfile<ClusterProfileProperties> clusterProfile) {
         LOG.info("[Migrate Config] Coping over existing plugin settings configurations to '{}' cluster profile.", clusterProfile.getId());
-        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
+        clusterProfile.setClusterProfileProperties(dockerPluginSettings.toClusterProfileConfig());
 
         if (clusterProfile.getId().equals(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID))) {
             String newClusterId = UUID.randomUUID().toString();
@@ -107,18 +109,18 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
         return elasticAgentProfiles.stream().filter(profile -> Objects.equals(profile.getClusterProfileId(), clusterProfile.getId())).collect(Collectors.toList());
     }
 
-    private GoPluginApiResponse getGoPluginApiResponse(ClusterProfileProperties clusterProfileProperties,
+    private GoPluginApiResponse getGoPluginApiResponse(DockerPluginSettings dockerPluginSettings,
                                                        List<ClusterProfile<ClusterProfileProperties>> clusterProfiles,
                                                        List<ElasticAgentProfile<ElasticProfileConfiguration>> elasticAgentProfiles) {
         MigrateConfigurationRequest response = new MigrateConfigurationRequest();
-        response.setPluginSettings(clusterProfileProperties);
+        response.setPluginSettings(dockerPluginSettings);
         response.setClusterProfiles(clusterProfiles);
         response.setElasticAgentProfiles(elasticAgentProfiles);
 
         return new DefaultGoPluginApiResponse(200, response.toJSON());
     }
 
-    private boolean arePluginSettingsConfigured(ClusterProfileProperties clusterProfileProperties) {
-        return !StringUtils.isBlank(clusterProfileProperties.getGoServerUrl());
+    private boolean arePluginSettingsConfigured(DockerPluginSettings clusterProfileProperties) {
+        return isNotBlank(clusterProfileProperties.getGoServerUrl());
     }
 }

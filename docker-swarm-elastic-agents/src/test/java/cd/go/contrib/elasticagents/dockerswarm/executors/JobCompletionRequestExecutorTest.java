@@ -19,63 +19,72 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.DockerService;
+import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class JobCompletionRequestExecutorTest {
+class JobCompletionRequestExecutorTest {
+    private static final String ELASTIC_AGENT_ID = "agent-1";
+    private Map<String, DockerServices> clusterToDockerServiceMap;
+
+    @Mock
+    private DockerServices mockAgentInstances;
     @Mock
     private ElasticAgentRequestClient mockPluginRequest;
-    @Mock
-    private AgentInstances<DockerService> mockAgentInstances;
 
     @Captor
     private ArgumentCaptor<List<Agent>> agentsArgumentCaptor;
+    private ClusterProfileProperties clusterProfileProperties;
+    private JobCompletionRequestExecutor executor;
+    private JobCompletionRequest request;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
+        clusterProfileProperties = new ClusterProfileProperties();
+
+        request = new JobCompletionRequest();
+        request.setElasticAgentId(ELASTIC_AGENT_ID)
+                .setJobIdentifier(new JobIdentifier(100L))
+                .setClusterProfileConfiguration(clusterProfileProperties);
+
+        clusterToDockerServiceMap = new HashMap<>();
+        clusterToDockerServiceMap.put(clusterProfileProperties.uuid(), mockAgentInstances);
+        executor = new JobCompletionRequestExecutor(clusterToDockerServiceMap, mockPluginRequest);
     }
 
     @Test
-    public void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
-        JobIdentifier jobIdentifier = new JobIdentifier(100L);
-        ClusterProfileProperties profileProperties = new ClusterProfileProperties();
-        String elasticAgentId = "agent-1";
-        JobCompletionRequest request = new JobCompletionRequest(elasticAgentId, jobIdentifier, profileProperties);
-        JobCompletionRequestExecutor executor = new JobCompletionRequestExecutor(clusterToDockerServiceMap, mockPluginRequest);
+    void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
+        GoPluginApiResponse response = executor.execute(request);
 
-
-        GoPluginApiResponse response = executor.execute();
-
-        InOrder inOrder = inOrder(mockPluginRequest, mockAgentInstances);
-
+        InOrder inOrder = inOrder(mockPluginRequest, clusterToDockerServiceMap);
         inOrder.verify(mockPluginRequest).disableAgents(agentsArgumentCaptor.capture());
-        List<Agent> agentsToDisabled = agentsArgumentCaptor.getValue();
-        assertEquals(1, agentsToDisabled.size());
-        assertEquals(elasticAgentId, agentsToDisabled.get(0).elasticAgentId());
-        inOrder.verify(mockAgentInstances).terminate(elasticAgentId, profileProperties);
+        inOrder.verify(mockAgentInstances).terminate(ELASTIC_AGENT_ID, clusterProfileProperties);
         inOrder.verify(mockPluginRequest).deleteAgents(agentsArgumentCaptor.capture());
+
+        List<Agent> agentsToDisabled = agentsArgumentCaptor.getValue();
         List<Agent> agentsToDelete = agentsArgumentCaptor.getValue();
 
-        assertEquals(agentsToDisabled, agentsToDelete);
-
-        assertEquals(200, response.responseCode());
+        assertThat(1).isEqualTo(agentsToDisabled.size());
+        assertThat(ELASTIC_AGENT_ID).isEqualTo(agentsToDisabled.get(0).elasticAgentId());
+        assertThat(agentsToDisabled).isEqualTo(agentsToDelete);
+        assertThat(200).isEqualTo(response.responseCode());
         assertTrue(response.responseBody().isEmpty());
     }
 }

@@ -18,7 +18,6 @@ package cd.go.contrib.elasticagents.docker.executors;
 
 import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.docker.DockerContainers;
-import cd.go.contrib.elasticagents.docker.DockerPlugin;
 import cd.go.contrib.elasticagents.docker.models.StatusReport;
 import cd.go.contrib.elasticagents.docker.requests.ClusterStatusReportRequest;
 import com.google.gson.JsonObject;
@@ -28,6 +27,7 @@ import freemarker.template.Template;
 
 import java.util.Map;
 
+import static cd.go.contrib.elasticagents.docker.DockerPlugin.LOG;
 import static cd.go.plugin.base.GsonTransformer.fromJson;
 
 public class ClusterStatusReportExecutor extends BaseExecutor<ClusterStatusReportRequest> {
@@ -43,8 +43,8 @@ public class ClusterStatusReportExecutor extends BaseExecutor<ClusterStatusRepor
     protected GoPluginApiResponse execute(ClusterStatusReportRequest request) {
         try {
             refreshInstancesForCluster(request.getClusterProfileConfiguration());
-            DockerPlugin.LOG.info("[status-report] Generating status report");
-            DockerContainers dockerContainers = this.clusterToContainersMap.get(request.getClusterProfileConfiguration().uuid());
+            LOG.info("[status-report] Generating status report");
+            DockerContainers dockerContainers = clusterToContainersMap.get(request.getClusterProfileConfiguration().uuid());
             StatusReport statusReport = dockerContainers.getStatusReport(request.getClusterProfileConfiguration());
 
             final Template template = viewBuilder.getTemplate("docker/cluster-status-report.template.ftlh");

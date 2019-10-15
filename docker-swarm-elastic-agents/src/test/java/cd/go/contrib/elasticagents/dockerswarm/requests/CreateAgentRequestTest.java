@@ -16,36 +16,33 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.Map;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import org.junit.jupiter.api.Test;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class CreateAgentRequestTest {
+class CreateAgentRequestTest {
 
     @Test
-    public void shouldDeserializeFromJSON() throws Exception {
+    void shouldDeserializeFromJSON() {
         String json = "{\n" +
                 "  \"auto_register_key\": \"secret-key\",\n" +
                 "  \"elastic_agent_profile_properties\": {\n" +
-                "    \"key1\": \"value1\",\n" +
-                "    \"key2\": \"value2\"\n" +
+                "    \"Image\": \"alpine:latest\",\n" +
+                "    \"MaxMemory\": \"1G\"\n" +
                 "  },\n" +
                 "  \"environment\": \"prod\"\n" +
                 "}";
 
-        CreateAgentRequest request = fromJson(json, null);
-        assertThat(request.autoRegisterKey(), equalTo("secret-key"));
-        assertThat(request.environment(), equalTo("prod"));
-        HashMap<String, String> expectedProperties = new HashMap<>();
-        expectedProperties.put("key1", "value1");
-        expectedProperties.put("key2", "value2");
-        assertThat(request.properties(), Matchers.<Map<String, String>>equalTo(expectedProperties));
+        CreateAgentRequest request = fromJson(json, CreateAgentRequest.class);
+        assertThat(request.getAutoRegisterKey()).isEqualTo("secret-key");
+        assertThat(request.getEnvironment()).isEqualTo("prod");
+
+        ElasticProfileConfiguration expectedProperties = new ElasticProfileConfiguration();
+        expectedProperties.setImage("alpine:latest");
+        expectedProperties.setMaxMemory("1G");
+        assertThat(request.getElasticProfileConfiguration()).isEqualTo(expectedProperties);
 
     }
 }

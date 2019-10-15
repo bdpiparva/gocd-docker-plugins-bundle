@@ -16,40 +16,37 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.validator;
 
-import cd.go.contrib.elasticagents.dockerswarm.executors.GetClusterProfileMetadataExecutor;
-import cd.go.contrib.elasticagents.dockerswarm.executors.Metadata;
-import cd.go.contrib.elasticagents.dockerswarm.requests.ClusterProfileValidateRequest;
+import cd.go.plugin.base.validation.ValidationResult;
+import cd.go.plugin.base.validation.Validator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
-public class PrivateDockerRegistrySettingsValidator {
+public class PrivateDockerRegistrySettingsValidator implements Validator {
 
-    public List<Map<String, String>> validate(ClusterProfileValidateRequest request) {
-        final List<Map<String, String>> result = new ArrayList<>();
-        final boolean useDockerAuthInfo = Boolean.parseBoolean(request.getProperties().get(GetClusterProfileMetadataExecutor.ENABLE_PRIVATE_REGISTRY_AUTHENTICATION.getKey()));
+    @Override
+    public ValidationResult validate(Map<String, String> request) {
+        final ValidationResult result = new ValidationResult();
+        final boolean useDockerAuthInfo = Boolean.parseBoolean(request.get(ENABLE_PRIVATE_REGISTRY_AUTHENTICATION));
+
         if (!useDockerAuthInfo) {
             return result;
         }
 
-        validate(GetClusterProfileMetadataExecutor.PRIVATE_REGISTRY_SERVER, request, result);
-        validate(GetClusterProfileMetadataExecutor.PRIVATE_REGISTRY_USERNAME, request, result);
-        validate(GetClusterProfileMetadataExecutor.PRIVATE_REGISTRY_PASSWORD, request, result);
-        return result;
-    }
-
-    private void validate(Metadata field,
-                          ClusterProfileValidateRequest request,
-                          List<Map<String, String>> errorResult) {
-        if (isBlank(request.getProperties().get(field.getKey()))) {
-            Map<String, String> result = new HashMap<>();
-            result.put("key", field.getKey());
-            result.put("message", field.getKey() + " must not be blank.");
-            errorResult.add(result);
+        if (isBlank(request.get(PRIVATE_REGISTRY_SERVER))) {
+            result.add(PRIVATE_REGISTRY_SERVER, PRIVATE_REGISTRY_SERVER + " must not be blank.");
         }
+
+        if (isBlank(request.get(PRIVATE_REGISTRY_USERNAME))) {
+            result.add(PRIVATE_REGISTRY_USERNAME, PRIVATE_REGISTRY_USERNAME + " must not be blank.");
+        }
+
+        if (isBlank(request.get(PRIVATE_REGISTRY_PASSWORD))) {
+            result.add(PRIVATE_REGISTRY_PASSWORD, PRIVATE_REGISTRY_PASSWORD + " must not be blank.");
+        }
+
+        return result;
     }
 }

@@ -20,7 +20,6 @@ import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class JobIdentifierTest {
     @Test
@@ -29,7 +28,7 @@ class JobIdentifierTest {
 
         final JobIdentifier deserializedJobIdentifier = JobIdentifier.fromJson(jobIdentifier.toJson());
 
-        assertTrue(jobIdentifier.equals(deserializedJobIdentifier));
+        assertThat(jobIdentifier.equals(deserializedJobIdentifier)).isTrue();
     }
 
     @Test

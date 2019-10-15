@@ -19,6 +19,7 @@ package cd.go.contrib.elasticagents.docker.requests;
 import cd.go.contrib.elasticagents.common.models.ClusterProfile;
 import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.docker.models.DockerPluginSettings;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
@@ -98,14 +99,18 @@ class MigrateConfigurationRequestTest {
 
     @Test
     void shouldSerializeToJSONFromMigrationConfigRequest() throws JSONException {
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
-        clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
-        clusterProfileProperties.setAutoRegisterTimeout("20");
+        DockerPluginSettings dockerPluginSettings = new DockerPluginSettings();
+        dockerPluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
+        dockerPluginSettings.setAutoRegisterTimeout("20");
 
         ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
-        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
+        clusterProfile.setClusterProfileProperties(
+                new ClusterProfileProperties()
+                        .setGoServerUrl("https://127.0.0.1:8154/go")
+                        .setAutoRegisterTimeout("20")
+        );
 
         ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
         elasticAgentProfile.setId("profile_id");
@@ -114,7 +119,7 @@ class MigrateConfigurationRequestTest {
         elasticAgentProfile.setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine:latest"));
 
         MigrateConfigurationRequest request = new MigrateConfigurationRequest();
-        request.setPluginSettings(clusterProfileProperties)
+        request.setPluginSettings(dockerPluginSettings)
                 .setClusterProfiles(of(clusterProfile))
                 .setElasticAgentProfiles(of(elasticAgentProfile));
 

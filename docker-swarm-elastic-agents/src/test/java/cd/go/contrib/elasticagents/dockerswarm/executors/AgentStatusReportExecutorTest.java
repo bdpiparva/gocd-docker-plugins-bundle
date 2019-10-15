@@ -16,12 +16,10 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
-import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.AgentStatusReportRequest;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import com.google.gson.reflect.TypeToken;
@@ -34,14 +32,13 @@ import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 
@@ -49,99 +46,94 @@ import static cd.go.contrib.elasticagents.dockerswarm.Constants.JOB_IDENTIFIER_L
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.GSON;
 import static com.spotify.docker.client.DockerClient.LogsParam.stderr;
 import static com.spotify.docker.client.DockerClient.LogsParam.stdout;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static java.util.List.of;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class AgentStatusReportExecutorTest {
+class AgentStatusReportExecutorTest {
     @Mock
     private AgentStatusReportRequest statusReportRequest;
-    @Mock
-    private ElasticAgentRequestClient pluginRequest;
     @Mock
     private DockerClientFactory dockerClientFactory;
     @Mock
     private DockerClient client;
     @Mock
     private ClusterProfileProperties clusterProfileProperties;
-    @Mock
-    private DockerServices dockerServices;
 
     private AgentStatusReportExecutor executor;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    void setUp() throws Exception {
         initMocks(this);
         executor = new AgentStatusReportExecutor(dockerClientFactory, ViewBuilder.instance());
         clusterProfileProperties = new ClusterProfileProperties();
         when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(client);
-        when(statusReportRequest.getClusterProfileProperties()).thenReturn(clusterProfileProperties);
+        when(statusReportRequest.getClusterProfileConfiguration()).thenReturn(clusterProfileProperties);
     }
 
     @Test
-    public void shouldReturnAgentStatusReportBasedOnProvidedElasticAgentId() throws Exception {
+    void shouldReturnAgentStatusReportBasedOnProvidedElasticAgentId() throws Exception {
         final Service service = mockedService("elastic-agent-id", "abcd-xyz");
         when(statusReportRequest.getJobIdentifier()).thenReturn(JobIdentifierMother.get());
         when(statusReportRequest.getElasticAgentId()).thenReturn("elastic-agent-id");
-        when(client.listServices()).thenReturn(Arrays.asList(service));
+        when(client.listServices()).thenReturn(of(service));
         when(client.serviceLogs("abcd-xyz", stdout(), stderr())).thenReturn(new StubbedLogStream("some-logs"));
 
-        GoPluginApiResponse response = executor.execute();
+        GoPluginApiResponse response = executor.execute(statusReportRequest);
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         final Map<String, String> responseMap = GSON.fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertTrue(responseMap.containsKey("view"));
+        assertThat(responseMap.containsKey("view")).isTrue();
 
         final Document document = Jsoup.parse(responseMap.get("view"));
         assertServiceDetails(service, document);
         assertServiceLog(document, "some-logs");
-        assertTrue(hasEnvironmentVariable(document, "Foo", "Bar"));
-        assertTrue(hasEnvironmentVariable(document, "Baz", null));
+        assertThat(hasEnvironmentVariable(document, "Foo", "Bar")).isTrue();
+        assertThat(hasEnvironmentVariable(document, "Baz", null)).isTrue();
     }
 
     @Test
-    public void shouldNotPrintAutoRegisterKey() throws Exception {
+    void shouldNotPrintAutoRegisterKey() throws Exception {
         final Service service = mockedService("elastic-agent-id", "abcd-xyz");
         when(statusReportRequest.getJobIdentifier()).thenReturn(JobIdentifierMother.get());
         when(statusReportRequest.getElasticAgentId()).thenReturn("elastic-agent-id");
-        when(client.listServices()).thenReturn(Arrays.asList(service));
+        when(client.listServices()).thenReturn(of(service));
         when(client.serviceLogs("abcd-xyz", stdout(), stderr())).thenReturn(new StubbedLogStream("some-logs"));
 
-        GoPluginApiResponse response = executor.execute();
+        GoPluginApiResponse response = executor.execute(statusReportRequest);
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         final Map<String, String> responseMap = GSON.fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertTrue(responseMap.containsKey("view"));
+        assertThat(responseMap.containsKey("view")).isTrue();
 
         final Document document = Jsoup.parse(responseMap.get("view"));
         assertServiceDetails(service, document);
         assertServiceLog(document, "some-logs");
-        assertTrue(hasEnvironmentVariable(document, "Foo", "Bar"));
-        assertTrue(hasEnvironmentVariable(document, "Baz", null));
-        assertFalse(hasEnvironmentVariable(document, "GO_EA_AUTO_REGISTER_KEY", null));
+        assertThat(hasEnvironmentVariable(document, "Foo", "Bar")).isTrue();
+        assertThat(hasEnvironmentVariable(document, "Baz", null)).isTrue();
+        assertThat(hasEnvironmentVariable(document, "GO_EA_AUTO_REGISTER_KEY", null)).isFalse();
     }
 
     @Test
-    public void shouldPrintMessageWhenLogIsNotAvailable() throws Exception {
+    void shouldPrintMessageWhenLogIsNotAvailable() throws Exception {
         final Service service = mockedService("elastic-agent-id", "abcd-xyz");
         when(statusReportRequest.getJobIdentifier()).thenReturn(null);
         when(statusReportRequest.getElasticAgentId()).thenReturn("elastic-agent-id");
-        when(client.listServices()).thenReturn(Arrays.asList(service));
+        when(client.listServices()).thenReturn(of(service));
         when(client.serviceLogs("abcd-xyz", stdout(), stderr())).thenReturn(new StubbedLogStream(""));
 
-        GoPluginApiResponse response = executor.execute();
+        GoPluginApiResponse response = executor.execute(statusReportRequest);
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         final Map<String, String> responseMap = GSON.fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
-        assertTrue(responseMap.containsKey("view"));
+        assertThat(responseMap.containsKey("view")).isTrue();
 
         final Document document = Jsoup.parse(responseMap.get("view"));
-        assertThat(document.select(".service-logs").text(), is("Logs not available for this agent."));
+        assertThat(document.select(".service-logs").text()).isEqualTo("Logs not available for this agent.");
     }
 
     private boolean hasEnvironmentVariable(Document document, String name, String value) {
@@ -156,21 +148,21 @@ public class AgentStatusReportExecutorTest {
 
     private void assertServiceLog(Document document, String logs) {
         final Elements logDetails = document.select(".service-logs").select("textarea");
-        assertThat(logDetails.val(), is(logs));
+        assertThat(logDetails.val()).isEqualTo(logs);
     }
 
     private void assertServiceDetails(Service service, Document document) {
         final Elements serviceDetails = document.select(".tab-content").attr("ng-show", "currenttab == 'service-details'");
         final String serviceDetailsText = serviceDetails.text();
 
-        assertThat(serviceDetailsText, containsString(service.id()));
-        assertThat(serviceDetailsText, containsString(service.spec().name()));
-        assertThat(serviceDetailsText, containsString(service.spec().taskTemplate().containerSpec().image()));
+        assertThat(serviceDetailsText).contains(service.id());
+        assertThat(serviceDetailsText).contains(service.spec().name());
+        assertThat(serviceDetailsText).contains(service.spec().taskTemplate().containerSpec().image());
     }
 
     private Service mockedService(String serviceName, String serviceId) {
         final ContainerSpec containerSpec = ContainerSpec.builder()
-                .hosts(Arrays.asList("10.0.0.1 foo.bar.com", "10.0.0.1 abx.baz.com"))
+                .hosts(of("10.0.0.1 foo.bar.com", "10.0.0.1 abx.baz.com"))
                 .hostname("some-hostname")
                 .image("gocd/gocd-docker-agent:v18.2.0")
                 .command("")
@@ -181,7 +173,7 @@ public class AgentStatusReportExecutorTest {
         final TaskSpec template = TaskSpec.builder()
                 .containerSpec(containerSpec)
                 .resources(ResourceRequirements.builder().build())
-                .placement(Placement.create(Arrays.asList("")))
+                .placement(Placement.create(of("")))
                 .build();
 
         final ServiceSpec serviceSpec = ServiceSpec.builder()
@@ -195,7 +187,7 @@ public class AgentStatusReportExecutorTest {
     class StubbedLogStream implements LogStream {
         private final String logs;
 
-        public StubbedLogStream(String logs) {
+        StubbedLogStream(String logs) {
 
             this.logs = logs;
         }
@@ -235,7 +227,7 @@ public class AgentStatusReportExecutorTest {
         private final String serviceId;
         private final ServiceSpec serviceSpec;
 
-        public StubbedService(String serviceId, ServiceSpec serviceSpec) {
+        StubbedService(String serviceId, ServiceSpec serviceSpec) {
             this.serviceId = serviceId;
             this.serviceSpec = serviceSpec;
         }

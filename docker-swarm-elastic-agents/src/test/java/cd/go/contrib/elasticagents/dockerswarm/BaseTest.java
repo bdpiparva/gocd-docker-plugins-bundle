@@ -23,8 +23,8 @@ import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.exceptions.ServiceNotFoundException;
 import com.spotify.docker.client.messages.Container;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -38,23 +38,22 @@ import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.dockerApiVersionAtLeast;
 import static java.lang.System.getenv;
 import static java.text.MessageFormat.format;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Fail.fail;
 
 public abstract class BaseTest {
-    protected static DefaultDockerClient.Builder builder;
-    protected static DefaultDockerClient docker;
+    private static DefaultDockerClient.Builder builder;
+    static DefaultDockerClient docker;
     protected static HashSet<String> services;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() throws Exception {
         builder = DefaultDockerClient.fromEnv();
         docker = builder.build();
         services = new HashSet<>();
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() throws Exception {
         for (String service : services) {
             try {
@@ -102,7 +101,7 @@ public abstract class BaseTest {
 
     protected ClusterProfileProperties createClusterProfiles() throws IOException {
         ClusterProfileProperties settings = new ClusterProfileProperties();
-        settings.setMaxDockerContainers(1);
+        settings.setMaxDockerContainers("1");
         settings.setDockerURI(builder.uri().toString());
         if (settings.getDockerURI().startsWith("https://")) {
             settings.setDockerCACert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CA_CERT_NAME).toFile(), StandardCharsets.UTF_8));
@@ -113,7 +112,7 @@ public abstract class BaseTest {
         return settings;
     }
 
-    protected void assertServiceDoesNotExist(String id) throws DockerException, InterruptedException {
+    void assertServiceDoesNotExist(String id) throws DockerException, InterruptedException {
         try {
             docker.inspectService(id);
             fail("Expected ServiceNotFoundException");
@@ -122,16 +121,16 @@ public abstract class BaseTest {
         }
     }
 
-    protected void assertServiceExist(String id) throws DockerException, InterruptedException {
-        assertNotNull(docker.inspectService(id));
+    void assertServiceExist(String id) throws DockerException, InterruptedException {
+        assertThat(docker.inspectService(id)).isNotNull();
     }
 
-    protected static void requireDockerApiVersionAtLeast(final String required, final String functionality)
+    static void requireDockerApiVersionAtLeast(final String required, final String functionality)
             throws Exception {
 
         final String msg = String.format("Docker API should be at least v%s to support %s but runtime version is %s", required, functionality, docker.version().apiVersion());
 
-        assumeTrue(msg, dockerApiVersionAtLeast(docker, required));
+        assertThat(msg).isEqualTo(dockerApiVersionAtLeast(docker, required));
     }
 
     protected List<Container> waitForContainerToStart(DockerService service,
@@ -151,16 +150,15 @@ public abstract class BaseTest {
     }
 
     protected ClusterProfileProperties createClusterProfileProperties() throws IOException {
-        ClusterProfileProperties settings = new ClusterProfileProperties();
-
-        settings.setMaxDockerContainers(1);
-        settings.setDockerURI(builder.uri().toString());
-        if (settings.getDockerURI().startsWith("https://")) {
-            settings.setDockerCACert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CA_CERT_NAME).toFile(), StandardCharsets.UTF_8));
-            settings.setDockerClientCert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_CERT_NAME).toFile(), StandardCharsets.UTF_8));
-            settings.setDockerClientKey(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_KEY_NAME).toFile(), StandardCharsets.UTF_8));
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setMaxDockerContainers("1");
+        clusterProfileProperties.setDockerURI(builder.uri().toString());
+        if (clusterProfileProperties.getDockerURI().startsWith("https://")) {
+            clusterProfileProperties.setDockerCACert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CA_CERT_NAME).toFile(), StandardCharsets.UTF_8));
+            clusterProfileProperties.setDockerClientCert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_CERT_NAME).toFile(), StandardCharsets.UTF_8));
+            clusterProfileProperties.setDockerClientKey(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_KEY_NAME).toFile(), StandardCharsets.UTF_8));
         }
 
-        return settings;
+        return clusterProfileProperties;
     }
 }

@@ -41,11 +41,20 @@ import java.util.concurrent.Semaphore;
 
 public class DockerServices implements AgentInstances<DockerService, ElasticProfileConfiguration, ClusterProfileProperties> {
     private final ConcurrentHashMap<String, DockerService> services = new ConcurrentHashMap<>();
+    private final DockerClientFactory factory;
     private boolean refreshed;
     private List<JobIdentifier> jobsWaitingForAgentCreation = new ArrayList<>();
     public Clock clock = Clock.DEFAULT;
     final Semaphore semaphore = new Semaphore(0, true);
 
+    public DockerServices() {
+        this(DockerClientFactory.instance());
+    }
+
+    //Only for the test
+    public DockerServices(DockerClientFactory factory) {
+        this.factory = factory;
+    }
 
     @Override
     public DockerService create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
@@ -168,7 +177,7 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
     }
 
     private DockerClient docker(ClusterProfileProperties clusterProfileProperties) throws Exception {
-        return DockerClientFactory.instance().docker(clusterProfileProperties);
+        return factory.docker(clusterProfileProperties);
     }
 
     private DockerServices unregisteredAfterTimeout(ClusterProfileProperties clusterProfileProperties,

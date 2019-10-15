@@ -17,33 +17,31 @@
 package cd.go.contrib.elasticagents.dockerswarm.metadata;
 
 import cd.go.plugin.base.validation.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class HostMetadataTest {
-
+class HostMetadataTest {
     @Test
-    public void shouldValidateHostConfig() throws Exception {
+    void shouldValidateHostConfig() {
         ValidationResult validationResult = new ValidationResult();
         new HostMetadata("Hosts", false, false).validate("10.0.0.1 hostname", validationResult);
 
-        assertTrue(validationResult.isEmpty());
+        assertThat(validationResult.isEmpty()).isTrue();
 
         new HostMetadata("Hosts", false, false)
                 .validate("some-config", validationResult);
 
-        assertFalse(validationResult.isEmpty());
-        assertThat(validationResult.find("Hosts").get().getMessage(), is("Host entry `some-config` is invalid. Must be in `IP-ADDRESS HOST-1 HOST-2...` format."));
+        assertThat(validationResult.isEmpty()).isFalse();
+        assertThat(validationResult.find("Hosts").get().getMessage()).isEqualTo("Host entry `some-config` is invalid. Must be in `IP-ADDRESS HOST-1 HOST-2...` format.");
     }
 
     @Test
-    public void shouldValidateHostConfigWhenRequireField() throws Exception {
+    void shouldValidateHostConfigWhenRequireField() {
         ValidationResult validationResult = new ValidationResult();
         new HostMetadata("Hosts", true, false).validate(null, validationResult);
 
-        assertFalse(validationResult.isEmpty());
-        assertThat(validationResult.find("Hosts").get().getMessage(), is("Hosts must not be blank."));
+        assertThat(validationResult.isEmpty()).isFalse();
+        assertThat(validationResult.find("Hosts").get().getMessage()).isEqualTo("Hosts must not be blank.");
     }
 }

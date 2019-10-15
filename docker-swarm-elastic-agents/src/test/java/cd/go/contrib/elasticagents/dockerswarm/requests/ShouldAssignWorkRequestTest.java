@@ -20,44 +20,36 @@ import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.AgentBuildState;
 import cd.go.contrib.elasticagents.common.agent.AgentConfigState;
 import cd.go.contrib.elasticagents.common.agent.AgentState;
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
-import com.google.gson.JsonObject;
-import org.hamcrest.Matchers;
-import org.junit.Test;
-
-import java.util.HashMap;
+import cd.go.plugin.base.test_helper.annotations.JsonSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ShouldAssignWorkRequestTest {
+class ShouldAssignWorkRequestTest {
 
-    @Test
-    public void shouldDeserializeFromJSON() {
-        JsonObject agentJson = new JsonObject();
-        agentJson.addProperty("agent_id", "42");
-        agentJson.addProperty("agent_state", "Idle");
-        agentJson.addProperty("build_state", "Idle");
-        agentJson.addProperty("config_state", "Enabled");
+    @ParameterizedTest
+    @JsonSource(jsonFiles = "/docker-swarm/should-assign-work-request.json")
+    void shouldDeserializeFromJSON(String inputJSON) {
+        ShouldAssignWorkRequest request = fromJson(inputJSON, ShouldAssignWorkRequest.class);
 
-        JsonObject propertiesJson = new JsonObject();
-        propertiesJson.addProperty("property_name", "property_value");
-
-        JsonObject json = new JsonObject();
-        json.addProperty("environment", "prod");
-        json.add("agent", agentJson);
-        json.add("job_identifier", JobIdentifierMother.getJson());
-        json.add("properties", propertiesJson);
-
-        ShouldAssignWorkRequest request = fromJson(json.toString(), null);
-
-        assertThat(request.environment(), equalTo("prod"));
-        assertThat(request.agent(), equalTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled)));
-        HashMap<String, String> expectedProperties = new HashMap<>();
-        expectedProperties.put("property_name", "property_value");
-        assertThat(request.properties(), Matchers.equalTo(expectedProperties));
-        assertThat(request.jobIdentifier(), is(JobIdentifierMother.get()));
+        assertThat(request.getEnvironment()).isEqualTo("Production");
+        assertThat(request.getAgent()).isEqualTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled));
+        assertThat(request.getJobIdentifier()).isEqualTo(JobIdentifierMother.get());
+        assertThat(request.getClusterProfileProperties()).isEqualTo(
+                new ClusterProfileProperties()
+                        .setGoServerUrl("https://go.server.url/go")
+                        .setDockerURI("unix://foo/bar")
+        );
+        assertThat(request.getElasticProfileConfiguration()).isEqualTo(
+                new ElasticProfileConfiguration()
+                        .setImage("alpine:latest")
+                        .setCommand("/bin/sleep\n3")
+                        .setMaxMemory("10G")
+                        .setReservedMemory("5G")
+        );
     }
 }

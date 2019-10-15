@@ -23,7 +23,6 @@ import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.validator.DockerMountsValidator;
 import cd.go.contrib.elasticagents.dockerswarm.validator.DockerSecretValidator;
 import cd.go.contrib.elasticagents.dockerswarm.validator.Validatable;
-import cd.go.plugin.base.GsonTransformer;
 import cd.go.plugin.base.validation.ValidationResult;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -32,18 +31,18 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPlugin.LOG;
 import static cd.go.plugin.base.GsonTransformer.fromJson;
+import static cd.go.plugin.base.GsonTransformer.toJson;
 import static java.text.MessageFormat.format;
 
 public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest> {
     private static final DateTimeFormatter MESSAGE_PREFIX_FORMATTER = DateTimeFormat.forPattern("'##|'HH:mm:ss.SSS '[go]'");
     private final ElasticAgentRequestClient pluginRequest;
-    private List<Validatable> validators = new ArrayList<>();
+    private List<Validatable<CreateAgentRequest>> validators = new ArrayList<>();
 
     public CreateAgentRequestExecutor(Map<String, DockerServices> clusterToServicesMap,
                                       ElasticAgentRequestClient pluginRequest) {
@@ -62,22 +61,14 @@ public class CreateAgentRequestExecutor extends BaseExecutor<CreateAgentRequest>
             };
             refreshInstancesForCluster(request.getClusterProfileProperties());
             LOG.debug(format("[create-agent] Validating with profile: {0}", request.getElasticProfileConfiguration()));
-            boolean hasError = false;
-            List<Map<String, String>> messages = new ArrayList<>();
-            for (Validatable validatable : validators) {
-                ValidationResult validationResult = validatable.validate(request.getElasticProfileConfiguration());
-                if (!validationResult.isEmpty()) {
-                    hasError = true;
-                    Map<String, String> messageToBeAdded = new HashMap<>();
-                    messageToBeAdded.put("type", "warning");
-                    messageToBeAdded.put("message", GsonTransformer.toJson(validationResult));
-                    messages.add(messageToBeAdded);
-                }
+            ValidationResult result = new ValidationResult();
+            for (Validatable<CreateAgentRequest> validatable : validators) {
+                result.merge(validatable.validate(request));
             }
-            if (hasError) {
-                LOG.debug(format("[create-agent] Error in validtion: {0}", messages));
-                pluginRequest.addServerHealthMessage(messages);
-                return DefaultGoPluginApiResponse.incompleteRequest(messages.toString());
+            if (!result.isEmpty()) {
+                LOG.debug(format("[create-agent] Error in validtion: {0}", result));
+                pluginRequest.addServerHealthMessage(result);
+                return DefaultGoPluginApiResponse.incompleteRequest(toJson(result));
             }
             LOG.debug(format("[create-agent] Creating agent with profile: {0}", request.getElasticProfileConfiguration()));
 

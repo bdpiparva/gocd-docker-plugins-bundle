@@ -1,0 +1,14 @@
+[
+  {
+    "key": "private_registry_server",
+    "message": "private_registry_server must not be blank."
+  },
+  {
+    "key": "private_registry_username",
+    "message": "private_registry_username must not be blank."
+  },
+  {
+    "key": "private_registry_password",
+    "message": "private_registry_password must not be blank."
+  }
+]

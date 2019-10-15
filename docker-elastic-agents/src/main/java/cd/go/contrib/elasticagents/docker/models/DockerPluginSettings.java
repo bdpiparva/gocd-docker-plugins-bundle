@@ -16,99 +16,88 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
-import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
+import cd.go.contrib.elasticagents.common.models.PluginSettings;
 import cd.go.contrib.elasticagents.docker.utils.Util;
-import cd.go.plugin.base.annotations.Property;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import lombok.EqualsAndHashCode;
-import lombok.Setter;
 import lombok.ToString;
-import lombok.experimental.Accessors;
 import org.joda.time.Period;
 
 import java.util.Collection;
-import java.util.Objects;
 
-import static cd.go.plugin.base.GsonTransformer.fromJson;
-
-@Setter
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode(doNotUseGetters = true)
-@Accessors(chain = true)
-public class ClusterProfileProperties implements ClusterProfileConfiguration {
-    public static final String GO_SERVER_URL = "go_server_url";
+public class DockerPluginSettings implements PluginSettings {
+    public static final Gson GSON = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .excludeFieldsWithoutExposeAnnotation()
+            .create();
+
     @Expose
-    @SerializedName(GO_SERVER_URL)
-    @Property(name = GO_SERVER_URL, required = true)
+    @SerializedName("go_server_url")
     private String goServerUrl;
 
     @Expose
     @SerializedName("environment_variables")
-    @Property(name = "environment_variables")
     private String environmentVariables;
 
     @Expose
     @SerializedName("max_docker_containers")
-    @Property(name = "max_docker_containers", required = true)
     private String maxDockerContainers;
 
     @Expose
     @SerializedName("docker_uri")
-    @Property(name = "docker_uri", required = true)
     private String dockerURI;
 
     @Expose
     @SerializedName("auto_register_timeout")
-    @Property(name = "auto_register_timeout", required = true)
     private String autoRegisterTimeout;
 
     @Expose
     @SerializedName("docker_ca_cert")
-    @Property(name = "docker_ca_cert")
     private String dockerCACert;
 
     @Expose
     @SerializedName("docker_client_cert")
-    @Property(name = "docker_client_cert")
     private String dockerClientCert;
 
     @Expose
     @SerializedName("docker_client_key")
-    @Property(name = "docker_client_key")
     private String dockerClientKey;
 
     @Expose
     @SerializedName("private_registry_server")
-    @Property(name = "private_registry_server")
     private String privateRegistryServer;
 
     @Expose
     @SerializedName("private_registry_username")
-    @Property(name = "private_registry_username")
     private String privateRegistryUsername;
 
     @Expose
     @SerializedName("private_registry_password")
-    @Property(name = "private_registry_password", secure = true)
     private String privateRegistryPassword;
 
     @Expose
     @SerializedName("enable_private_registry_authentication")
-    @Property(name = "enable_private_registry_authentication")
     private boolean useDockerAuthInfo;
 
     @Expose
     @SerializedName("private_registry_custom_credentials")
-    @Property(name = "private_registry_custom_credentials")
     private boolean useCustomRegistryCredentials;
 
     @Expose
     @SerializedName("pull_on_container_create")
-    @Property(name = "pull_on_container_create")
     private boolean pullOnContainerCreate;
 
     private Period autoRegisterPeriod;
+
+    public static PluginSettings fromJSON(String json) {
+        return GSON.fromJson(json, PluginSettings.class);
+    }
 
     public Period getAutoRegisterPeriod() {
         if (this.autoRegisterPeriod == null) {
@@ -122,6 +111,10 @@ public class ClusterProfileProperties implements ClusterProfileConfiguration {
             autoRegisterTimeout = "10";
         }
         return autoRegisterTimeout;
+    }
+
+    public void setAutoRegisterTimeout(String autoRegisterTimeout) {
+        this.autoRegisterTimeout = autoRegisterTimeout;
     }
 
     public Collection<String> getEnvironmentVariables() {
@@ -165,22 +158,64 @@ public class ClusterProfileProperties implements ClusterProfileConfiguration {
     }
 
     public Boolean useDockerAuthInfo() {
-        return useDockerAuthInfo;
+        return Boolean.valueOf(useDockerAuthInfo);
     }
 
     public Boolean useCustomRegistryCredentials() {
-        return useCustomRegistryCredentials;
+        return Boolean.valueOf(useCustomRegistryCredentials);
     }
 
     public Boolean pullOnContainerCreate() {
-        return pullOnContainerCreate;
+        return Boolean.valueOf(pullOnContainerCreate);
     }
 
-    public static ClusterProfileProperties fromJSON(String json) {
-        return fromJson(json, ClusterProfileProperties.class);
+    public void setDockerCACert(String dockerCACert) {
+        this.dockerCACert = dockerCACert;
     }
 
-    public String uuid() {
-        return Integer.toHexString(Objects.hash(this));
+    public void setDockerClientCert(String dockerClientCert) {
+        this.dockerClientCert = dockerClientCert;
+    }
+
+    public void setDockerClientKey(String dockerClientKey) {
+        this.dockerClientKey = dockerClientKey;
+    }
+
+    public void setDockerURI(String dockerURI) {
+        this.dockerURI = dockerURI;
+    }
+
+    public void setEnvironmentVariables(String environmentVariables) {
+        this.environmentVariables = environmentVariables;
+    }
+
+    public void setMaxDockerContainers(Integer maxDockerContainers) {
+        this.maxDockerContainers = String.valueOf(maxDockerContainers);
+    }
+
+    public void setPullOnContainerCreate(Boolean pullOnContainerCreate) {
+        this.pullOnContainerCreate = Boolean.valueOf(pullOnContainerCreate);
+    }
+
+    public void setGoServerUrl(String goServerUrl) {
+        this.goServerUrl = goServerUrl;
+    }
+
+    public ClusterProfileProperties toClusterProfileConfig() {
+        return new ClusterProfileProperties()
+                .setGoServerUrl(goServerUrl)
+                .setEnvironmentVariables(environmentVariables)
+                .setMaxDockerContainers(maxDockerContainers)
+                .setDockerURI(dockerURI)
+                .setAutoRegisterTimeout(autoRegisterTimeout)
+                .setDockerCACert(dockerCACert)
+                .setDockerClientCert(dockerClientCert)
+                .setDockerClientKey(dockerClientKey)
+                .setPrivateRegistryServer(privateRegistryServer)
+                .setPrivateRegistryUsername(privateRegistryUsername)
+                .setPrivateRegistryPassword(privateRegistryPassword)
+                .setUseCustomRegistryCredentials(useCustomRegistryCredentials)
+                .setUseDockerAuthInfo(useDockerAuthInfo)
+                .setPullOnContainerCreate(pullOnContainerCreate);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker.validator;
+package cd.go.contrib.elasticagents.common.validators;
 
 import cd.go.plugin.base.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration.MAX_MEMORY;
-import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration.RESERVED_MEMORY;
+import static cd.go.contrib.elasticagents.common.validators.ContainerMemorySettingsValidator.MAX_MEMORY;
+import static cd.go.contrib.elasticagents.common.validators.ContainerMemorySettingsValidator.RESERVED_MEMORY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ContainerMemorySettingsValidatorTest {

@@ -18,49 +18,43 @@ package cd.go.contrib.elasticagents.dockerswarm;
 
 import com.spotify.docker.client.messages.Network;
 import com.spotify.docker.client.messages.swarm.NetworkAttachmentConfig;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class NetworksTest {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
+class NetworksTest {
     @Test
-    public void shouldReturnEmptyListWhenNetworkConfigIsNotProvided() throws Exception {
-        assertThat(Networks.fromString(null, Collections.emptyList()), hasSize(0));
-        assertThat(Networks.fromString("", Collections.emptyList()), hasSize(0));
+    void shouldReturnEmptyListWhenNetworkConfigIsNotProvided() {
+        assertThat(Networks.fromString(null, Collections.emptyList())).hasSize(0);
+        assertThat(Networks.fromString("", Collections.emptyList())).hasSize(0);
     }
 
     @Test
-    public void shouldReturnNetworkAttachmentConfigListFromString() throws Exception {
+    void shouldReturnNetworkAttachmentConfigListFromString() {
         final Network swarmNetwork = mock(Network.class);
         when(swarmNetwork.name()).thenReturn("frontend");
 
         final List<NetworkAttachmentConfig> serviceNetworks = Networks.fromString("frontend", asList(swarmNetwork));
 
         assertNotNull(serviceNetworks);
-        assertThat(serviceNetworks, hasSize(1));
+        assertThat(serviceNetworks).hasSize(1);
 
-        assertThat(serviceNetworks.get(0).target(), is("frontend"));
+        assertThat(serviceNetworks.get(0).target()).isEqualTo("frontend");
     }
 
     @Test
-    public void shouldErrorOutWhenNetworkDoesNotExist() throws Exception {
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Network with name `frontend` does not exist.");
-
-        final List<NetworkAttachmentConfig> serviceNetworks = Networks.fromString("frontend", Collections.emptyList());
+    void shouldErrorOutWhenNetworkDoesNotExist() {
+        assertThatCode(() -> Networks.fromString("frontend", Collections.emptyList()))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Network with name `frontend` does not exist.");
+        ;
     }
 }

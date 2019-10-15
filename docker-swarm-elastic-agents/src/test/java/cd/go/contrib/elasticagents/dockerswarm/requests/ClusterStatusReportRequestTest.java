@@ -16,26 +16,28 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
+import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
 import com.google.gson.JsonObject;
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
-
-import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class ClusterStatusReportRequestTest {
+class ClusterStatusReportRequestTest {
     @Test
-    public void shouldDeserializeFromJSON() {
+    void shouldDeserializeFromJSON() {
         JsonObject jsonObject = new JsonObject();
         JsonObject clusterJSON = new JsonObject();
         clusterJSON.addProperty("go_server_url", "https://go-server/go");
         jsonObject.add("cluster_profile_properties", clusterJSON);
 
-        ClusterStatusReportRequest clusterStatusReportRequest = fromJson(jsonObject.toString(), null);
+        ClusterStatusReportRequest clusterStatusReportRequest = fromJson(jsonObject.toString(), ClusterStatusReportRequest.class);
 
-        ClusterStatusReportRequest expected = new ClusterStatusReportRequest(Collections.singletonMap("go_server_url", "https://go-server/go"));
-        assertThat(clusterStatusReportRequest, CoreMatchers.is(expected));
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setDockerURI("https://go-server/go");
+
+        ClusterStatusReportRequest expected = new ClusterStatusReportRequest();
+        expected.setClusterProfileConfiguration(new ClusterProfileProperties().setGoServerUrl("https://go-server/go"));
+        assertThat(clusterStatusReportRequest).isEqualTo(expected);
     }
 }

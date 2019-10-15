@@ -18,12 +18,12 @@ package cd.go.contrib.elasticagents.docker;
 
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.ViewBuilder;
+import cd.go.contrib.elasticagents.common.validators.ContainerMemorySettingsValidator;
+import cd.go.contrib.elasticagents.common.validators.GoServerURLValidator;
 import cd.go.contrib.elasticagents.docker.executors.*;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import cd.go.contrib.elasticagents.docker.validator.ContainerMemorySettingsValidator;
 import cd.go.contrib.elasticagents.docker.validator.CpusMetadataValidator;
-import cd.go.contrib.elasticagents.docker.validator.GoServerURLValidator;
 import cd.go.contrib.elasticagents.docker.validator.HostsValidator;
 import cd.go.plugin.base.dispatcher.BaseBuilder;
 import cd.go.plugin.base.dispatcher.RequestDispatcher;
@@ -62,11 +62,11 @@ public class DockerPlugin implements GoPlugin {
                 .elasticProfileMetadata(ElasticProfileConfiguration.class)
                 .elasticProfileView("/docker/elastic-profile.template.html")
                 .validateElasticProfile(
-                        new GoServerURLValidator(),
                         new ContainerMemorySettingsValidator(),
                         new CpusMetadataValidator(),
                         new HostsValidator()
                 )
+                .validateClusterProfile(new GoServerURLValidator())
                 .pluginStatusReport(null)
                 .agentStatusReport(new AgentStatusReportExecutor(clusterSpecificAgentInstances, ViewBuilder.instance()))
                 .clusterStatusReport(new ClusterStatusReportExecutor(clusterSpecificAgentInstances, ViewBuilder.instance()))

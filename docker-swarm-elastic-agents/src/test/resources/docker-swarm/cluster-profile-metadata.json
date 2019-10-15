@@ -1,0 +1,98 @@
+[
+  {
+    "key": "go_server_url",
+    "metadata": {
+      "displayName": "",
+      "required": true,
+      "secure": false
+    }
+  },
+  {
+    "key": "environment_variables",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "max_docker_containers",
+    "metadata": {
+      "displayName": "",
+      "required": true,
+      "secure": false
+    }
+  },
+  {
+    "key": "docker_uri",
+    "metadata": {
+      "displayName": "",
+      "required": true,
+      "secure": false
+    }
+  },
+  {
+    "key": "auto_register_timeout",
+    "metadata": {
+      "displayName": "",
+      "required": true,
+      "secure": false
+    }
+  },
+  {
+    "key": "docker_ca_cert",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": true
+    }
+  },
+  {
+    "key": "docker_client_cert",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": true
+    }
+  },
+  {
+    "key": "docker_client_key",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": true
+    }
+  },
+  {
+    "key": "private_registry_server",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "private_registry_username",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "private_registry_password",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": true
+    }
+  },
+  {
+    "key": "enable_private_registry_authentication",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  }
+]

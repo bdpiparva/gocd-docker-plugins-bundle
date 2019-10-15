@@ -18,61 +18,53 @@ package cd.go.contrib.elasticagents.dockerswarm;
 
 import com.spotify.docker.client.messages.Volume;
 import com.spotify.docker.client.messages.mount.Mount;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DockerMountsTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+class DockerMountsTest {
 
     @Test
-    public void shouldBuildVolumeMountFromString() throws Exception {
+    void shouldBuildVolumeMountFromString() {
         final DockerMounts mounts = DockerMounts.fromString("source=namedVolume, target=/path/in/container");
 
-        assertNotNull(mounts);
-        assertThat(mounts, hasSize(1));
+        assertThat(mounts).isNotNull();
+        assertThat(mounts).hasSize(1);
 
-        assertThat(mounts.get(0).type(), is("volume"));
-        assertThat(mounts.get(0).source(), is("namedVolume"));
-        assertThat(mounts.get(0).target(), is("/path/in/container"));
+        assertThat(mounts.get(0).type()).isEqualTo("volume");
+        assertThat(mounts.get(0).source()).isEqualTo("namedVolume");
+        assertThat(mounts.get(0).target()).isEqualTo("/path/in/container");
     }
 
     @Test
-    public void shouldBuildBindMountFromString() throws Exception {
+    void shouldBuildBindMountFromString() {
         final DockerMounts mounts = DockerMounts.fromString("type=bind, source=/path/in/host, target=/path/in/container");
 
-        assertNotNull(mounts);
-        assertThat(mounts, hasSize(1));
+        assertThat(mounts).isNotNull();
+        assertThat(mounts).hasSize(1);
 
-        assertThat(mounts.get(0).type(), is("bind"));
-        assertThat(mounts.get(0).source(), is("/path/in/host"));
-        assertThat(mounts.get(0).target(), is("/path/in/container"));
+        assertThat(mounts.get(0).type()).isEqualTo("bind");
+        assertThat(mounts.get(0).source()).isEqualTo("/path/in/host");
+        assertThat(mounts.get(0).target()).isEqualTo("/path/in/container");
     }
 
     @Test
-    public void shouldSkipEmptyLine() throws Exception {
+    void shouldSkipEmptyLine() {
         final DockerMounts dockerMounts = DockerMounts.fromString("type=volume, source=namedVolume, target=/path/in/container\n\ntype=bind, source=/path/in/host, target=/path/in/container2");
 
-        assertNotNull(dockerMounts);
-        assertThat(dockerMounts, hasSize(2));
+        assertThat(dockerMounts).isNotNull();
+        assertThat(dockerMounts).hasSize(2);
 
-        assertThat(dockerMounts.get(0).type(), is("volume"));
-        assertThat(dockerMounts.get(1).type(), is("bind"));
+        assertThat(dockerMounts.get(0).type()).isEqualTo("volume");
+        assertThat(dockerMounts.get(1).type()).isEqualTo("bind");
     }
 
     @Test
-    public void shouldBuildMountFromDockerMount() throws Exception {
+    void shouldBuildMountFromDockerMount() {
         final DockerMounts dockerMounts = DockerMounts.fromString("source=namedVolume, target=/path/in/container\ntype=bind, src=/path/in/host, target=/path/in/container2, readonly");
         final Volume volume = mock(Volume.class);
 
@@ -80,15 +72,15 @@ public class DockerMountsTest {
 
         final List<Mount> mounts = dockerMounts.toMount();
 
-        assertThat(mounts, hasSize(2));
-        assertThat(mounts.get(0).type(), is("volume"));
-        assertThat(mounts.get(0).source(), is("namedVolume"));
-        assertThat(mounts.get(0).target(), is("/path/in/container"));
-        assertThat(mounts.get(0).readOnly(), is(false));
+        assertThat(mounts).hasSize(2);
+        assertThat(mounts.get(0).type()).isEqualTo("volume");
+        assertThat(mounts.get(0).source()).isEqualTo("namedVolume");
+        assertThat(mounts.get(0).target()).isEqualTo("/path/in/container");
+        assertThat(mounts.get(0).readOnly()).isEqualTo(false);
 
-        assertThat(mounts.get(1).type(), is("bind"));
-        assertThat(mounts.get(1).source(), is("/path/in/host"));
-        assertThat(mounts.get(1).target(), is("/path/in/container2"));
-        assertThat(mounts.get(1).readOnly(), is(true));
+        assertThat(mounts.get(1).type()).isEqualTo("bind");
+        assertThat(mounts.get(1).source()).isEqualTo("/path/in/host");
+        assertThat(mounts.get(1).target()).isEqualTo("/path/in/container2");
+        assertThat(mounts.get(1).readOnly()).isEqualTo(true);
     }
 }

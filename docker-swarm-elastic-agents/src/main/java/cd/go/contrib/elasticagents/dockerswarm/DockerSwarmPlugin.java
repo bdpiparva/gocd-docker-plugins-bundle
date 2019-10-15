@@ -17,7 +17,10 @@
 package cd.go.contrib.elasticagents.dockerswarm;
 
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
+import cd.go.contrib.elasticagents.common.validators.ContainerMemorySettingsValidator;
+import cd.go.contrib.elasticagents.common.validators.GoServerURLValidator;
 import cd.go.contrib.elasticagents.dockerswarm.executors.*;
+import cd.go.contrib.elasticagents.dockerswarm.validator.PrivateDockerRegistrySettingsValidator;
 import cd.go.plugin.base.dispatcher.BaseBuilder;
 import cd.go.plugin.base.dispatcher.RequestDispatcher;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -52,9 +55,11 @@ public class DockerSwarmPlugin implements GoPlugin {
                 .capabilities(false, true, true)
                 .clusterProfileMetadata(ClusterProfileProperties.class)
                 .clusterProfileView("/docker-swarm/cluster-profile.template.html")
+                .validateClusterProfile(new PrivateDockerRegistrySettingsValidator())
                 .elasticProfileMetadata(ElasticProfileConfiguration.class)
                 .elasticProfileView("/docker-swarm/elastic-profile.template.html")
-//                .validateElasticProfile()
+                .validateElasticProfile(new ContainerMemorySettingsValidator())
+                .validateClusterProfile(new GoServerURLValidator())
                 .pluginStatusReport(null)
                 .agentStatusReport(new AgentStatusReportExecutor())
                 .clusterStatusReport(new ClusterStatusReportExecutor())

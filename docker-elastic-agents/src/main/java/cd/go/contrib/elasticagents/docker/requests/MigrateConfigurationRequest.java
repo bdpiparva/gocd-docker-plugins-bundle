@@ -17,12 +17,9 @@
 package cd.go.contrib.elasticagents.docker.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractMigrateConfigurationRequest;
-import cd.go.contrib.elasticagents.docker.models.ClusterProfile;
 import cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.docker.models.ElasticAgentProfile;
+import cd.go.contrib.elasticagents.docker.models.DockerPluginSettings;
 import cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
-public class MigrateConfigurationRequest extends AbstractMigrateConfigurationRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
+public class MigrateConfigurationRequest extends AbstractMigrateConfigurationRequest<ElasticProfileConfiguration, ClusterProfileProperties, DockerPluginSettings> {
 }

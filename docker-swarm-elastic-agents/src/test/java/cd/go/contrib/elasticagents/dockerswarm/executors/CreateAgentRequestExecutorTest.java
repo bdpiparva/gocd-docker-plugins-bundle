@@ -16,26 +16,40 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
+import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.dockerswarm.AgentInstances;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.DockerService;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.*;
+import java.util.HashMap;
+import java.util.Map;
 
-public class CreateAgentRequestExecutorTest {
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+class CreateAgentRequestExecutorTest {
     @Test
-    public void shouldAskDockerContainersToCreateAnAgent() throws Exception {
-        CreateAgentRequest request = mock(CreateAgentRequest.class);
-        AgentInstances<DockerService> agentInstances = mock(DockerServices.class);
-        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
-        ClusterProfileProperties clusterProfileProperties = mock(ClusterProfileProperties.class);
-        when(request.getClusterProfileProperties()).thenReturn(clusterProfileProperties);
-        new CreateAgentRequestExecutor(clusterToServicesMap, pluginRequest).execute();
+    void shouldAskDockerContainersToCreateAnAgent() throws Exception {
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        CreateAgentRequest request = new CreateAgentRequest();
+        request.setClusterProfileProperties(clusterProfileProperties)
+                .setElasticProfileConfiguration(new ElasticProfileConfiguration());
 
-        verify(agentInstances).create(request, pluginRequest);
+        ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
+
+        DockerServices dockerServices = mock(DockerServices.class);
+        Map<String, DockerServices> clusterToServicesMap = new HashMap<>();
+        clusterToServicesMap.put(clusterProfileProperties.uuid(), dockerServices);
+
+        new CreateAgentRequestExecutor(clusterToServicesMap, pluginRequest).execute(request);
+
+        verify(dockerServices).refreshAll(clusterProfileProperties);
+        verify(dockerServices).create(eq(request), eq(pluginRequest), any(ConsoleLogAppender.class));
+
     }
 }

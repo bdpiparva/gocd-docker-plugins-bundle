@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker.validator;
+package cd.go.contrib.elasticagents.common.validators;
 
-import cd.go.contrib.elasticagents.docker.MemorySpecification;
+import cd.go.contrib.elasticagents.common.MemorySpecification;
 import cd.go.plugin.base.validation.ValidationResult;
 import cd.go.plugin.base.validation.Validator;
 
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration.MAX_MEMORY;
-import static cd.go.contrib.elasticagents.docker.models.ElasticProfileConfiguration.RESERVED_MEMORY;
-
 /**
  * Check that max memory is not lower than reserved memory.
  */
 public class ContainerMemorySettingsValidator implements Validator {
+    public static final String RESERVED_MEMORY = "ReservedMemory";
+    public static final String MAX_MEMORY = "MaxMemory";
+
     @Override
     public ValidationResult validate(Map<String, String> elasticProfile) {
         ValidationResult result = new ValidationResult();

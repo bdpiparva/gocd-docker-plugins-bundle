@@ -19,20 +19,19 @@ package cd.go.contrib.elasticagents.dockerswarm.model;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.DockerTask;
 import com.spotify.docker.client.messages.swarm.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Date;
 
 import static cd.go.contrib.elasticagents.dockerswarm.Constants.JOB_IDENTIFIER_LABEL_KEY;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class DockerTaskTest {
+class DockerTaskTest {
     @Test
-    public void shouldCreateDockerContainerFromContainerObject() {
+    void shouldCreateDockerContainerFromContainerObject() {
         final Task task = mock(Task.class);
         final ContainerSpec containerSpec = ContainerSpec.builder().image("gocd-agent:latest").build();
         final TaskSpec taskSpec = TaskSpec.builder().containerSpec(containerSpec).build();
@@ -55,11 +54,11 @@ public class DockerTaskTest {
 
         final DockerTask dockerTask = new DockerTask(task, service);
 
-        assertThat(dockerTask.getId(), is("task-id"));
-        assertThat(dockerTask.getCreated(), is(createdAt));
-        assertThat(dockerTask.getImage(), is("gocd-agent:latest"));
-        assertThat(dockerTask.getServiceId(), is("service-id"));
-        assertThat(dockerTask.getState(), is("Running"));
-        assertThat(dockerTask.getNodeId(), is("node-id"));
+        assertThat(dockerTask.getId()).isEqualTo("task-id");
+        assertThat(dockerTask.getCreated()).isEqualTo(createdAt);
+        assertThat(dockerTask.getImage()).isEqualTo("gocd-agent:latest");
+        assertThat(dockerTask.getServiceId()).isEqualTo("service-id");
+        assertThat(dockerTask.getState()).isEqualTo("Running");
+        assertThat(dockerTask.getNodeId()).isEqualTo("node-id");
     }
 }

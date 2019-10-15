@@ -24,6 +24,7 @@ subprojects {
     mavenCentral()
   }
 
+  apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-helpers/master/test-task-helper.gradle?_=${(int) (new Date().toInstant().epochSecond / 60)}"
   apply plugin: 'java'
 
   sourceCompatibility = 11

@@ -16,23 +16,22 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfile;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticAgentProfile;
+import cd.go.contrib.elasticagents.common.models.ClusterProfile;
+import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
 import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPluginSettings;
+import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
-import java.util.Arrays;
-import java.util.HashMap;
-
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static java.util.List.of;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class MigrateConfigurationRequestTest {
+class MigrateConfigurationRequestTest {
     @Test
-    public void shouldCreateMigrationConfigRequestFromRequestBody() {
+    void shouldCreateMigrationConfigRequestFromRequestBody() {
         String requestBody = "{" +
                 "    \"plugin_settings\":{" +
                 "        \"go_server_url\":\"https://127.0.0.1:8154/go\", " +
@@ -61,67 +60,72 @@ public class MigrateConfigurationRequestTest {
                 "    ]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = fromJson(requestBody, null);
+        MigrateConfigurationRequest request = fromJson(requestBody, MigrateConfigurationRequest.class);
 
-        ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
+        DockerSwarmPluginSettings pluginSettings = new DockerSwarmPluginSettings();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
-        ClusterProfile clusterProfile = new ClusterProfile();
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
+        clusterProfileProperties.setAutoRegisterTimeout("20");
+
+        ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
-        clusterProfile.setClusterProfileProperties(pluginSettings);
+        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
 
-        ElasticAgentProfile elasticAgentProfile = new ElasticAgentProfile();
-        elasticAgentProfile.setId("profile_id");
-        elasticAgentProfile.setPluginId("plugin_id");
-        elasticAgentProfile.setClusterProfileId("cluster_profile_id");
-        HashMap<String, String> properties = new HashMap<>();
-        properties.put("some_key", "some_value");
-        properties.put("some_key2", "some_value2");
-        elasticAgentProfile.setProperties(properties);
+        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
+        elasticAgentProfile.setId("profile_id")
+                .setPluginId("plugin_id")
+                .setClusterProfileId("cluster_profile_id")
+                .setElasticProfileConfiguration(new ElasticProfileConfiguration());
 
-        assertThat(pluginSettings, is(request.getPluginSettings()));
-        assertThat(Arrays.asList(clusterProfile), is(request.getClusterProfiles()));
-        assertThat(Arrays.asList(elasticAgentProfile), is(request.getElasticAgentProfiles()));
+        assertThat(pluginSettings).isEqualTo(request.getPluginSettings());
+        assertThat(of(clusterProfile)).isEqualTo(request.getClusterProfiles());
+        assertThat(of(elasticAgentProfile)).isEqualTo(request.getElasticAgentProfiles());
     }
 
     @Test
-    public void shouldCreateMigrationConfigRequestWhenNoConfigurationsAreSpecified() {
+    void shouldCreateMigrationConfigRequestWhenNoConfigurationsAreSpecified() {
         String requestBody = "{" +
                 "    \"plugin_settings\":{}," +
                 "    \"cluster_profiles\":[]," +
                 "    \"elastic_agent_profiles\":[]" +
                 "}\n";
 
-        MigrateConfigurationRequest request = fromJson(requestBody, null);
+        MigrateConfigurationRequest request = fromJson(requestBody, MigrateConfigurationRequest.class);
 
-        assertThat(new ClusterProfileProperties(), is(request.getPluginSettings()));
-        assertThat(Arrays.asList(), is(request.getClusterProfiles()));
-        assertThat(Arrays.asList(), is(request.getElasticAgentProfiles()));
+        assertThat(new DockerSwarmPluginSettings()).isEqualTo(request.getPluginSettings());
+        assertThat(of()).isEqualTo(request.getClusterProfiles());
+        assertThat(of()).isEqualTo(request.getElasticAgentProfiles());
     }
 
     @Test
-    public void shouldSerializeToJSONFromMigrationConfigRequest() throws JSONException {
-        ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
+    void shouldSerializeToJSONFromMigrationConfigRequest() throws JSONException {
+        DockerSwarmPluginSettings pluginSettings = new DockerSwarmPluginSettings();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
-        ClusterProfile clusterProfile = new ClusterProfile();
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
+        clusterProfileProperties.setAutoRegisterTimeout("10");
+
+        ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
-        clusterProfile.setClusterProfileProperties(pluginSettings);
+        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
 
-        ElasticAgentProfile elasticAgentProfile = new ElasticAgentProfile();
-        elasticAgentProfile.setId("profile_id");
-        elasticAgentProfile.setPluginId("plugin_id");
-        elasticAgentProfile.setClusterProfileId("cluster_profile_id");
-        HashMap<String, String> properties = new HashMap<>();
-        properties.put("some_key", "some_value");
-        properties.put("some_key2", "some_value2");
-        elasticAgentProfile.setProperties(properties);
+        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
+        elasticAgentProfile.setId("profile_id")
+                .setPluginId("plugin_id")
+                .setClusterProfileId("cluster_profile_id")
+                .setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine:latest"));
 
-        MigrateConfigurationRequest request = new MigrateConfigurationRequest(pluginSettings, Arrays.asList(clusterProfile), Arrays.asList(elasticAgentProfile));
+        MigrateConfigurationRequest request = new MigrateConfigurationRequest();
+        request.setPluginSettings(pluginSettings)
+                .setClusterProfiles(of(clusterProfile))
+                .setElasticAgentProfiles(of(elasticAgentProfile));
 
         String actual = request.toJSON();
 
@@ -136,7 +140,7 @@ public class MigrateConfigurationRequestTest {
                 "            \"plugin_id\":\"plugin_id\"," +
                 "            \"properties\":{" +
                 "                \"go_server_url\":\"https://127.0.0.1:8154/go\", " +
-                "                \"auto_register_timeout\":\"20\"" +
+                "                \"auto_register_timeout\":\"10\"" +
                 "            }" +
                 "         }" +
                 "    ]," +
@@ -146,14 +150,12 @@ public class MigrateConfigurationRequestTest {
                 "            \"plugin_id\":\"plugin_id\"," +
                 "            \"cluster_profile_id\":\"cluster_profile_id\"," +
                 "            \"properties\":{" +
-                "                \"some_key\":\"some_value\"," +
-                "                \"some_key2\":\"some_value2\"" +
+                "                \"Image\":\"alpine:latest\"" +
                 "            }" +
                 "        }" +
                 "    ]" +
                 "}\n";
 
-        JSONAssert.assertEquals(expected, actual, false);
+        JSONAssert.assertEquals(expected, actual, true);
     }
-
 }

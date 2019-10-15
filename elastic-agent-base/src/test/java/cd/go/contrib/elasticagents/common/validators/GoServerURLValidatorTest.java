@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker.validator;
+package cd.go.contrib.elasticagents.common.validators;
 
 import cd.go.plugin.base.validation.ValidationResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties.GO_SERVER_URL;
+import static cd.go.contrib.elasticagents.common.validators.GoServerURLValidator.GO_SERVER_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GoServerURLValidatorTest {

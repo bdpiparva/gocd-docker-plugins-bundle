@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cd.go.contrib.elasticagents.docker.validator;
+package cd.go.contrib.elasticagents.common.validators;
 
 import cd.go.plugin.base.validation.ValidationResult;
 import cd.go.plugin.base.validation.Validator;
@@ -23,11 +23,11 @@ import org.apache.http.client.utils.URIBuilder;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.docker.models.ClusterProfileProperties.GO_SERVER_URL;
 import static java.lang.String.format;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class GoServerURLValidator implements Validator {
+    public static final String GO_SERVER_URL = "go_server_url";
 
     @Override
     public ValidationResult validate(Map<String, String> requestBody) {

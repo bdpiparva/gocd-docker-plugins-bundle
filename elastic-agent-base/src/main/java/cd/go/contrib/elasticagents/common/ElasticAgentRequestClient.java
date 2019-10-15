@@ -20,6 +20,7 @@ import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.common.exceptions.ServerRequestFailedException;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
+import cd.go.plugin.base.validation.ValidationResult;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
@@ -32,6 +33,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Instances of this class know how to send messages to the GoCD Server.
@@ -129,5 +131,11 @@ public class ElasticAgentRequestClient {
         if (response.responseCode() != 200) {
             LOG.error("Failed to append to console log for " + jobIdentifier.represent() + " with text: " + text);
         }
+    }
+
+    public void addServerHealthMessage(ValidationResult result) {
+        addServerHealthMessage(result.stream()
+                .map(error -> Map.of("type", "warning", "message", error.getMessage()))
+                .collect(Collectors.toList()));
     }
 }

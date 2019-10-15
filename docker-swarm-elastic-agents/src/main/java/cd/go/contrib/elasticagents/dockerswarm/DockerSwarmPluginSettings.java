@@ -23,10 +23,14 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.spotify.docker.client.messages.RegistryAuth;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.joda.time.Period;
 
 import java.util.Collection;
 
+@ToString(doNotUseGetters = true)
+@EqualsAndHashCode(doNotUseGetters = true)
 public class DockerSwarmPluginSettings implements cd.go.contrib.elasticagents.common.models.PluginSettings {
     public static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
@@ -79,7 +83,7 @@ public class DockerSwarmPluginSettings implements cd.go.contrib.elasticagents.co
 
     @Expose
     @SerializedName("enable_private_registry_authentication")
-    private boolean useDockerAuthInfo;
+    private String useDockerAuthInfo;
 
     private Period autoRegisterPeriod;
 
@@ -129,30 +133,6 @@ public class DockerSwarmPluginSettings implements cd.go.contrib.elasticagents.co
         return dockerClientKey;
     }
 
-    public void setDockerCACert(String dockerCACert) {
-        this.dockerCACert = dockerCACert;
-    }
-
-    public void setDockerClientCert(String dockerClientCert) {
-        this.dockerClientCert = dockerClientCert;
-    }
-
-    public void setDockerClientKey(String dockerClientKey) {
-        this.dockerClientKey = dockerClientKey;
-    }
-
-    public void setDockerURI(String dockerURI) {
-        this.dockerURI = dockerURI;
-    }
-
-    public void setEnvironmentVariables(String environmentVariables) {
-        this.environmentVariables = environmentVariables;
-    }
-
-    public void setMaxDockerContainers(Integer maxDockerContainers) {
-        this.maxDockerContainers = String.valueOf(maxDockerContainers);
-    }
-
     public boolean useDockerAuthInfo() {
         return Boolean.valueOf(useDockerAuthInfo);
     }
@@ -165,78 +145,27 @@ public class DockerSwarmPluginSettings implements cd.go.contrib.elasticagents.co
                 .build();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DockerSwarmPluginSettings that = (DockerSwarmPluginSettings) o;
-
-        if (useDockerAuthInfo != that.useDockerAuthInfo) return false;
-        if (goServerUrl != null ? !goServerUrl.equals(that.goServerUrl) : that.goServerUrl != null) return false;
-        if (environmentVariables != null ? !environmentVariables.equals(that.environmentVariables) : that.environmentVariables != null)
-            return false;
-        if (maxDockerContainers != null ? !maxDockerContainers.equals(that.maxDockerContainers) : that.maxDockerContainers != null)
-            return false;
-        if (dockerURI != null ? !dockerURI.equals(that.dockerURI) : that.dockerURI != null) return false;
-        if (autoRegisterTimeout != null ? !autoRegisterTimeout.equals(that.autoRegisterTimeout) : that.autoRegisterTimeout != null)
-            return false;
-        if (dockerCACert != null ? !dockerCACert.equals(that.dockerCACert) : that.dockerCACert != null) return false;
-        if (dockerClientCert != null ? !dockerClientCert.equals(that.dockerClientCert) : that.dockerClientCert != null)
-            return false;
-        if (dockerClientKey != null ? !dockerClientKey.equals(that.dockerClientKey) : that.dockerClientKey != null)
-            return false;
-        if (privateRegistryServer != null ? !privateRegistryServer.equals(that.privateRegistryServer) : that.privateRegistryServer != null)
-            return false;
-        if (privateRegistryUsername != null ? !privateRegistryUsername.equals(that.privateRegistryUsername) : that.privateRegistryUsername != null)
-            return false;
-        if (privateRegistryPassword != null ? !privateRegistryPassword.equals(that.privateRegistryPassword) : that.privateRegistryPassword != null)
-            return false;
-        return autoRegisterPeriod != null ? autoRegisterPeriod.equals(that.autoRegisterPeriod) : that.autoRegisterPeriod == null;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = goServerUrl != null ? goServerUrl.hashCode() : 0;
-        result = 31 * result + (environmentVariables != null ? environmentVariables.hashCode() : 0);
-        result = 31 * result + (maxDockerContainers != null ? maxDockerContainers.hashCode() : 0);
-        result = 31 * result + (dockerURI != null ? dockerURI.hashCode() : 0);
-        result = 31 * result + (autoRegisterTimeout != null ? autoRegisterTimeout.hashCode() : 0);
-        result = 31 * result + (dockerCACert != null ? dockerCACert.hashCode() : 0);
-        result = 31 * result + (dockerClientCert != null ? dockerClientCert.hashCode() : 0);
-        result = 31 * result + (dockerClientKey != null ? dockerClientKey.hashCode() : 0);
-        result = 31 * result + (privateRegistryServer != null ? privateRegistryServer.hashCode() : 0);
-        result = 31 * result + (privateRegistryUsername != null ? privateRegistryUsername.hashCode() : 0);
-        result = 31 * result + (privateRegistryPassword != null ? privateRegistryPassword.hashCode() : 0);
-        result = 31 * result + (useDockerAuthInfo ? 1 : 0);
-        result = 31 * result + (autoRegisterPeriod != null ? autoRegisterPeriod.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return "PluginSettings{" +
-                "goServerUrl='" + goServerUrl + '\'' +
-                ", environmentVariables='" + environmentVariables + '\'' +
-                ", maxDockerContainers='" + maxDockerContainers + '\'' +
-                ", dockerURI='" + dockerURI + '\'' +
-                ", autoRegisterTimeout='" + autoRegisterTimeout + '\'' +
-                ", dockerCACert='" + dockerCACert + '\'' +
-                ", dockerClientCert='" + dockerClientCert + '\'' +
-                ", dockerClientKey='" + dockerClientKey + '\'' +
-                ", privateRegistryServer='" + privateRegistryServer + '\'' +
-                ", privateRegistryUsername='" + privateRegistryUsername + '\'' +
-                ", privateRegistryPassword='" + privateRegistryPassword + '\'' +
-                ", useDockerAuthInfo=" + useDockerAuthInfo +
-                ", autoRegisterPeriod=" + autoRegisterPeriod +
-                '}';
-    }
-
     public void setGoServerUrl(String goServerUrl) {
         this.goServerUrl = goServerUrl;
     }
 
     public void setAutoRegisterTimeout(String autoRegisterTimeout) {
         this.autoRegisterTimeout = autoRegisterTimeout;
+    }
+
+    public ClusterProfileProperties toClusterProfileProperties() {
+        return new ClusterProfileProperties()
+                .setGoServerUrl(goServerUrl)
+                .setDockerURI(dockerURI)
+                .setEnvironmentVariables(this.environmentVariables)
+                .setMaxDockerContainers(this.maxDockerContainers)
+                .setAutoRegisterTimeout(autoRegisterTimeout)
+                .setDockerCACert(dockerCACert)
+                .setDockerClientCert(dockerClientCert)
+                .setDockerClientKey(dockerClientKey)
+                .setPrivateRegistryServer(privateRegistryServer)
+                .setPrivateRegistryUsername(privateRegistryUsername)
+                .setPrivateRegistryPassword(privateRegistryPassword)
+                .setUseDockerAuthInfo(useDockerAuthInfo);
     }
 }

@@ -23,6 +23,7 @@ import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
 
 import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.dockerApiVersionAtLeast;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class DockerMountsValidator implements Validatable<CreateAgentRequest> {
     private final DockerClientFactory dockerClientFactory;
@@ -36,25 +37,27 @@ public class DockerMountsValidator implements Validatable<CreateAgentRequest> {
     }
 
     @Override
-    public ValidationResult validate(CreateAgentRequest createAgentRequest) {
-        final ValidationResult validationResult = new ValidationResult();
+    public ValidationResult validate(CreateAgentRequest request) {
+        final ValidationResult result = new ValidationResult();
 
         try {
-            final DockerMounts dockerMounts = DockerMounts.fromString(createAgentRequest.getElasticProfileConfiguration().getMounts());
+            String mounts = request.getElasticProfileConfiguration().getMounts();
+            if (isBlank(mounts)) {
+                return result;
+            }
 
+            final DockerMounts dockerMounts = DockerMounts.fromString(mounts);
             if (!dockerMounts.isEmpty()) {
-                DockerClient dockerClient = dockerClientFactory.docker(createAgentRequest.getClusterProfileProperties());
-
+                DockerClient dockerClient = dockerClientFactory.docker(request.getClusterProfileProperties());
                 if (!dockerApiVersionAtLeast(dockerClient, "1.26")) {
                     throw new RuntimeException("Docker volume mount requires api version 1.26 or higher.");
                 }
-
                 dockerMounts.toMount();
             }
         } catch (Exception e) {
-            validationResult.add("Mounts", e.getMessage());
+            result.add("Mounts", e.getMessage());
         }
 
-        return validationResult;
+        return result;
     }
 }

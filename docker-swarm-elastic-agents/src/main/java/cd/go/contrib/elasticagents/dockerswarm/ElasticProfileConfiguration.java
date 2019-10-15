@@ -26,55 +26,62 @@ import lombok.experimental.Accessors;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(doNotUseGetters = true)
 @Accessors(chain = true)
 public class ElasticProfileConfiguration implements cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration {
-    @Property(name = "Image", required = true)
+    @Expose
     @SerializedName("Image")
-    @Expose
+    @Property(name = "Image", required = true)
     private String image;
-    @Property(name = "Command")
-    @SerializedName("Command")
+
     @Expose
+    @SerializedName("Command")
+    @Property(name = "Command")
     private String command;
+
+    @Expose
     @Property(name = "Environment")
     @SerializedName("Environment")
-    @Expose
     private String environment;
+
+    @Expose
     @Property(name = "Secrets")
     @SerializedName("Secrets")
-    @Expose
     private String secrets;
+
+    @Expose
     @Property(name = "Networks")
     @SerializedName("Networks")
-    @Expose
     private String networks;
+
+    @Expose
     @Property(name = "Mounts")
     @SerializedName("Mounts")
-    @Expose
     private String mounts;
 
+    @Expose
     @Property(name = "Constraints")
     @SerializedName("Constraints")
-    @Expose
     private String constraints;
+
+    @Expose
     @Property(name = "LogDriver")
     @SerializedName("LogDriver")
-    @Expose
     private String logDriver;
+
+    @Expose
     @Property(name = "LogDriverOptions")
     @SerializedName("LogDriverOptions")
-    @Expose
     private String logDriverOptions;
 
+    @Expose
     @Property(name = "MaxMemory")
     @SerializedName("MaxMemory")
-    @Expose
     private String maxMemory;
 
+    @Expose
     @Property(name = "ReservedMemory")
     @SerializedName("ReservedMemory")
-    @Expose
     private String reservedMemory;
 
     @Expose

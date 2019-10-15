@@ -17,17 +17,15 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class JobCompletionRequestTest {
+class JobCompletionRequestTest {
 
     @Test
-    public void shouldDeserializeFromJSON() throws Exception {
-
+    void shouldDeserializeFromJSON() {
         String json = "{\n" +
                 "  \"elastic_agent_id\": \"ea1\",\n" +
                 "  \"job_identifier\": {\n" +
@@ -41,14 +39,13 @@ public class JobCompletionRequestTest {
                 "  }\n" +
                 "}";
 
-        JobCompletionRequest request = fromJson(json, null);
+        JobCompletionRequest request = fromJson(json, JobCompletionRequest.class);
 
         JobIdentifier expectedJobIdentifier = new JobIdentifier("test-pipeline", 1L, "Test Pipeline", "test-stage", "1", "test-job", 100L);
-        JobIdentifier actualJobIdentifier = request.jobIdentifier();
+        JobIdentifier actualJobIdentifier = request.getJobIdentifier();
 
-        assertThat(actualJobIdentifier, is(expectedJobIdentifier));
-
-        assertThat(request.getElasticAgentId(), is("ea1"));
+        assertThat(actualJobIdentifier).isEqualTo(expectedJobIdentifier);
+        assertThat(request.getElasticAgentId()).isEqualTo("ea1");
     }
 
 

@@ -17,18 +17,17 @@
 package cd.go.contrib.elasticagents.dockerswarm.reports;
 
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.StatusReportGenerationError;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-public class StatusReportGenerationErrorHandlerTest {
+
+class StatusReportGenerationErrorHandlerTest {
     @Test
-    public void shouldConvertThrowableToStatusReportGenerationErrorObject() {
+    void shouldConvertThrowableToStatusReportGenerationErrorObject() {
         final StatusReportGenerationError statusReportGenerationError = new StatusReportGenerationError(StatusReportGenerationException.noRunningService("foo"));
 
-        assertThat(statusReportGenerationError.getMessage(), is("Service is not running."));
-        assertThat(statusReportGenerationError.getDescription(), startsWith("Can not find a running service for the provided elastic agent id 'foo'"));
+        assertThat(statusReportGenerationError.getMessage()).isEqualTo("Service is not running.");
+        assertThat(statusReportGenerationError.getDescription()).startsWith("Can not find a running service for the provided elastic agent id 'foo'");
     }
 }

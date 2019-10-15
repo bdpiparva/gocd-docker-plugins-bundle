@@ -1,0 +1,98 @@
+[
+  {
+    "key": "Image",
+    "metadata": {
+      "displayName": "",
+      "required": true,
+      "secure": false
+    }
+  },
+  {
+    "key": "Command",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "Environment",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "Secrets",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "Networks",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "Mounts",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "Constraints",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "LogDriver",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "LogDriverOptions",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "MaxMemory",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "ReservedMemory",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  },
+  {
+    "key": "Hosts",
+    "metadata": {
+      "displayName": "",
+      "required": false,
+      "secure": false
+    }
+  }
+]

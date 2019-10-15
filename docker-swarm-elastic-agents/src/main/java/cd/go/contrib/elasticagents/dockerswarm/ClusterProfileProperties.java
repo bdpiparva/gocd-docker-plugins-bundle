@@ -18,64 +18,87 @@ package cd.go.contrib.elasticagents.dockerswarm;
 
 import cd.go.contrib.elasticagents.common.models.ClusterProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
+import cd.go.plugin.base.annotations.Property;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.spotify.docker.client.messages.RegistryAuth;
+import lombok.EqualsAndHashCode;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.joda.time.Period;
 
 import java.util.Collection;
 import java.util.Objects;
 
 @Setter
+@Accessors(chain = true)
+@ToString(doNotUseGetters = true)
+@EqualsAndHashCode(doNotUseGetters = true)
 public class ClusterProfileProperties implements ClusterProfileConfiguration {
+    public static final String ENABLE_PRIVATE_REGISTRY_AUTHENTICATION = "enable_private_registry_authentication";
+    public static final String PRIVATE_REGISTRY_PASSWORD = "private_registry_password";
+    public static final String PRIVATE_REGISTRY_USERNAME = "private_registry_username";
+    public static final String PRIVATE_REGISTRY_SERVER = "private_registry_server";
     @Expose
     @SerializedName("go_server_url")
+    @Property(name = "go_server_url", required = true)
     private String goServerUrl;
 
     @Expose
+    @Property(name = "environment_variables")
     @SerializedName("environment_variables")
     private String environmentVariables;
 
     @Expose
     @SerializedName("max_docker_containers")
+    @Property(name = "max_docker_containers", required = true)
     private String maxDockerContainers;
 
     @Expose
     @SerializedName("docker_uri")
+    @Property(name = "docker_uri", required = true)
     private String dockerURI;
 
     @Expose
     @SerializedName("auto_register_timeout")
+    @Property(name = "auto_register_timeout", required = true)
     private String autoRegisterTimeout;
 
     @Expose
     @SerializedName("docker_ca_cert")
+    @Property(name = "docker_ca_cert", secure = true)
     private String dockerCACert;
 
     @Expose
     @SerializedName("docker_client_cert")
+    @Property(name = "docker_client_cert", secure = true)
     private String dockerClientCert;
 
     @Expose
     @SerializedName("docker_client_key")
+    @Property(name = "docker_client_key", secure = true)
     private String dockerClientKey;
 
     @Expose
-    @SerializedName("private_registry_server")
+    @SerializedName(PRIVATE_REGISTRY_SERVER)
+    @Property(name = PRIVATE_REGISTRY_SERVER)
     private String privateRegistryServer;
 
     @Expose
-    @SerializedName("private_registry_username")
+    @SerializedName(PRIVATE_REGISTRY_USERNAME)
+    @Property(name = PRIVATE_REGISTRY_USERNAME)
     private String privateRegistryUsername;
 
     @Expose
-    @SerializedName("private_registry_password")
+    @SerializedName(PRIVATE_REGISTRY_PASSWORD)
+    @Property(name = PRIVATE_REGISTRY_PASSWORD, secure = true)
     private String privateRegistryPassword;
 
     @Expose
-    @SerializedName("enable_private_registry_authentication")
-    private boolean useDockerAuthInfo;
+    @SerializedName(ENABLE_PRIVATE_REGISTRY_AUTHENTICATION)
+    @Property(name = ENABLE_PRIVATE_REGISTRY_AUTHENTICATION)
+    private String useDockerAuthInfo;
 
     private Period autoRegisterPeriod;
 
@@ -136,10 +159,4 @@ public class ClusterProfileProperties implements ClusterProfileConfiguration {
     public String uuid() {
         return Integer.toHexString(Objects.hash(this));
     }
-
-    @Override
-    public String toString() {
-        return super.toString();
-    }
-
 }

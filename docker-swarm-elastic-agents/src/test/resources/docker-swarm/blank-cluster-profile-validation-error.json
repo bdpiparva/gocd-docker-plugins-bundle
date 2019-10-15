@@ -1,0 +1,18 @@
+[
+  {
+    "key": "go_server_url",
+    "message": "go_server_url must not be blank."
+  },
+  {
+    "key": "max_docker_containers",
+    "message": "max_docker_containers must not be blank."
+  },
+  {
+    "key": "docker_uri",
+    "message": "docker_uri must not be blank."
+  },
+  {
+    "key": "auto_register_timeout",
+    "message": "auto_register_timeout must not be blank."
+  }
+]
