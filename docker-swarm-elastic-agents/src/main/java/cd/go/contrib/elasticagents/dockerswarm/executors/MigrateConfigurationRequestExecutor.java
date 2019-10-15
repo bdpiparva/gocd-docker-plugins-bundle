@@ -18,10 +18,10 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.models.ClusterProfile;
 import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.Constants;
 import cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPluginSettings;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.MigrateConfigurationRequest;
 import cd.go.plugin.base.executors.AbstractExecutor;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -44,8 +44,8 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
         LOG.info("[Migrate Config] Request for Config Migration Started...");
 
         DockerSwarmPluginSettings pluginSettings = request.getPluginSettings();
-        List<ClusterProfile<ClusterProfileProperties>> existingClusterProfiles = request.getClusterProfiles();
-        List<ElasticAgentProfile<ElasticProfileConfiguration>> existingElasticAgentProfiles = request.getElasticAgentProfiles();
+        List<ClusterProfile<SwarmClusterConfiguration>> existingClusterProfiles = request.getClusterProfiles();
+        List<ElasticAgentProfile<SwarmElasticProfileConfiguration>> existingElasticAgentProfiles = request.getElasticAgentProfiles();
 
         if (!arePluginSettingsConfigured(pluginSettings)) {
             LOG.info("[Migrate Config] No Plugin Settings are configured. Skipping Config Migration...");
@@ -57,15 +57,15 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
             String newClusterId = UUID.randomUUID().toString();
             LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile '{}'", newClusterId);
             LOG.info("[Migrate Config] Migrating existing plugin settings to new cluster profile with plugin'{}'", Constants.PLUGIN_ID);
-            ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>(newClusterId, Constants.PLUGIN_ID, pluginSettings.toClusterProfileProperties());
+            ClusterProfile<SwarmClusterConfiguration> clusterProfile = new ClusterProfile<>(newClusterId, Constants.PLUGIN_ID, pluginSettings.toClusterProfileProperties());
 
             return getGoPluginApiResponse(pluginSettings, Arrays.asList(clusterProfile), existingElasticAgentProfiles);
         }
 
         LOG.info("[Migrate Config] Checking to perform migrations on Cluster Profiles '{}'.", existingClusterProfiles.stream().map(ClusterProfile::getId).collect(Collectors.toList()));
 
-        for (ClusterProfile<ClusterProfileProperties> clusterProfile : existingClusterProfiles) {
-            List<ElasticAgentProfile<ElasticProfileConfiguration>> associatedElasticAgentProfiles = findAssociatedElasticAgentProfiles(clusterProfile, existingElasticAgentProfiles);
+        for (ClusterProfile<SwarmClusterConfiguration> clusterProfile : existingClusterProfiles) {
+            List<ElasticAgentProfile<SwarmElasticProfileConfiguration>> associatedElasticAgentProfiles = findAssociatedElasticAgentProfiles(clusterProfile, existingElasticAgentProfiles);
             if (associatedElasticAgentProfiles.size() == 0) {
                 LOG.info("[Migrate Config] Skipping migration for the cluster '{}' as no Elastic Agent Profiles are associated with it.", clusterProfile.getId());
                 continue;
@@ -85,8 +85,8 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
 
     //this is responsible to copy over plugin settings configurations to cluster profile and if required rename no op cluster
     private void migrateConfigForCluster(DockerSwarmPluginSettings pluginSettings,
-                                         List<ElasticAgentProfile<ElasticProfileConfiguration>> associatedElasticAgentProfiles,
-                                         ClusterProfile<ClusterProfileProperties> clusterProfile) {
+                                         List<ElasticAgentProfile<SwarmElasticProfileConfiguration>> associatedElasticAgentProfiles,
+                                         ClusterProfile<SwarmClusterConfiguration> clusterProfile) {
         LOG.info("[Migrate Config] Coping over existing plugin settings configurations to '{}' cluster profile.", clusterProfile.getId());
         clusterProfile.setClusterProfileProperties(pluginSettings.toClusterProfileProperties());
 
@@ -100,14 +100,14 @@ public class MigrateConfigurationRequestExecutor extends AbstractExecutor<Migrat
         }
     }
 
-    private List<ElasticAgentProfile<ElasticProfileConfiguration>> findAssociatedElasticAgentProfiles(ClusterProfile<ClusterProfileProperties> clusterProfile,
-                                                                                                      List<ElasticAgentProfile<ElasticProfileConfiguration>> elasticAgentProfiles) {
+    private List<ElasticAgentProfile<SwarmElasticProfileConfiguration>> findAssociatedElasticAgentProfiles(ClusterProfile<SwarmClusterConfiguration> clusterProfile,
+                                                                                                           List<ElasticAgentProfile<SwarmElasticProfileConfiguration>> elasticAgentProfiles) {
         return elasticAgentProfiles.stream().filter(profile -> Objects.equals(profile.getClusterProfileId(), clusterProfile.getId())).collect(Collectors.toList());
     }
 
     private GoPluginApiResponse getGoPluginApiResponse(DockerSwarmPluginSettings pluginSettings,
-                                                       List<ClusterProfile<ClusterProfileProperties>> clusterProfiles,
-                                                       List<ElasticAgentProfile<ElasticProfileConfiguration>> elasticAgentProfiles) {
+                                                       List<ClusterProfile<SwarmClusterConfiguration>> clusterProfiles,
+                                                       List<ElasticAgentProfile<SwarmElasticProfileConfiguration>> elasticAgentProfiles) {
         MigrateConfigurationRequest response = new MigrateConfigurationRequest();
         response.setPluginSettings(pluginSettings);
         response.setClusterProfiles(clusterProfiles);

@@ -18,9 +18,9 @@ package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.models.ClusterProfile;
 import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPluginSettings;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -66,20 +66,20 @@ class MigrateConfigurationRequestTest {
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
-        clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
-        clusterProfileProperties.setAutoRegisterTimeout("20");
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration();
+        swarmClusterConfiguration.setGoServerUrl("https://127.0.0.1:8154/go");
+        swarmClusterConfiguration.setAutoRegisterTimeout("20");
 
-        ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
+        ClusterProfile<SwarmClusterConfiguration> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
-        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
+        clusterProfile.setClusterProfileProperties(swarmClusterConfiguration);
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
         elasticAgentProfile.setId("profile_id")
                 .setPluginId("plugin_id")
                 .setClusterProfileId("cluster_profile_id")
-                .setElasticProfileConfiguration(new ElasticProfileConfiguration());
+                .setElasticProfileConfiguration(new SwarmElasticProfileConfiguration());
 
         assertThat(pluginSettings).isEqualTo(request.getPluginSettings());
         assertThat(of(clusterProfile)).isEqualTo(request.getClusterProfiles());
@@ -107,20 +107,20 @@ class MigrateConfigurationRequestTest {
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
-        clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
-        clusterProfileProperties.setAutoRegisterTimeout("10");
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration();
+        swarmClusterConfiguration.setGoServerUrl("https://127.0.0.1:8154/go");
+        swarmClusterConfiguration.setAutoRegisterTimeout("10");
 
-        ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
+        ClusterProfile<SwarmClusterConfiguration> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
-        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
+        clusterProfile.setClusterProfileProperties(swarmClusterConfiguration);
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
         elasticAgentProfile.setId("profile_id")
                 .setPluginId("plugin_id")
                 .setClusterProfileId("cluster_profile_id")
-                .setElasticProfileConfiguration(new ElasticProfileConfiguration().setImage("alpine:latest"));
+                .setElasticProfileConfiguration(new SwarmElasticProfileConfiguration().setImage("alpine:latest"));
 
         MigrateConfigurationRequest request = new MigrateConfigurationRequest();
         request.setPluginSettings(pluginSettings)

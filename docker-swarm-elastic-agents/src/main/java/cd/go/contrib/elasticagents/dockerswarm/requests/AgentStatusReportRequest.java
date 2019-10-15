@@ -17,7 +17,7 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractAgentStatusReportRequest;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 
-public class AgentStatusReportRequest extends AbstractAgentStatusReportRequest<ClusterProfileProperties> {
+public class AgentStatusReportRequest extends AbstractAgentStatusReportRequest<SwarmClusterConfiguration> {
 }

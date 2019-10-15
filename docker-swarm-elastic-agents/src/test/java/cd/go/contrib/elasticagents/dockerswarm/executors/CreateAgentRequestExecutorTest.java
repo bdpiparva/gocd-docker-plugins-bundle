@@ -18,9 +18,9 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import org.junit.jupiter.api.Test;
 
@@ -35,20 +35,20 @@ import static org.mockito.Mockito.verify;
 class CreateAgentRequestExecutorTest {
     @Test
     void shouldAskDockerContainersToCreateAnAgent() throws Exception {
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration();
         CreateAgentRequest request = new CreateAgentRequest();
-        request.setClusterProfileProperties(clusterProfileProperties)
-                .setElasticProfileConfiguration(new ElasticProfileConfiguration());
+        request.setClusterProfileProperties(swarmClusterConfiguration)
+                .setElasticProfileConfiguration(new SwarmElasticProfileConfiguration());
 
         ElasticAgentRequestClient pluginRequest = mock(ElasticAgentRequestClient.class);
 
         DockerServices dockerServices = mock(DockerServices.class);
         Map<String, DockerServices> clusterToServicesMap = new HashMap<>();
-        clusterToServicesMap.put(clusterProfileProperties.uuid(), dockerServices);
+        clusterToServicesMap.put(swarmClusterConfiguration.uuid(), dockerServices);
 
         new CreateAgentRequestExecutor(clusterToServicesMap, pluginRequest).execute(request);
 
-        verify(dockerServices).refreshAll(clusterProfileProperties);
+        verify(dockerServices).refreshAll(swarmClusterConfiguration);
         verify(dockerServices).create(eq(request), eq(pluginRequest), any(ConsoleLogAppender.class));
 
     }

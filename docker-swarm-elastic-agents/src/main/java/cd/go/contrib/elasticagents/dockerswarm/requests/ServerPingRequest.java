@@ -17,7 +17,7 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractServerPingRequest;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 
-public class ServerPingRequest extends AbstractServerPingRequest<ClusterProfileProperties> {
+public class ServerPingRequest extends AbstractServerPingRequest<SwarmClusterConfiguration> {
 }

@@ -18,7 +18,7 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -45,7 +45,7 @@ public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequ
     protected GoPluginApiResponse execute(JobCompletionRequest request) {
         try {
             refreshInstancesForCluster(request.getClusterProfileConfiguration());
-            ClusterProfileProperties clusterProfileProperties = request.getClusterProfileConfiguration();
+            SwarmClusterConfiguration swarmClusterConfiguration = request.getClusterProfileConfiguration();
             String elasticAgentId = request.getElasticAgentId();
 
             Agent agent = new Agent();
@@ -53,10 +53,10 @@ public class JobCompletionRequestExecutor extends BaseExecutor<JobCompletionRequ
 
             LOG.info(format("[Job Completion] Terminating elastic agent with id {0} on job completion {1}.", agent.elasticAgentId(), request.getJobIdentifier()));
 
-            DockerServices dockerServices = clusterToServicesMap.get(clusterProfileProperties.uuid());
+            DockerServices dockerServices = clusterToServicesMap.get(swarmClusterConfiguration.uuid());
             List<Agent> agents = Collections.singletonList(agent);
             pluginRequest.disableAgents(agents);
-            dockerServices.terminate(agent.elasticAgentId(), clusterProfileProperties);
+            dockerServices.terminate(agent.elasticAgentId(), swarmClusterConfiguration);
             pluginRequest.deleteAgents(agents);
             return DefaultGoPluginApiResponse.success("");
         } catch (Exception e) {

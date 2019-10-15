@@ -17,9 +17,9 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractMigrateConfigurationRequest;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPluginSettings;
 
-public class MigrateConfigurationRequest extends AbstractMigrateConfigurationRequest<ElasticProfileConfiguration, ClusterProfileProperties, DockerSwarmPluginSettings> {
+public class MigrateConfigurationRequest extends AbstractMigrateConfigurationRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration, DockerSwarmPluginSettings> {
 }

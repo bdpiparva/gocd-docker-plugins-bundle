@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import org.junit.jupiter.api.Test;
 
 import static cd.go.plugin.base.GsonTransformer.fromJson;
@@ -39,7 +39,7 @@ class CreateAgentRequestTest {
         assertThat(request.getAutoRegisterKey()).isEqualTo("secret-key");
         assertThat(request.getEnvironment()).isEqualTo("prod");
 
-        ElasticProfileConfiguration expectedProperties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration expectedProperties = new SwarmElasticProfileConfiguration();
         expectedProperties.setImage("alpine:latest");
         expectedProperties.setMaxMemory("1G");
         assertThat(request.getElasticProfileConfiguration()).isEqualTo(expectedProperties);

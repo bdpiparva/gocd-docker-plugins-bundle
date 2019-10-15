@@ -153,8 +153,8 @@ public class DockerSwarmPluginSettings implements cd.go.contrib.elasticagents.co
         this.autoRegisterTimeout = autoRegisterTimeout;
     }
 
-    public ClusterProfileProperties toClusterProfileProperties() {
-        return new ClusterProfileProperties()
+    public SwarmClusterConfiguration toClusterProfileProperties() {
+        return new SwarmClusterConfiguration()
                 .setGoServerUrl(goServerUrl)
                 .setDockerURI(dockerURI)
                 .setEnvironmentVariables(this.environmentVariables)

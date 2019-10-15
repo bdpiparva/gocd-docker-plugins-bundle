@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import com.google.gson.JsonObject;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ class AgentStatusReportRequestTest {
 
         AgentStatusReportRequest agentStatusReportRequest = fromJson(jsonObject.toString(), AgentStatusReportRequest.class);
 
-        ClusterProfileProperties expectedClusterProfile = new ClusterProfileProperties();
+        SwarmClusterConfiguration expectedClusterProfile = new SwarmClusterConfiguration();
         expectedClusterProfile.setGoServerUrl("https://foo.com/go");
         expectedClusterProfile.setDockerURI("unix:///var/run/docker.sock");
 

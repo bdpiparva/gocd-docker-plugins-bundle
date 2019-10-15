@@ -40,14 +40,14 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 public class DockerService {
     private static final Gson GSON = new Gson();
     private final DateTime createdAt;
-    private final ElasticProfileConfiguration properties;
+    private final SwarmElasticProfileConfiguration properties;
     private final String environment;
     private JobIdentifier jobIdentifier;
     private String name;
 
     public DockerService(String name,
                          Date createdAt,
-                         ElasticProfileConfiguration properties,
+                         SwarmElasticProfileConfiguration properties,
                          String environment,
                          JobIdentifier jobIdentifier) {
         this.name = name;
@@ -69,7 +69,7 @@ public class DockerService {
         return environment;
     }
 
-    public ElasticProfileConfiguration getElasticProfileConfiguration() {
+    public SwarmElasticProfileConfiguration getElasticProfileConfiguration() {
         return properties;
     }
 
@@ -88,7 +88,7 @@ public class DockerService {
 
     public static DockerService fromService(Service service) {
         Map<String, String> labels = service.spec().labels();
-        final ElasticProfileConfiguration properties = fromJson(labels.get(CONFIGURATION_LABEL_KEY), ElasticProfileConfiguration.class);
+        final SwarmElasticProfileConfiguration properties = fromJson(labels.get(CONFIGURATION_LABEL_KEY), SwarmElasticProfileConfiguration.class);
         return new DockerService(service.spec().name(),
                 service.createdAt(),
                 properties,
@@ -96,14 +96,14 @@ public class DockerService {
                 JobIdentifier.fromJson(labels.get(JOB_IDENTIFIER_LABEL_KEY)));
     }
 
-    public static DockerService create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
-                                       ClusterProfileProperties clusterProfileProperties,
+    public static DockerService create(AbstractCreateAgentRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> request,
+                                       SwarmClusterConfiguration swarmClusterConfiguration,
                                        DockerClient docker) throws InterruptedException, DockerException {
         String serviceName = UUID.randomUUID().toString();
 
         HashMap<String, String> labels = labelsFrom(request);
         String imageName = image(request.getElasticProfileConfiguration().getImage());
-        String[] env = environmentFrom(request, clusterProfileProperties, serviceName);
+        String[] env = environmentFrom(request, swarmClusterConfiguration, serviceName);
 
         final ContainerSpec.Builder containerSpecBuilder = ContainerSpec.builder()
                 .image(imageName)
@@ -155,9 +155,9 @@ public class DockerService {
                 request.getJobIdentifier());
     }
 
-    private static ResourceRequirements resourceRequirements(ElasticProfileConfiguration elasticProfileConfiguration) {
+    private static ResourceRequirements resourceRequirements(SwarmElasticProfileConfiguration swarmElasticProfileConfiguration) {
         ResourceRequirements.Builder resourceRequirementsBuilder = ResourceRequirements.builder();
-        final String maxMemory = elasticProfileConfiguration.getMaxMemory();
+        final String maxMemory = swarmElasticProfileConfiguration.getMaxMemory();
         if (StringUtils.isNotBlank(maxMemory)) {
             resourceRequirementsBuilder.limits(
                     Resources.builder()
@@ -166,7 +166,7 @@ public class DockerService {
             );
         }
 
-        final String reservedMemory = elasticProfileConfiguration.getReservedMemory();
+        final String reservedMemory = swarmElasticProfileConfiguration.getReservedMemory();
         if (StringUtils.isNotBlank(reservedMemory)) {
             resourceRequirementsBuilder.reservations(
                     Resources.builder()
@@ -178,19 +178,19 @@ public class DockerService {
         return resourceRequirementsBuilder.build();
     }
 
-    private static String[] environmentFrom(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
-                                            ClusterProfileProperties clusterProfileProperties,
+    private static String[] environmentFrom(AbstractCreateAgentRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> request,
+                                            SwarmClusterConfiguration swarmClusterConfiguration,
                                             String containerName) {
         Set<String> env = new HashSet<>();
 
-        env.addAll(clusterProfileProperties.getEnvironmentVariables());
+        env.addAll(swarmClusterConfiguration.getEnvironmentVariables());
         if (StringUtils.isNotBlank(request.getElasticProfileConfiguration().getEnvironment())) {
             env.addAll(Util.splitIntoLinesAndTrimSpaces(request.getElasticProfileConfiguration().getEnvironment()));
         }
 
         env.addAll(Arrays.asList(
                 "GO_EA_MODE=" + mode(),
-                "GO_EA_SERVER_URL=" + clusterProfileProperties.getGoServerUrl(),
+                "GO_EA_SERVER_URL=" + swarmClusterConfiguration.getGoServerUrl(),
                 "GO_EA_GUID=" + "docker-swarm." + containerName
         ));
 
@@ -199,7 +199,7 @@ public class DockerService {
         return env.toArray(new String[env.size()]);
     }
 
-    private static HashMap<String, String> labelsFrom(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request) {
+    private static HashMap<String, String> labelsFrom(AbstractCreateAgentRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> request) {
         HashMap<String, String> labels = new HashMap<>();
 
         labels.put(CREATED_BY_LABEL_KEY, Constants.PLUGIN_ID);

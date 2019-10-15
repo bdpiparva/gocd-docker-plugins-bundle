@@ -16,7 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.plugin.base.executors.AbstractExecutor;
 
@@ -30,20 +30,20 @@ public abstract class BaseExecutor<T> extends AbstractExecutor<T> {
         this.clusterToServicesMap = clusterToServicesMap;
     }
 
-    protected void refreshInstancesForAllClusters(List<ClusterProfileProperties> listOfClusterProfileProperties) throws Exception {
-        for (ClusterProfileProperties clusterProfileProperties : listOfClusterProfileProperties) {
-            refreshInstancesForCluster(clusterProfileProperties);
+    protected void refreshInstancesForAllClusters(List<SwarmClusterConfiguration> listOfDockerSwarmClusterProfileProperties) throws Exception {
+        for (SwarmClusterConfiguration swarmClusterConfiguration : listOfDockerSwarmClusterProfileProperties) {
+            refreshInstancesForCluster(swarmClusterConfiguration);
         }
     }
 
     protected DockerServices getAgentInstancesFor(
-            ClusterProfileProperties clusterProfileProperties) {
-        return clusterToServicesMap.get(clusterProfileProperties.uuid());
+            SwarmClusterConfiguration swarmClusterConfiguration) {
+        return clusterToServicesMap.get(swarmClusterConfiguration.uuid());
     }
 
-    protected void refreshInstancesForCluster(ClusterProfileProperties clusterProfileProperties) throws Exception {
-        DockerServices dockerContainers = clusterToServicesMap.getOrDefault(clusterProfileProperties.uuid(), new DockerServices());
-        dockerContainers.refreshAll(clusterProfileProperties);
-        clusterToServicesMap.put(clusterProfileProperties.uuid(), dockerContainers);
+    protected void refreshInstancesForCluster(SwarmClusterConfiguration swarmClusterConfiguration) throws Exception {
+        DockerServices dockerContainers = clusterToServicesMap.getOrDefault(swarmClusterConfiguration.uuid(), new DockerServices());
+        dockerContainers.refreshAll(swarmClusterConfiguration);
+        clusterToServicesMap.put(swarmClusterConfiguration.uuid(), dockerContainers);
     }
 }

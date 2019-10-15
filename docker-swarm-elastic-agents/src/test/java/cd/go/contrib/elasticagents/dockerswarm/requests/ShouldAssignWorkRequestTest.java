@@ -20,8 +20,8 @@ import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.AgentBuildState;
 import cd.go.contrib.elasticagents.common.agent.AgentConfigState;
 import cd.go.contrib.elasticagents.common.agent.AgentState;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import cd.go.plugin.base.test_helper.annotations.JsonSource;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -40,12 +40,12 @@ class ShouldAssignWorkRequestTest {
         assertThat(request.getAgent()).isEqualTo(new Agent("42", AgentState.Idle, AgentBuildState.Idle, AgentConfigState.Enabled));
         assertThat(request.getJobIdentifier()).isEqualTo(JobIdentifierMother.get());
         assertThat(request.getClusterProfileProperties()).isEqualTo(
-                new ClusterProfileProperties()
+                new SwarmClusterConfiguration()
                         .setGoServerUrl("https://go.server.url/go")
                         .setDockerURI("unix://foo/bar")
         );
         assertThat(request.getElasticProfileConfiguration()).isEqualTo(
-                new ElasticProfileConfiguration()
+                new SwarmElasticProfileConfiguration()
                         .setImage("alpine:latest")
                         .setCommand("/bin/sleep\n3")
                         .setMaxMemory("10G")

@@ -20,7 +20,7 @@ import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.agent.Agents;
 import cd.go.contrib.elasticagents.common.exceptions.ServerRequestFailedException;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ServerPingRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -48,10 +48,10 @@ public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
         try {
             refreshInstancesForAllClusters(serverPingRequest.getAllClusterProfileConfigurations());
             LOG.info("[server-ping] Starting execute server ping request.");
-            List<ClusterProfileProperties> allClusterProfileProperties = serverPingRequest.getAllClusterProfileConfigurations();
+            List<SwarmClusterConfiguration> allDockerSwarmClusterProfileProperties = serverPingRequest.getAllClusterProfileConfigurations();
 
-            for (ClusterProfileProperties clusterProfileProperties : allClusterProfileProperties) {
-                performCleanupForACluster(clusterProfileProperties, clusterToServicesMap.get(clusterProfileProperties.uuid()));
+            for (SwarmClusterConfiguration swarmClusterConfiguration : allDockerSwarmClusterProfileProperties) {
+                performCleanupForACluster(swarmClusterConfiguration, clusterToServicesMap.get(swarmClusterConfiguration.uuid()));
             }
 
             CheckForPossiblyMissingAgents();
@@ -61,25 +61,25 @@ public class ServerPingRequestExecutor extends BaseExecutor<ServerPingRequest> {
         }
     }
 
-    private void performCleanupForACluster(ClusterProfileProperties clusterProfileProperties,
+    private void performCleanupForACluster(SwarmClusterConfiguration swarmClusterConfiguration,
                                            DockerServices dockerServices) throws Exception {
         Agents allAgents = pluginRequest.listAgents();
-        Agents agentsToDisable = dockerServices.instancesCreatedAfterTimeout(clusterProfileProperties, allAgents);
+        Agents agentsToDisable = dockerServices.instancesCreatedAfterTimeout(swarmClusterConfiguration, allAgents);
         disableIdleAgents(agentsToDisable);
 
         allAgents = pluginRequest.listAgents();
-        terminateDisabledAgents(allAgents, clusterProfileProperties, dockerServices);
+        terminateDisabledAgents(allAgents, swarmClusterConfiguration, dockerServices);
 
-        dockerServices.terminateUnregisteredInstances(clusterProfileProperties, allAgents);
+        dockerServices.terminateUnregisteredInstances(swarmClusterConfiguration, allAgents);
     }
 
     private void terminateDisabledAgents(Agents agents,
-                                         ClusterProfileProperties clusterProfileProperties,
+                                         SwarmClusterConfiguration swarmClusterConfiguration,
                                          DockerServices dockerServices) throws Exception {
         Collection<Agent> toBeDeleted = agents.findInstancesToTerminate();
 
         for (Agent agent : toBeDeleted) {
-            dockerServices.terminate(agent.elasticAgentId(), clusterProfileProperties);
+            dockerServices.terminate(agent.elasticAgentId(), swarmClusterConfiguration);
         }
         pluginRequest.deleteAgents(toBeDeleted);
     }

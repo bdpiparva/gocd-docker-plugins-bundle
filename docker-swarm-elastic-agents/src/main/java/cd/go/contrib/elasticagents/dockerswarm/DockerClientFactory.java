@@ -35,17 +35,17 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class DockerClientFactory {
     private DefaultDockerClient client;
-    private ClusterProfileProperties clusterProfileProperties;
+    private SwarmClusterConfiguration swarmClusterConfiguration;
 
     private static final DockerClientFactory DOCKER_CLIENT_FACTORY = new DockerClientFactory();
 
-    public synchronized DockerClient docker(ClusterProfileProperties clusterProfileProperties) throws Exception {
-        if (clusterProfileProperties.equals(this.clusterProfileProperties) && this.client != null) {
+    public synchronized DockerClient docker(SwarmClusterConfiguration swarmClusterConfiguration) throws Exception {
+        if (swarmClusterConfiguration.equals(this.swarmClusterConfiguration) && this.client != null) {
             return this.client;
         }
 
-        this.clusterProfileProperties = clusterProfileProperties;
-        this.client = createClient(clusterProfileProperties);
+        this.swarmClusterConfiguration = swarmClusterConfiguration;
+        this.client = createClient(swarmClusterConfiguration);
         return this.client;
     }
 
@@ -53,16 +53,16 @@ public class DockerClientFactory {
         return DOCKER_CLIENT_FACTORY;
     }
 
-    private static DefaultDockerClient createClient(ClusterProfileProperties clusterProfileProperties) throws Exception {
+    private static DefaultDockerClient createClient(SwarmClusterConfiguration swarmClusterConfiguration) throws Exception {
         DefaultDockerClient.Builder builder = DefaultDockerClient.builder();
 
-        builder.uri(clusterProfileProperties.getDockerURI());
-        if (clusterProfileProperties.getDockerURI().startsWith("https://")) {
-            setupCerts(clusterProfileProperties, builder);
+        builder.uri(swarmClusterConfiguration.getDockerURI());
+        if (swarmClusterConfiguration.getDockerURI().startsWith("https://")) {
+            setupCerts(swarmClusterConfiguration, builder);
         }
 
-        if (clusterProfileProperties.useDockerAuthInfo()) {
-            final RegistryAuth registryAuth = clusterProfileProperties.registryAuth();
+        if (swarmClusterConfiguration.useDockerAuthInfo()) {
+            final RegistryAuth registryAuth = swarmClusterConfiguration.registryAuth();
             DockerSwarmPlugin.LOG.info(format("Using private docker registry server `{0}`.", registryAuth.serverAddress()));
             builder.registryAuth(registryAuth);
         }
@@ -75,9 +75,9 @@ public class DockerClientFactory {
         return docker;
     }
 
-    private static void setupCerts(ClusterProfileProperties clusterProfileProperties,
+    private static void setupCerts(SwarmClusterConfiguration swarmClusterConfiguration,
                                    DefaultDockerClient.Builder builder) throws IOException, DockerCertificateException {
-        if (isBlank(clusterProfileProperties.getDockerCACert()) || isBlank(clusterProfileProperties.getDockerClientCert()) || isBlank(clusterProfileProperties.getDockerClientKey())) {
+        if (isBlank(swarmClusterConfiguration.getDockerCACert()) || isBlank(swarmClusterConfiguration.getDockerClientCert()) || isBlank(swarmClusterConfiguration.getDockerClientKey())) {
             DockerSwarmPlugin.LOG.warn("Missing docker certificates, will attempt to connect without certificates");
             return;
         }
@@ -86,9 +86,9 @@ public class DockerClientFactory {
         File tempDirectory = certificateDir.toFile();
 
         try {
-            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CA_CERT_NAME), clusterProfileProperties.getDockerCACert(), StandardCharsets.UTF_8);
-            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_CERT_NAME), clusterProfileProperties.getDockerClientCert(), StandardCharsets.UTF_8);
-            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_KEY_NAME), clusterProfileProperties.getDockerClientKey(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CA_CERT_NAME), swarmClusterConfiguration.getDockerCACert(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_CERT_NAME), swarmClusterConfiguration.getDockerClientCert(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(new File(tempDirectory, DockerCertificates.DEFAULT_CLIENT_KEY_NAME), swarmClusterConfiguration.getDockerClientKey(), StandardCharsets.UTF_8);
             builder.dockerCertificates(new DockerCertificates(certificateDir));
         } finally {
             FileUtils.deleteDirectory(tempDirectory);

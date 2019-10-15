@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.validator;
 
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.plugin.base.validation.ValidationResult;
 import com.spotify.docker.client.DockerClient;
@@ -38,22 +38,22 @@ class DockerSecretsValidatorTest {
     private DockerClientFactory dockerClientFactory;
     private CreateAgentRequest createAgentRequest;
     private DockerClient dockerClient;
-    private ElasticProfileConfiguration elasticProfileConfiguration;
+    private SwarmElasticProfileConfiguration swarmElasticProfileConfiguration;
 
     @BeforeEach
     void setUp() throws Exception {
         dockerClientFactory = mock(DockerClientFactory.class);
-        ClusterProfileProperties clusterProfileProperties = mock(ClusterProfileProperties.class);
+        SwarmClusterConfiguration swarmClusterConfiguration = mock(SwarmClusterConfiguration.class);
         dockerClient = mock(DockerClient.class);
 
-        elasticProfileConfiguration = new ElasticProfileConfiguration();
-        elasticProfileConfiguration.setImage("alpine");
-        elasticProfileConfiguration.setSecrets("src=Foo");
+        swarmElasticProfileConfiguration = new SwarmElasticProfileConfiguration();
+        swarmElasticProfileConfiguration.setImage("alpine");
+        swarmElasticProfileConfiguration.setSecrets("src=Foo");
         createAgentRequest = new CreateAgentRequest();
-        createAgentRequest.setElasticProfileConfiguration(elasticProfileConfiguration)
-                .setClusterProfileProperties(clusterProfileProperties);
+        createAgentRequest.setElasticProfileConfiguration(swarmElasticProfileConfiguration)
+                .setClusterProfileProperties(swarmClusterConfiguration);
 
-        when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(dockerClient);
+        when(dockerClientFactory.docker(swarmClusterConfiguration)).thenReturn(dockerClient);
     }
 
     @Test
@@ -76,11 +76,11 @@ class DockerSecretsValidatorTest {
     @Test
     void shouldValidateInvalidDockerSecretsConfiguration() throws Exception {
         final Version version = mock(Version.class);
-        elasticProfileConfiguration.setSecrets("Foo");
+        swarmElasticProfileConfiguration.setSecrets("Foo");
 
         when(version.apiVersion()).thenReturn("1.27");
         when(dockerClient.version()).thenReturn(version);
-        when(dockerClientFactory.docker(any(ClusterProfileProperties.class))).thenReturn(dockerClient);
+        when(dockerClientFactory.docker(any(SwarmClusterConfiguration.class))).thenReturn(dockerClient);
 
         ValidationResult validationResult = new DockerSecretValidator(null).validate(createAgentRequest);
 

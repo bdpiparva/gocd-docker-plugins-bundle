@@ -99,8 +99,8 @@ public abstract class BaseTest {
         }
     }
 
-    protected ClusterProfileProperties createClusterProfiles() throws IOException {
-        ClusterProfileProperties settings = new ClusterProfileProperties();
+    protected SwarmClusterConfiguration createClusterProfiles() throws IOException {
+        SwarmClusterConfiguration settings = new SwarmClusterConfiguration();
         settings.setMaxDockerContainers("1");
         settings.setDockerURI(builder.uri().toString());
         if (settings.getDockerURI().startsWith("https://")) {
@@ -149,16 +149,16 @@ public abstract class BaseTest {
         return containers;
     }
 
-    protected ClusterProfileProperties createClusterProfileProperties() throws IOException {
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
-        clusterProfileProperties.setMaxDockerContainers("1");
-        clusterProfileProperties.setDockerURI(builder.uri().toString());
-        if (clusterProfileProperties.getDockerURI().startsWith("https://")) {
-            clusterProfileProperties.setDockerCACert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CA_CERT_NAME).toFile(), StandardCharsets.UTF_8));
-            clusterProfileProperties.setDockerClientCert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_CERT_NAME).toFile(), StandardCharsets.UTF_8));
-            clusterProfileProperties.setDockerClientKey(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_KEY_NAME).toFile(), StandardCharsets.UTF_8));
+    protected SwarmClusterConfiguration createClusterProfileProperties() throws IOException {
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration();
+        swarmClusterConfiguration.setMaxDockerContainers("1");
+        swarmClusterConfiguration.setDockerURI(builder.uri().toString());
+        if (swarmClusterConfiguration.getDockerURI().startsWith("https://")) {
+            swarmClusterConfiguration.setDockerCACert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CA_CERT_NAME).toFile(), StandardCharsets.UTF_8));
+            swarmClusterConfiguration.setDockerClientCert(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_CERT_NAME).toFile(), StandardCharsets.UTF_8));
+            swarmClusterConfiguration.setDockerClientKey(FileUtils.readFileToString(Paths.get(getenv("DOCKER_CERT_PATH"), DockerCertificates.DEFAULT_CLIENT_KEY_NAME).toFile(), StandardCharsets.UTF_8));
         }
 
-        return clusterProfileProperties;
+        return swarmClusterConfiguration;
     }
 }

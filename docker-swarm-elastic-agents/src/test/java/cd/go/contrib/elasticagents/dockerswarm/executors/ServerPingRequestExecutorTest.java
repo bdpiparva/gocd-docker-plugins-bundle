@@ -24,7 +24,7 @@ import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.BaseTest;
 import cd.go.contrib.elasticagents.dockerswarm.DockerService;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ServerPingRequest;
 import org.joda.time.Period;
@@ -103,11 +103,11 @@ class ServerPingRequestExecutorTest extends BaseTest {
 
         DockerServices agentInstances = new DockerServices();
         agentInstances.clock = new Clock.TestClock().forward(Period.minutes(11));
-        ElasticProfileConfiguration elasticProfileConfiguration = new ElasticProfileConfiguration()
+        SwarmElasticProfileConfiguration swarmElasticProfileConfiguration = new SwarmElasticProfileConfiguration()
                 .setImage("alpine")
                 .setCommand("/bin/sleep\n5");
         CreateAgentRequest request = new CreateAgentRequest();
-        request.setElasticProfileConfiguration(elasticProfileConfiguration)
+        request.setElasticProfileConfiguration(swarmElasticProfileConfiguration)
                 .setJobIdentifier(new JobIdentifier())
                 .setClusterProfileProperties(createClusterProfiles());
         DockerService container = agentInstances.create(request, pluginRequest, mock(ConsoleLogAppender.class));

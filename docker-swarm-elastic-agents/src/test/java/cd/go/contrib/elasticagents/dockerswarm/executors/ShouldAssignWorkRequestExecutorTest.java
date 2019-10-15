@@ -44,17 +44,17 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
     private DockerService instance;
     private final String environment = "production";
     private JobIdentifier jobIdentifier;
-    private ElasticProfileConfiguration properties;
+    private SwarmElasticProfileConfiguration properties;
     private ShouldAssignWorkRequestExecutor executor;
-    private ClusterProfileProperties clusterProfileProperties;
+    private SwarmClusterConfiguration swarmClusterConfiguration;
 
     @BeforeEach
     void setUp() throws Exception {
         initMocks(this);
-        clusterProfileProperties = createClusterProfiles();
+        swarmClusterConfiguration = createClusterProfiles();
         jobIdentifier = new JobIdentifier("up42", 98765L, "foo", "stage_1", "30000", "job_1", 876578L);
         dockerServices = new DockerServices();
-        properties = new ElasticProfileConfiguration();
+        properties = new SwarmElasticProfileConfiguration();
         properties.setImage("alpine:latest");
 
         CreateAgentRequest createAgentRequest = new CreateAgentRequest();
@@ -62,13 +62,13 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
                 .setElasticProfileConfiguration(properties)
                 .setEnvironment(environment)
                 .setJobIdentifier(jobIdentifier)
-                .setClusterProfileProperties(clusterProfileProperties);
+                .setClusterProfileProperties(swarmClusterConfiguration);
 
         instance = dockerServices.create(createAgentRequest, elasticAgentRequestClient, consoleLogAppender);
         services.add(instance.name());
 
         Map<String, DockerServices> clusterToServicesMap = new HashMap<>();
-        clusterToServicesMap.put(clusterProfileProperties.uuid(), dockerServices);
+        clusterToServicesMap.put(swarmClusterConfiguration.uuid(), dockerServices);
         executor = new ShouldAssignWorkRequestExecutor(clusterToServicesMap);
     }
 
@@ -79,7 +79,7 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
                 .setEnvironment(environment)
                 .setElasticProfileConfiguration(properties)
                 .setJobIdentifier(jobIdentifier)
-                .setClusterProfileProperties(clusterProfileProperties);
+                .setClusterProfileProperties(swarmClusterConfiguration);
 
         GoPluginApiResponse response = executor.execute(request);
         assertThat(response.responseCode()).isEqualTo(200);
@@ -93,7 +93,7 @@ class ShouldAssignWorkRequestExecutorTest extends BaseTest {
         request.setAgent(new Agent(instance.name(), null, null, null))
                 .setEnvironment(environment)
                 .setElasticProfileConfiguration(properties)
-                .setClusterProfileProperties(clusterProfileProperties)
+                .setClusterProfileProperties(swarmClusterConfiguration)
                 .setJobIdentifier(mismatchingJobIdentifier);
 
         GoPluginApiResponse response = executor.execute(request);

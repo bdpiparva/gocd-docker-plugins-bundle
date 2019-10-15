@@ -92,7 +92,7 @@ class DockerSwarmPluginTest {
             String template = readResource("/docker-swarm/cluster-profile.template.html");
             Document document = Jsoup.parse(template);
 
-            for (MetadataHolder field : new MetadataExtractor().forClass(ClusterProfileProperties.class)) {
+            for (MetadataHolder field : new MetadataExtractor().forClass(SwarmClusterConfiguration.class)) {
                 assertThat(getInputOrTextArea(document, field.getKey()))
                         .describedAs(format("Field %s must be present", field.getKey()))
                         .isNotNull();
@@ -138,7 +138,7 @@ class DockerSwarmPluginTest {
 
         @Test
         void shouldValidateAGoodConfiguration() throws Exception {
-            ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties()
+            SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration()
                     .setMaxDockerContainers("1")
                     .setDockerURI("https://api.example.com")
                     .setDockerClientCert("some ca cert")
@@ -148,7 +148,7 @@ class DockerSwarmPluginTest {
                     .setAutoRegisterTimeout("10")
                     .setUseDockerAuthInfo("false");
 
-            request.setRequestBody(toJson(clusterProfileProperties));
+            request.setRequestBody(toJson(swarmClusterConfiguration));
             GoPluginApiResponse response = plugin.handle(request);
 
             assertThat(response.responseCode()).isEqualTo(200);
@@ -157,7 +157,7 @@ class DockerSwarmPluginTest {
 
         @Test
         void shouldValidateAConfigurationWithAllPrivateRegistryInfos() throws Exception {
-            ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties()
+            SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration()
                     .setMaxDockerContainers("1")
                     .setDockerURI("https://api.example.com")
                     .setDockerClientCert("some ca cert")
@@ -170,7 +170,7 @@ class DockerSwarmPluginTest {
                     .setPrivateRegistryUsername("username")
                     .setPrivateRegistryPassword("password");
 
-            request.setRequestBody(toJson(clusterProfileProperties));
+            request.setRequestBody(toJson(swarmClusterConfiguration));
             GoPluginApiResponse response = plugin.handle(request);
 
             assertThat(response.responseCode()).isEqualTo(200);
@@ -180,7 +180,7 @@ class DockerSwarmPluginTest {
         @ParameterizedTest
         @JsonSource(jsonFiles = "/docker-swarm/cluster-profile-invalid-docker-registry-settings-error.json")
         void shouldNotValidateAConfigurationWithInvalidPrivateRegistrySettings(String expectedJSON) throws Exception {
-            ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties()
+            SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration()
                     .setMaxDockerContainers("1")
                     .setDockerURI("https://api.example.com")
                     .setDockerClientCert("some ca cert")
@@ -193,7 +193,7 @@ class DockerSwarmPluginTest {
                     .setPrivateRegistryUsername("")
                     .setPrivateRegistryPassword("");
 
-            request.setRequestBody(toJson(clusterProfileProperties));
+            request.setRequestBody(toJson(swarmClusterConfiguration));
             GoPluginApiResponse response = plugin.handle(request);
 
             assertThat(response.responseCode()).isEqualTo(200);
@@ -219,7 +219,7 @@ class DockerSwarmPluginTest {
             String template = readResource("/docker-swarm/elastic-profile.template.html");
             Document document = Jsoup.parse(template);
 
-            for (MetadataHolder field : new MetadataExtractor().forClass(ElasticProfileConfiguration.class)) {
+            for (MetadataHolder field : new MetadataExtractor().forClass(SwarmElasticProfileConfiguration.class)) {
                 assertThat(getInputOrTextArea(document, field.getKey()))
                         .describedAs(format("Field %s must be present", field.getKey()))
                         .isNotNull();

@@ -41,9 +41,9 @@ class DockerServiceElasticAgentTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration();
 
-        ElasticProfileConfiguration elasticAgentProperties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration elasticAgentProperties = new SwarmElasticProfileConfiguration();
         elasticAgentProperties.setImage("alpine:latest");
 
         jobIdentifier = new JobIdentifier(100L);
@@ -52,7 +52,7 @@ class DockerServiceElasticAgentTest extends BaseTest {
                 .setElasticProfileConfiguration(elasticAgentProperties)
                 .setEnvironment("production")
                 .setJobIdentifier(jobIdentifier)
-                .setClusterProfileProperties(clusterProfileProperties);
+                .setClusterProfileProperties(swarmClusterConfiguration);
     }
 
     @Test
@@ -71,8 +71,8 @@ class DockerServiceElasticAgentTest extends BaseTest {
 
     @Test
     void shouldNotCreateServiceIfTheImageIsNotProvided() {
-        createAgentRequest.setClusterProfileProperties(new ClusterProfileProperties())
-                .setElasticProfileConfiguration(new ElasticProfileConfiguration());
+        createAgentRequest.setClusterProfileProperties(new SwarmClusterConfiguration())
+                .setElasticProfileConfiguration(new SwarmElasticProfileConfiguration());
 
         assertThatCode(() -> DockerService.create(createAgentRequest, createClusterProfiles(), docker))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -113,10 +113,10 @@ class DockerServiceElasticAgentTest extends BaseTest {
 
     @Test
     void shouldStartContainerWithAutoregisterEnvironmentVariables() throws Exception {
-        ElasticProfileConfiguration elasticProfileConfiguration = new ElasticProfileConfiguration();
-        elasticProfileConfiguration.setImage("alpine:latest");
+        SwarmElasticProfileConfiguration swarmElasticProfileConfiguration = new SwarmElasticProfileConfiguration();
+        swarmElasticProfileConfiguration.setImage("alpine:latest");
 
-        createAgentRequest.setElasticProfileConfiguration(elasticProfileConfiguration)
+        createAgentRequest.setElasticProfileConfiguration(swarmElasticProfileConfiguration)
                 .setClusterProfileProperties(createClusterProfiles());
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
@@ -133,12 +133,12 @@ class DockerServiceElasticAgentTest extends BaseTest {
 
     @Test
     void shouldStartContainerWithCorrectCommand() throws Exception {
-        ElasticProfileConfiguration properties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration properties = new SwarmElasticProfileConfiguration();
         properties.setImage("alpine:latest");
         properties.setCommand(join(of("/bin/sh", "-c", "cat /etc/hosts /etc/group"), "\n"));
 
         createAgentRequest.setElasticProfileConfiguration(properties)
-                .setClusterProfileProperties(new ClusterProfileProperties());
+                .setClusterProfileProperties(new SwarmClusterConfiguration());
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
         services.add(service.name());
@@ -149,14 +149,14 @@ class DockerServiceElasticAgentTest extends BaseTest {
 
     @Test
     void shouldStartContainerWithCorrectMemoryLimit() throws Exception {
-        ElasticProfileConfiguration properties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration properties = new SwarmElasticProfileConfiguration();
         properties.setImage("alpine:latest");
         properties.setMaxMemory("512MB");
         properties.setReservedMemory("100MB");
 
         createAgentRequest.setElasticProfileConfiguration(properties)
                 .setEnvironment("prod")
-                .setClusterProfileProperties(new ClusterProfileProperties());
+                .setClusterProfileProperties(new SwarmClusterConfiguration());
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
         services.add(service.name());
@@ -169,12 +169,12 @@ class DockerServiceElasticAgentTest extends BaseTest {
     void shouldStartContainerWithHostEntry() throws Exception {
         requireDockerApiVersionAtLeast("1.26", "Swarm host entry support");
 
-        ElasticProfileConfiguration elasticProfileConfiguration = new ElasticProfileConfiguration();
-        elasticProfileConfiguration.setImage("alpine:latest");
-        elasticProfileConfiguration.setHosts("127.0.0.1 foo bar\n 127.0.0.2 baz");
+        SwarmElasticProfileConfiguration swarmElasticProfileConfiguration = new SwarmElasticProfileConfiguration();
+        swarmElasticProfileConfiguration.setImage("alpine:latest");
+        swarmElasticProfileConfiguration.setHosts("127.0.0.1 foo bar\n 127.0.0.2 baz");
 
-        createAgentRequest.setElasticProfileConfiguration(elasticProfileConfiguration)
-                .setClusterProfileProperties(new ClusterProfileProperties())
+        createAgentRequest.setElasticProfileConfiguration(swarmElasticProfileConfiguration)
+                .setClusterProfileProperties(new SwarmClusterConfiguration())
                 .setEnvironment("prod");
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
@@ -189,13 +189,13 @@ class DockerServiceElasticAgentTest extends BaseTest {
         requireDockerApiVersionAtLeast("1.26", "Docker volume mount.");
         final String volumeName = UUID.randomUUID().toString();
 
-        ElasticProfileConfiguration properties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration properties = new SwarmElasticProfileConfiguration();
         properties.setImage("alpine:latest");
         properties.setMounts("source=" + volumeName + ", target=/path/in/container");
 
         createAgentRequest.setElasticProfileConfiguration(properties)
                 .setEnvironment("prod")
-                .setClusterProfileProperties(new ClusterProfileProperties());
+                .setClusterProfileProperties(new SwarmClusterConfiguration());
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
         services.add(service.name());
@@ -252,14 +252,14 @@ class DockerServiceElasticAgentTest extends BaseTest {
         );
 
         final List<String> command = Arrays.asList("/bin/sh", "-c", "cat /run/secrets/" + secretName);
-        ElasticProfileConfiguration properties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration properties = new SwarmElasticProfileConfiguration();
         properties.setImage("alpine:latest");
         properties.setSecrets("src=" + secretName);
         properties.setCommand(join(command, "\n"));
 
         createAgentRequest.setElasticProfileConfiguration(properties)
                 .setEnvironment("prod")
-                .setClusterProfileProperties(new ClusterProfileProperties());
+                .setClusterProfileProperties(new SwarmClusterConfiguration());
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
         services.add(service.name());
@@ -275,13 +275,13 @@ class DockerServiceElasticAgentTest extends BaseTest {
     void shouldCreateServiceWithConstraints() throws Exception {
         final List<Node> nodes = docker.listNodes();
         final String nodeId = nodes.get(0).id();
-        final ElasticProfileConfiguration properties = new ElasticProfileConfiguration();
+        final SwarmElasticProfileConfiguration properties = new SwarmElasticProfileConfiguration();
         properties.setImage("alpine:latest");
         properties.setConstraints(format("node.id == %s", nodeId));
 
         createAgentRequest.setElasticProfileConfiguration(properties)
                 .setEnvironment("prod")
-                .setClusterProfileProperties(new ClusterProfileProperties());
+                .setClusterProfileProperties(new SwarmClusterConfiguration());
 
         DockerService service = DockerService.create(createAgentRequest, createClusterProfiles(), docker);
         services.add(service.name());

@@ -16,9 +16,9 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.validator;
 
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.CreateAgentRequest;
 import cd.go.plugin.base.validation.ValidationResult;
 import com.google.common.collect.ImmutableList;
@@ -43,22 +43,22 @@ class DockerMountsValidatorTest {
 
     private CreateAgentRequest createAgentRequest;
     private DockerMountsValidator validator;
-    private ElasticProfileConfiguration elasticProfileConfiguration;
+    private SwarmElasticProfileConfiguration swarmElasticProfileConfiguration;
 
     @BeforeEach
     void setUp() throws Exception {
         initMocks(this);
 
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
-        when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(dockerClient);
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration();
+        when(dockerClientFactory.docker(swarmClusterConfiguration)).thenReturn(dockerClient);
 
-        elasticProfileConfiguration = new ElasticProfileConfiguration()
+        swarmElasticProfileConfiguration = new SwarmElasticProfileConfiguration()
                 .setImage("alpine:latest")
                 .setMounts("src=Foo, target=Bar");
 
         createAgentRequest = new CreateAgentRequest();
-        createAgentRequest.setClusterProfileProperties(clusterProfileProperties)
-                .setElasticProfileConfiguration(elasticProfileConfiguration);
+        createAgentRequest.setClusterProfileProperties(swarmClusterConfiguration)
+                .setElasticProfileConfiguration(swarmElasticProfileConfiguration);
         validator = new DockerMountsValidator(dockerClientFactory);
     }
 
@@ -94,7 +94,7 @@ class DockerMountsValidatorTest {
     void shouldValidateInvalidDockerSecretsConfiguration() throws Exception {
         final Version version = mock(Version.class);
         final VolumeList volumeList = mock(VolumeList.class);
-        elasticProfileConfiguration.setMounts("src=Foo");
+        swarmElasticProfileConfiguration.setMounts("src=Foo");
 
         when(version.apiVersion()).thenReturn("1.27");
         when(dockerClient.version()).thenReturn(version);

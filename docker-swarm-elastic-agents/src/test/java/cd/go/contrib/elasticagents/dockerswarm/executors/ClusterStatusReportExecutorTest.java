@@ -17,7 +17,7 @@
 package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ViewBuilder;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
 import cd.go.contrib.elasticagents.dockerswarm.model.reports.SwarmCluster;
 import cd.go.contrib.elasticagents.dockerswarm.requests.ClusterStatusReportRequest;
@@ -37,16 +37,16 @@ class ClusterStatusReportExecutorTest {
     private DockerClientFactory dockerClientFactory;
     private DockerClient dockerClient;
     private ClusterStatusReportRequest request;
-    private ClusterProfileProperties clusterProfileProperties;
+    private SwarmClusterConfiguration swarmClusterConfiguration;
 
     @BeforeEach
     void setUp() throws Exception {
         dockerClientFactory = mock(DockerClientFactory.class);
         dockerClient = mock(DockerClient.class);
         request = mock(ClusterStatusReportRequest.class);
-        clusterProfileProperties = new ClusterProfileProperties();
-        when(request.getClusterProfileConfiguration()).thenReturn(clusterProfileProperties);
-        when(dockerClientFactory.docker(clusterProfileProperties)).thenReturn(dockerClient);
+        swarmClusterConfiguration = new SwarmClusterConfiguration();
+        when(request.getClusterProfileConfiguration()).thenReturn(swarmClusterConfiguration);
+        when(dockerClientFactory.docker(swarmClusterConfiguration)).thenReturn(dockerClient);
     }
 
     @Test

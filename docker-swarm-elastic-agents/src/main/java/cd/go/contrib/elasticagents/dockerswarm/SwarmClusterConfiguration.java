@@ -35,7 +35,7 @@ import java.util.Objects;
 @Accessors(chain = true)
 @ToString(doNotUseGetters = true)
 @EqualsAndHashCode(doNotUseGetters = true)
-public class ClusterProfileProperties implements ClusterProfileConfiguration {
+public class SwarmClusterConfiguration implements ClusterProfileConfiguration {
     public static final String ENABLE_PRIVATE_REGISTRY_AUTHENTICATION = "enable_private_registry_authentication";
     public static final String PRIVATE_REGISTRY_PASSWORD = "private_registry_password";
     public static final String PRIVATE_REGISTRY_USERNAME = "private_registry_username";

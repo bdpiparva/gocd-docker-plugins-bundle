@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 class DockerServicesTest extends BaseTest {
     private CreateAgentRequest request;
     private DockerServices dockerServices;
-    private ClusterProfileProperties clusterProfileProperties;
+    private SwarmClusterConfiguration swarmClusterConfiguration;
     private JobIdentifier jobIdentifier;
     private ElasticAgentRequestClient pluginRequest;
     private ConsoleLogAppender consoleLogAppender;
@@ -49,9 +49,9 @@ class DockerServicesTest extends BaseTest {
         consoleLogAppender = mock(ConsoleLogAppender.class);
         pluginRequest = mock(ElasticAgentRequestClient.class);
         jobIdentifier = new JobIdentifier(100L);
-        clusterProfileProperties = createClusterProfiles();
+        swarmClusterConfiguration = createClusterProfiles();
 
-        ElasticProfileConfiguration elasticAgentProperties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration elasticAgentProperties = new SwarmElasticProfileConfiguration();
         elasticAgentProperties.setImage("alpine:latest");
         elasticAgentProperties.setCommand("/bin/sleep\n5");
 
@@ -60,7 +60,7 @@ class DockerServicesTest extends BaseTest {
                 .setElasticProfileConfiguration(elasticAgentProperties)
                 .setEnvironment("production")
                 .setJobIdentifier(jobIdentifier)
-                .setClusterProfileProperties(clusterProfileProperties);
+                .setClusterProfileProperties(swarmClusterConfiguration);
 
         dockerServices = new DockerServices();
     }
@@ -77,30 +77,30 @@ class DockerServicesTest extends BaseTest {
         DockerService dockerService = dockerServices.create(request, pluginRequest, consoleLogAppender);
         services.add(dockerService.name());
 
-        dockerServices.terminate(dockerService.name(), clusterProfileProperties);
+        dockerServices.terminate(dockerService.name(), swarmClusterConfiguration);
 
         assertServiceDoesNotExist(dockerService.name());
     }
 
     @Test
     void shouldRefreshAllAgentInstancesAtStartUp() throws Exception {
-        DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker);
+        DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker);
         services.add(dockerService.name());
 
         DockerServices dockerServices = new DockerServices();
-        dockerServices.refreshAll(clusterProfileProperties);
+        dockerServices.refreshAll(swarmClusterConfiguration);
         assertThat(dockerServices.find(dockerService.name())).isEqualTo(dockerService);
     }
 
     @Test
     void shouldNotRefreshAllAgentInstancesAgainAfterTheStartUp() throws Exception {
         DockerServices dockerServices = new DockerServices();
-        dockerServices.refreshAll(clusterProfileProperties);
+        dockerServices.refreshAll(swarmClusterConfiguration);
 
-        DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker);
+        DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker);
         services.add(dockerService.name());
 
-        dockerServices.refreshAll(clusterProfileProperties);
+        dockerServices.refreshAll(swarmClusterConfiguration);
 
         assertThat(dockerServices.find(dockerService.name())).isNull();
     }
@@ -109,12 +109,12 @@ class DockerServicesTest extends BaseTest {
     @Test
     void shouldNotRefreshAllAgentInstancesAgainAfterTheStartUpIfForceRefreshIsFalse() throws Exception {
         DockerServices dockerServices = new DockerServices();
-        dockerServices.refreshAll(clusterProfileProperties);
+        dockerServices.refreshAll(swarmClusterConfiguration);
 
-        DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker);
+        DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker);
         services.add(dockerService.name());
 
-        dockerServices.refreshAll(clusterProfileProperties, false);
+        dockerServices.refreshAll(swarmClusterConfiguration, false);
 
         assertThat(dockerServices.find(dockerService.name())).isNull();
     }
@@ -122,23 +122,23 @@ class DockerServicesTest extends BaseTest {
     @Test
     void shouldRefreshAllAgentInstancesAgainAfterTheStartUp() throws Exception {
         DockerServices dockerServices = new DockerServices();
-        dockerServices.refreshAll(clusterProfileProperties, true);
+        dockerServices.refreshAll(swarmClusterConfiguration, true);
 
-        DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker);
+        DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker);
         services.add(dockerService.name());
 
-        dockerServices.refreshAll(clusterProfileProperties, true);
+        dockerServices.refreshAll(swarmClusterConfiguration, true);
 
         assertThat(dockerServices.find(dockerService.name())).isEqualTo(dockerService);
     }
 
     @Test
     void shouldNotListTheServiceIfItIsCreatedBeforeTimeout() throws Exception {
-        DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker);
+        DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker);
         services.add(dockerService.name());
 
         dockerServices.clock = new Clock.TestClock().forward(Period.minutes(9));
-        dockerServices.refreshAll(clusterProfileProperties);
+        dockerServices.refreshAll(swarmClusterConfiguration);
 
         Agents filteredDockerContainers = dockerServices.instancesCreatedAfterTimeout(createClusterProfiles(), new Agents(of(new Agent(dockerService.name(), null, null, null))));
 
@@ -147,11 +147,11 @@ class DockerServicesTest extends BaseTest {
 
     @Test
     void shouldListTheContainerIfItIsNotCreatedBeforeTimeout() throws Exception {
-        DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker);
+        DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker);
         services.add(dockerService.name());
 
         dockerServices.clock = new Clock.TestClock().forward(Period.minutes(11));
-        dockerServices.refreshAll(clusterProfileProperties);
+        dockerServices.refreshAll(swarmClusterConfiguration);
 
         Agents filteredDockerContainers = dockerServices.instancesCreatedAfterTimeout(createClusterProfiles(), new Agents(of(new Agent(dockerService.name(), null, null, null))));
 
@@ -160,9 +160,9 @@ class DockerServicesTest extends BaseTest {
 
     @Test
     void shouldNotCreateContainersIfMaxLimitIsReached() throws Exception {
-        ElasticProfileConfiguration elasticAgentProperties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration elasticAgentProperties = new SwarmElasticProfileConfiguration();
         elasticAgentProperties.setImage("alpine:latest");
-        clusterProfileProperties.setMaxDockerContainers("0");
+        swarmClusterConfiguration.setMaxDockerContainers("0");
 
         DockerService dockerService = dockerServices.create(request, pluginRequest, consoleLogAppender);
         if (dockerService != null) {
@@ -171,7 +171,7 @@ class DockerServicesTest extends BaseTest {
         assertThat(dockerService).isNull();
 
         // allow only one container
-        clusterProfileProperties.setMaxDockerContainers("1");
+        swarmClusterConfiguration.setMaxDockerContainers("1");
         dockerService = dockerServices.create(request, pluginRequest, consoleLogAppender);
         if (dockerService != null) {
             services.add(dockerService.name());
@@ -210,11 +210,11 @@ class DockerServicesTest extends BaseTest {
 
     @Test
     void shouldAddServerHealthMessagesIfMaxContainerLimitIsReached() throws Exception {
-        ElasticProfileConfiguration elasticAgentProperties = new ElasticProfileConfiguration();
+        SwarmElasticProfileConfiguration elasticAgentProperties = new SwarmElasticProfileConfiguration();
         elasticAgentProperties.setImage("alpine:latest");
         request.setElasticProfileConfiguration(elasticAgentProperties);
 
-        clusterProfileProperties.setMaxDockerContainers("0");
+        swarmClusterConfiguration.setMaxDockerContainers("0");
         DockerService dockerService = dockerServices.create(request, pluginRequest, consoleLogAppender);
         assertThat(dockerService).isNull();
         ArrayList<Map<String, String>> messages = new ArrayList<>();

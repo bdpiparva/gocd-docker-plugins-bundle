@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
-public class DockerServices implements AgentInstances<DockerService, ElasticProfileConfiguration, ClusterProfileProperties> {
+public class DockerServices implements AgentInstances<DockerService, SwarmElasticProfileConfiguration, SwarmClusterConfiguration> {
     private final ConcurrentHashMap<String, DockerService> services = new ConcurrentHashMap<>();
     private final DockerClientFactory factory;
     private boolean refreshed;
@@ -57,11 +57,11 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
     }
 
     @Override
-    public DockerService create(AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> request,
+    public DockerService create(AbstractCreateAgentRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> request,
                                 ElasticAgentRequestClient pluginRequest,
                                 ConsoleLogAppender consoleLogAppender) throws Exception {
-        ClusterProfileProperties clusterProfileProperties = request.getClusterProfileProperties();
-        final Integer maxAllowedContainers = clusterProfileProperties.getMaxDockerContainers();
+        SwarmClusterConfiguration swarmClusterConfiguration = request.getClusterProfileProperties();
+        final Integer maxAllowedContainers = swarmClusterConfiguration.getMaxDockerContainers();
         synchronized (services) {
             if (!jobsWaitingForAgentCreation.contains(request.getJobIdentifier())) {
                 jobsWaitingForAgentCreation.add(request.getJobIdentifier());
@@ -71,7 +71,7 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
 
             if (semaphore.tryAcquire()) {
                 pluginRequest.addServerHealthMessage(messages);
-                DockerService dockerService = DockerService.create(request, clusterProfileProperties, docker(clusterProfileProperties));
+                DockerService dockerService = DockerService.create(request, swarmClusterConfiguration, docker(swarmClusterConfiguration));
                 register(dockerService);
                 jobsWaitingForAgentCreation.remove(request.getJobIdentifier());
                 return dockerService;
@@ -95,10 +95,10 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
     }
 
     @Override
-    public void terminate(String agentId, ClusterProfileProperties clusterProfileProperties) throws Exception {
+    public void terminate(String agentId, SwarmClusterConfiguration swarmClusterConfiguration) throws Exception {
         DockerService instance = services.get(agentId);
         if (instance != null) {
-            instance.terminate(docker(clusterProfileProperties));
+            instance.terminate(docker(swarmClusterConfiguration));
         } else {
             DockerSwarmPlugin.LOG.warn("Requested to terminate an instance that does not exist " + agentId);
         }
@@ -116,21 +116,21 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
     }
 
     @Override
-    public void terminateUnregisteredInstances(ClusterProfileProperties clusterProfileProperties,
+    public void terminateUnregisteredInstances(SwarmClusterConfiguration swarmClusterConfiguration,
                                                Agents agents) throws Exception {
-        DockerServices toTerminate = unregisteredAfterTimeout(clusterProfileProperties, agents);
+        DockerServices toTerminate = unregisteredAfterTimeout(swarmClusterConfiguration, agents);
         if (toTerminate.services.isEmpty()) {
             return;
         }
 
         DockerSwarmPlugin.LOG.warn("Terminating services that did not register " + toTerminate.services.keySet());
         for (DockerService dockerService : toTerminate.services.values()) {
-            terminate(dockerService.name(), clusterProfileProperties);
+            terminate(dockerService.name(), swarmClusterConfiguration);
         }
     }
 
     @Override
-    public Agents instancesCreatedAfterTimeout(ClusterProfileProperties settings, Agents agents) {
+    public Agents instancesCreatedAfterTimeout(SwarmClusterConfiguration settings, Agents agents) {
         ArrayList<Agent> oldAgents = new ArrayList<>();
         for (Agent agent : agents.agents()) {
             DockerService instance = services.get(agent.elasticAgentId());
@@ -145,7 +145,7 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
         return new Agents(oldAgents);
     }
 
-    private void refreshAgentInstances(ClusterProfileProperties pluginSettings) throws Exception {
+    private void refreshAgentInstances(SwarmClusterConfiguration pluginSettings) throws Exception {
         DockerClient dockerClient = docker(pluginSettings);
         List<Service> clusterSpecificServices = dockerClient.listServices();
         services.clear();
@@ -159,14 +159,14 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
     }
 
     //TODO: Delete this
-    public void refreshAll(ClusterProfileProperties clusterProfileProperties, boolean forceRefresh) throws Exception {
+    public void refreshAll(SwarmClusterConfiguration swarmClusterConfiguration, boolean forceRefresh) throws Exception {
         if (!refreshed || forceRefresh) {
-            refreshAgentInstances(clusterProfileProperties);
+            refreshAgentInstances(swarmClusterConfiguration);
         }
     }
 
     @Override
-    public void refreshAll(ClusterProfileProperties pluginSettings) throws Exception {
+    public void refreshAll(SwarmClusterConfiguration pluginSettings) throws Exception {
         if (!refreshed) {
             refreshAgentInstances(pluginSettings);
         }
@@ -176,13 +176,13 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
         services.put(service.name(), service);
     }
 
-    private DockerClient docker(ClusterProfileProperties clusterProfileProperties) throws Exception {
-        return factory.docker(clusterProfileProperties);
+    private DockerClient docker(SwarmClusterConfiguration swarmClusterConfiguration) throws Exception {
+        return factory.docker(swarmClusterConfiguration);
     }
 
-    private DockerServices unregisteredAfterTimeout(ClusterProfileProperties clusterProfileProperties,
+    private DockerServices unregisteredAfterTimeout(SwarmClusterConfiguration swarmClusterConfiguration,
                                                     Agents knownAgents) throws Exception {
-        Period period = clusterProfileProperties.getAutoRegisterPeriod();
+        Period period = swarmClusterConfiguration.getAutoRegisterPeriod();
         DockerServices unregisteredContainers = new DockerServices();
 
         for (String serviceName : services.keySet()) {
@@ -192,7 +192,7 @@ public class DockerServices implements AgentInstances<DockerService, ElasticProf
 
             Service serviceInfo;
             try {
-                serviceInfo = docker(clusterProfileProperties).inspectService(serviceName);
+                serviceInfo = docker(swarmClusterConfiguration).inspectService(serviceName);
             } catch (ServiceNotFoundException e) {
                 DockerSwarmPlugin.LOG.warn("The container " + serviceName + " could not be found.");
                 continue;

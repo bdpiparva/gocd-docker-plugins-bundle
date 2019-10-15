@@ -17,8 +17,8 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 
-public class CreateAgentRequest extends AbstractCreateAgentRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
+public class CreateAgentRequest extends AbstractCreateAgentRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> {
 }

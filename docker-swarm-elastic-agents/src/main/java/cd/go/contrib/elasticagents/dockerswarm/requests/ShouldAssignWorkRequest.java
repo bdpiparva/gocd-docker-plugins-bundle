@@ -17,12 +17,12 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractShouldAssignWorkRequest;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.Request;
 
 /**
  * Represents the {@link Request#REQUEST_SHOULD_ASSIGN_WORK} message.
  */
-public class ShouldAssignWorkRequest extends AbstractShouldAssignWorkRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
+public class ShouldAssignWorkRequest extends AbstractShouldAssignWorkRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> {
 }

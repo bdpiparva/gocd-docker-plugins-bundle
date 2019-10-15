@@ -19,7 +19,7 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
@@ -50,22 +50,22 @@ class JobCompletionRequestExecutorTest {
 
     @Captor
     private ArgumentCaptor<List<Agent>> agentsArgumentCaptor;
-    private ClusterProfileProperties clusterProfileProperties;
+    private SwarmClusterConfiguration swarmClusterConfiguration;
     private JobCompletionRequestExecutor executor;
     private JobCompletionRequest request;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        clusterProfileProperties = new ClusterProfileProperties();
+        swarmClusterConfiguration = new SwarmClusterConfiguration();
 
         request = new JobCompletionRequest();
         request.setElasticAgentId(ELASTIC_AGENT_ID)
                 .setJobIdentifier(new JobIdentifier(100L))
-                .setClusterProfileConfiguration(clusterProfileProperties);
+                .setClusterProfileConfiguration(swarmClusterConfiguration);
 
         clusterToDockerServiceMap = new HashMap<>();
-        clusterToDockerServiceMap.put(clusterProfileProperties.uuid(), mockAgentInstances);
+        clusterToDockerServiceMap.put(swarmClusterConfiguration.uuid(), mockAgentInstances);
         executor = new JobCompletionRequestExecutor(clusterToDockerServiceMap, mockPluginRequest);
     }
 
@@ -75,7 +75,7 @@ class JobCompletionRequestExecutorTest {
 
         InOrder inOrder = inOrder(mockPluginRequest, clusterToDockerServiceMap);
         inOrder.verify(mockPluginRequest).disableAgents(agentsArgumentCaptor.capture());
-        inOrder.verify(mockAgentInstances).terminate(ELASTIC_AGENT_ID, clusterProfileProperties);
+        inOrder.verify(mockAgentInstances).terminate(ELASTIC_AGENT_ID, swarmClusterConfiguration);
         inOrder.verify(mockPluginRequest).deleteAgents(agentsArgumentCaptor.capture());
 
         List<Agent> agentsToDisabled = agentsArgumentCaptor.getValue();

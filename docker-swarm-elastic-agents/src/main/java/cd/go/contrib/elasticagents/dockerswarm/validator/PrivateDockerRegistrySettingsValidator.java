@@ -21,7 +21,7 @@ import cd.go.plugin.base.validation.Validator;
 
 import java.util.Map;
 
-import static cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties.*;
+import static cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration.*;
 import static org.apache.commons.lang.StringUtils.isBlank;
 
 public class PrivateDockerRegistrySettingsValidator implements Validator {

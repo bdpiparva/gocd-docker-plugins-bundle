@@ -28,7 +28,7 @@ import lombok.experimental.Accessors;
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
 @Accessors(chain = true)
-public class ElasticProfileConfiguration implements cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration {
+public class SwarmElasticProfileConfiguration implements cd.go.contrib.elasticagents.common.models.ElasticProfileConfiguration {
     @Expose
     @SerializedName("Image")
     @Property(name = "Image", required = true)

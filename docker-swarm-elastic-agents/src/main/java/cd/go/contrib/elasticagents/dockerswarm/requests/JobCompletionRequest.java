@@ -17,8 +17,8 @@
 package cd.go.contrib.elasticagents.dockerswarm.requests;
 
 import cd.go.contrib.elasticagents.common.requests.AbstractJobCompletionRequest;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 
-public class JobCompletionRequest extends AbstractJobCompletionRequest<ElasticProfileConfiguration, ClusterProfileProperties> {
+public class JobCompletionRequest extends AbstractJobCompletionRequest<SwarmElasticProfileConfiguration, SwarmClusterConfiguration> {
 }

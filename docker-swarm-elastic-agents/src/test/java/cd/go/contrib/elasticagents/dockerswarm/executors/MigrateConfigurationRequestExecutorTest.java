@@ -18,10 +18,10 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.models.ClusterProfile;
 import cd.go.contrib.elasticagents.common.models.ElasticAgentProfile;
-import cd.go.contrib.elasticagents.dockerswarm.ClusterProfileProperties;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.Constants;
 import cd.go.contrib.elasticagents.dockerswarm.DockerSwarmPluginSettings;
-import cd.go.contrib.elasticagents.dockerswarm.ElasticProfileConfiguration;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmElasticProfileConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.MigrateConfigurationRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,8 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MigrateConfigurationRequestExecutorTest {
     private DockerSwarmPluginSettings pluginSettings;
-    private ClusterProfile<ClusterProfileProperties> clusterProfile;
-    private ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile;
+    private ClusterProfile<SwarmClusterConfiguration> clusterProfile;
+    private ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile;
     private MigrateConfigurationRequestExecutor executor;
 
     @BeforeEach
@@ -46,21 +46,21 @@ class MigrateConfigurationRequestExecutorTest {
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
 
-        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties()
+        SwarmClusterConfiguration swarmClusterConfiguration = new SwarmClusterConfiguration()
                 .setGoServerUrl("https://127.0.0.1:8154/go")
                 .setAutoRegisterTimeout("20");
 
         clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId(Constants.PLUGIN_ID);
-        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
+        clusterProfile.setClusterProfileProperties(swarmClusterConfiguration);
 
         elasticAgentProfile = new ElasticAgentProfile<>();
         elasticAgentProfile.setId("profile_id");
         elasticAgentProfile.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile.setClusterProfileId("cluster_profile_id");
         elasticAgentProfile.setElasticProfileConfiguration(
-                new ElasticProfileConfiguration().setImage("Foo")
+                new SwarmElasticProfileConfiguration().setImage("Foo")
         );
         executor = new MigrateConfigurationRequestExecutor();
     }
@@ -99,7 +99,7 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations() {
-        ClusterProfile<ClusterProfileProperties> emptyClusterProfile = new ClusterProfile<>(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID), Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<SwarmClusterConfiguration> emptyClusterProfile = new ClusterProfile<>(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID), Constants.PLUGIN_ID, new SwarmClusterConfiguration());
         elasticAgentProfile.setClusterProfileId(emptyClusterProfile.getId());
 
         MigrateConfigurationRequest request = new MigrateConfigurationRequest();
@@ -112,7 +112,7 @@ class MigrateConfigurationRequestExecutorTest {
         MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
-        List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
+        List<ClusterProfile<SwarmClusterConfiguration>> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
 
         assertThat(actualClusterProfile.getId()).isNotEqualTo(String.format("no-op-cluster-for-%s", Constants.PLUGIN_ID));
@@ -127,7 +127,7 @@ class MigrateConfigurationRequestExecutorTest {
     @Test
     void shouldPopulateNoOpClusterProfileWithPluginSettingsConfigurations_WithoutChangingClusterProfileIdIfItsNotNoOp() {
         String clusterProfileId = "i-renamed-no-op-cluster-to-something-else";
-        ClusterProfile<ClusterProfileProperties> emptyClusterProfile = new ClusterProfile<>(clusterProfileId, Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<SwarmClusterConfiguration> emptyClusterProfile = new ClusterProfile<>(clusterProfileId, Constants.PLUGIN_ID, new SwarmClusterConfiguration());
         elasticAgentProfile.setClusterProfileId(emptyClusterProfile.getId());
         MigrateConfigurationRequest request = new MigrateConfigurationRequest();
         request.setPluginSettings(pluginSettings)
@@ -139,7 +139,7 @@ class MigrateConfigurationRequestExecutorTest {
         MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
-        List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
+        List<ClusterProfile<SwarmClusterConfiguration>> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
 
         assertThat(actualClusterProfile.getId()).isEqualTo(clusterProfileId);
@@ -163,7 +163,7 @@ class MigrateConfigurationRequestExecutorTest {
         MigrateConfigurationRequest responseObject = fromJson(response.responseBody(), MigrateConfigurationRequest.class);
 
         assertThat(responseObject.getPluginSettings()).isEqualTo(pluginSettings);
-        List<ClusterProfile<ClusterProfileProperties>> actual = responseObject.getClusterProfiles();
+        List<ClusterProfile<SwarmClusterConfiguration>> actual = responseObject.getClusterProfiles();
         ClusterProfile actualClusterProfile = actual.get(0);
         this.clusterProfile.setId(actualClusterProfile.getId());
 
@@ -173,15 +173,15 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void ShouldMigrateEmptyClusterProfiles_WhenMultipleEmptyClusterProfilesExists() {
-        ClusterProfile<ClusterProfileProperties> emptyCluster1 = new ClusterProfile<>("cluster_profile_1", Constants.PLUGIN_ID, new ClusterProfileProperties());
-        ClusterProfile<ClusterProfileProperties> emptyCluster2 = new ClusterProfile<>("cluster_profile_2", Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<SwarmClusterConfiguration> emptyCluster1 = new ClusterProfile<>("cluster_profile_1", Constants.PLUGIN_ID, new SwarmClusterConfiguration());
+        ClusterProfile<SwarmClusterConfiguration> emptyCluster2 = new ClusterProfile<>("cluster_profile_2", Constants.PLUGIN_ID, new SwarmClusterConfiguration());
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile1 = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile1 = new ElasticAgentProfile<>();
         elasticAgentProfile1.setId("profile_id_1");
         elasticAgentProfile1.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile1.setClusterProfileId(emptyCluster1.getId());
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile2 = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile2 = new ElasticAgentProfile<>();
         elasticAgentProfile2.setId("profile_id_2");
         elasticAgentProfile2.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile2.setClusterProfileId(emptyCluster2.getId());
@@ -209,15 +209,15 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void ShouldNotMigrateEmptyAndUnassociatedClusterProfiles() {
-        ClusterProfile<ClusterProfileProperties> emptyCluster1 = new ClusterProfile<>("cluster_profile_1", Constants.PLUGIN_ID, new ClusterProfileProperties());
-        ClusterProfile<ClusterProfileProperties> emptyCluster2 = new ClusterProfile<>("cluster_profile_2", Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<SwarmClusterConfiguration> emptyCluster1 = new ClusterProfile<>("cluster_profile_1", Constants.PLUGIN_ID, new SwarmClusterConfiguration());
+        ClusterProfile<SwarmClusterConfiguration> emptyCluster2 = new ClusterProfile<>("cluster_profile_2", Constants.PLUGIN_ID, new SwarmClusterConfiguration());
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile1 = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile1 = new ElasticAgentProfile<>();
         elasticAgentProfile1.setId("profile_id_1");
         elasticAgentProfile1.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile1.setClusterProfileId(emptyCluster1.getId());
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile2 = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile2 = new ElasticAgentProfile<>();
         elasticAgentProfile2.setId("profile_id_2");
         elasticAgentProfile2.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile2.setClusterProfileId(emptyCluster1.getId());
@@ -245,15 +245,15 @@ class MigrateConfigurationRequestExecutorTest {
 
     @Test
     void shouldNotMigrateConfigWhenMultipleClusterProfilesAreAlreadyMigrated() {
-        ClusterProfile<ClusterProfileProperties> cluster1 = new ClusterProfile<>("cluster_profile_1", Constants.PLUGIN_ID, new ClusterProfileProperties());
-        ClusterProfile<ClusterProfileProperties> cluster2 = new ClusterProfile<>("cluster_profile_2", Constants.PLUGIN_ID, new ClusterProfileProperties());
+        ClusterProfile<SwarmClusterConfiguration> cluster1 = new ClusterProfile<>("cluster_profile_1", Constants.PLUGIN_ID, new SwarmClusterConfiguration());
+        ClusterProfile<SwarmClusterConfiguration> cluster2 = new ClusterProfile<>("cluster_profile_2", Constants.PLUGIN_ID, new SwarmClusterConfiguration());
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile1 = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile1 = new ElasticAgentProfile<>();
         elasticAgentProfile1.setId("profile_id_1");
         elasticAgentProfile1.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile1.setClusterProfileId(cluster1.getId());
 
-        ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile2 = new ElasticAgentProfile<>();
+        ElasticAgentProfile<SwarmElasticProfileConfiguration> elasticAgentProfile2 = new ElasticAgentProfile<>();
         elasticAgentProfile2.setId("profile_id_2");
         elasticAgentProfile2.setPluginId(Constants.PLUGIN_ID);
         elasticAgentProfile2.setClusterProfileId(cluster2.getId());
