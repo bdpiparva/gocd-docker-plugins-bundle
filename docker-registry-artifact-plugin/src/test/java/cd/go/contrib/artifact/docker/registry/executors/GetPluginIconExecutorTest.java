@@ -19,7 +19,7 @@ package cd.go.contrib.artifact.docker.registry.executors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 import java.util.Map;
@@ -27,9 +27,9 @@ import java.util.Map;
 import static cd.go.plugin.base.ResourceReader.readResourceBytes;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetPluginIconExecutorTest {
+class GetPluginIconExecutorTest {
     @Test
-    public void rendersIconInBase64() {
+    void rendersIconInBase64() {
         GoPluginApiResponse response = new GetPluginIconExecutor().execute();
         Map<String, String> hashMap = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());

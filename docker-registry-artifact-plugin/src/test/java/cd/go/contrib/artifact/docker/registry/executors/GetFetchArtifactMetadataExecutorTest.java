@@ -18,14 +18,14 @@ package cd.go.contrib.artifact.docker.registry.executors;
 
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetFetchArtifactMetadataExecutorTest {
+class GetFetchArtifactMetadataExecutorTest {
     @Test
-    public void shouldReturnFetchArtifactMetadata() throws JSONException {
+    void shouldReturnFetchArtifactMetadata() throws JSONException {
         final GoPluginApiResponse response = new GetFetchArtifactMetadataExecutor().execute();
         final String expectedJSON = "[{\"key\":\"EnvironmentVariablePrefix\",\"metadata\":{\"required\":false,\"secure\":false}},{\"key\":\"SkipImagePulling\",\"metadata\":{\"required\":false,\"secure\":false}}]";
 

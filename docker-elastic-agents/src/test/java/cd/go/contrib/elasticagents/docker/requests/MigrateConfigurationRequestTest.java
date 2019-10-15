@@ -62,14 +62,18 @@ class MigrateConfigurationRequestTest {
 
         MigrateConfigurationRequest request = fromJson(requestBody, MigrateConfigurationRequest.class);
 
-        ClusterProfileProperties pluginSettings = new ClusterProfileProperties();
+        DockerPluginSettings pluginSettings = new DockerPluginSettings();
         pluginSettings.setGoServerUrl("https://127.0.0.1:8154/go");
         pluginSettings.setAutoRegisterTimeout("20");
+
+        ClusterProfileProperties clusterProfileProperties = new ClusterProfileProperties();
+        clusterProfileProperties.setGoServerUrl("https://127.0.0.1:8154/go");
+        clusterProfileProperties.setAutoRegisterTimeout("20");
 
         ClusterProfile<ClusterProfileProperties> clusterProfile = new ClusterProfile<>();
         clusterProfile.setId("cluster_profile_id");
         clusterProfile.setPluginId("plugin_id");
-        clusterProfile.setClusterProfileProperties(pluginSettings);
+        clusterProfile.setClusterProfileProperties(clusterProfileProperties);
 
         ElasticAgentProfile<ElasticProfileConfiguration> elasticAgentProfile = new ElasticAgentProfile<>();
         elasticAgentProfile.setId("profile_id")
@@ -92,7 +96,7 @@ class MigrateConfigurationRequestTest {
 
         MigrateConfigurationRequest request = fromJson(requestBody, MigrateConfigurationRequest.class);
 
-        assertThat(new ClusterProfileProperties()).isEqualTo(request.getPluginSettings());
+        assertThat(new DockerPluginSettings()).isEqualTo(request.getPluginSettings());
         assertThat(of()).isEqualTo(request.getClusterProfiles());
         assertThat(of()).isEqualTo(request.getElasticAgentProfiles());
     }

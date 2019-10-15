@@ -21,8 +21,8 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -30,17 +30,17 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ValidatePublishArtifactConfigExecutorTest {
+class ValidatePublishArtifactConfigExecutorTest {
     @Mock
     private GoPluginApiRequest request;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
     }
 
     @Test
-    public void shouldValidateRequestWithBuildFile() throws Exception {
+    void shouldValidateRequestWithBuildFile() throws Exception {
         String requestBody = new JSONObject().put("BuildFile", "").toString();
         when(request.requestBody()).thenReturn(requestBody);
 
@@ -60,7 +60,7 @@ public class ValidatePublishArtifactConfigExecutorTest {
     }
 
     @Test
-    public void shouldValidateRequestWithImageAndTag() throws JSONException {
+    void shouldValidateRequestWithImageAndTag() throws JSONException {
         String requestBody = new JSONObject()
                 .put("Image", "")
                 .put("Tag", "")
@@ -83,7 +83,7 @@ public class ValidatePublishArtifactConfigExecutorTest {
     }
 
     @Test
-    public void shouldValidateInvalidRequest() throws JSONException {
+    void shouldValidateInvalidRequest() throws JSONException {
         when(request.requestBody()).thenReturn("{}");
 
         final GoPluginApiResponse response = new ValidatePublishArtifactConfigExecutor(request).execute();
@@ -102,7 +102,7 @@ public class ValidatePublishArtifactConfigExecutorTest {
     }
 
     @Test
-    public void shouldValidateRequestContainingAllFields() throws JSONException {
+    void shouldValidateRequestContainingAllFields() throws JSONException {
         String requestBody = new JSONObject()
                 .put("BuildFile", "build.json")
                 .put("Image", "alpine")

@@ -23,7 +23,7 @@ import cd.go.contrib.artifact.docker.registry.model.ImageTagArtifactPlanConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetPublishArtifactViewExecutorTest extends ViewTest {
     @Test
-    public void shouldRenderTheTemplateInJSON() throws Exception {
+    void shouldRenderTheTemplateInJSON() throws Exception {
         GoPluginApiResponse response = getRequestExecutor().execute();
 
         Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {

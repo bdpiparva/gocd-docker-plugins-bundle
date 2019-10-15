@@ -30,6 +30,10 @@ subprojects {
   sourceCompatibility = 11
   targetCompatibility = 11
 
+  test {
+    useJUnitPlatform()
+  }
+
   sourceSets {
     test {
       java {

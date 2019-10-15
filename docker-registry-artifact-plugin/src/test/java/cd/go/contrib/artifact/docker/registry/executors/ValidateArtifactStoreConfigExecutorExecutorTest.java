@@ -20,8 +20,8 @@ import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -29,17 +29,17 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ValidateArtifactStoreConfigExecutorExecutorTest {
+class ValidateArtifactStoreConfigExecutorExecutorTest {
     @Mock
     private GoPluginApiRequest request;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
     }
 
     @Test
-    public void shouldValidateMandatoryKeys() throws Exception {
+    void shouldValidateMandatoryKeys() throws Exception {
         when(request.requestBody()).thenReturn("{}");
 
         final GoPluginApiResponse response = new ValidateArtifactStoreConfigExecutor(request).execute();
@@ -54,7 +54,7 @@ public class ValidateArtifactStoreConfigExecutorExecutorTest {
     }
 
     @Test
-    public void shouldValidateProperDataIfTypeIsOther() throws JSONException {
+    void shouldValidateProperDataIfTypeIsOther() throws JSONException {
         String requestBody = new JSONObject()
                 .put("RegistryURL", "http://localhost/index")
                 .put("RegistryType", "other")
@@ -69,7 +69,7 @@ public class ValidateArtifactStoreConfigExecutorExecutorTest {
     }
 
     @Test
-    public void shouldValidateProperDataIfTypeIsEcr() throws JSONException {
+    void shouldValidateProperDataIfTypeIsEcr() throws JSONException {
         String requestBody = new JSONObject()
                 .put("RegistryID", "12345")
                 .put("RegistryType", "ecr")
@@ -85,7 +85,7 @@ public class ValidateArtifactStoreConfigExecutorExecutorTest {
     }
 
     @Test
-    public void shouldValidateRegistryType() throws JSONException {
+    void shouldValidateRegistryType() throws JSONException {
         String requestBody = new JSONObject()
                 .put("RegistryURL", "http://localhost/index")
                 .put("RegistryType", "foo")
@@ -103,7 +103,7 @@ public class ValidateArtifactStoreConfigExecutorExecutorTest {
     }
 
     @Test
-    public void shouldValidatePresenceOfUsernameAndPasswordIfTypeIsOther() throws JSONException {
+    void shouldValidatePresenceOfUsernameAndPasswordIfTypeIsOther() throws JSONException {
         String requestBody = new JSONObject()
                 .put("RegistryURL", "http://localhost/index")
                 .put("RegistryType", "other")
@@ -125,7 +125,7 @@ public class ValidateArtifactStoreConfigExecutorExecutorTest {
     }
 
     @Test
-    public void shouldValidatePresenceOfAwsRegionIfTypeIsEcr() throws JSONException {
+    void shouldValidatePresenceOfAwsRegionIfTypeIsEcr() throws JSONException {
         String requestBody = new JSONObject()
                 .put("RegistryType", "ecr")
                 .toString();

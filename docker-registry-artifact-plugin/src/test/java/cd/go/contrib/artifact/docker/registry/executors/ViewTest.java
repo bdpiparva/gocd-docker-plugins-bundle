@@ -23,7 +23,7 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -31,9 +31,9 @@ import java.util.Map;
 import static java.text.MessageFormat.format;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public abstract class ViewTest {
+abstract class ViewTest {
     @Test
-    public void allFieldsShouldBePresentInView() throws Exception {
+    void allFieldsShouldBePresentInView() throws Exception {
         final Document document = getDocument();
         final List<ConfigMetadata> metadataList = getMetadataList();
         for (ConfigMetadata field : metadataList) {

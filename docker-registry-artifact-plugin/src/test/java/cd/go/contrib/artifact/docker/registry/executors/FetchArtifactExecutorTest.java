@@ -27,10 +27,8 @@ import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.HashMap;
@@ -41,10 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class FetchArtifactExecutorTest {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
+class FetchArtifactExecutorTest {
     @Mock
     private GoPluginApiRequest request;
     @Mock
@@ -56,15 +51,15 @@ public class FetchArtifactExecutorTest {
     @Mock
     private ConsoleLogger consoleLogger;
 
-    @Before
-    public void setUp() throws InterruptedException, DockerException, DockerCertificateException {
+    @BeforeEach
+    void setUp() throws InterruptedException, DockerException, DockerCertificateException {
         initMocks(this);
 
         when(dockerClientFactory.docker(any())).thenReturn(dockerClient);
     }
 
     @Test
-    public void shouldFetchArtifact() {
+    void shouldFetchArtifact() {
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final HashMap<String, String> artifactMetadata = new HashMap<>();
         artifactMetadata.put("image", "localhost:5000/alpine:v1");
@@ -84,7 +79,7 @@ public class FetchArtifactExecutorTest {
     }
 
     @Test
-    public void shouldNotFetchArtifactWhenSkipImagePullingIsToggled() {
+    void shouldNotFetchArtifactWhenSkipImagePullingIsToggled() {
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final HashMap<String, String> artifactMetadata = new HashMap<>();
         artifactMetadata.put("image", "localhost:5000/alpine:v1");
@@ -109,7 +104,7 @@ public class FetchArtifactExecutorTest {
     }
 
     @Test
-    public void shouldSetEnvironmentVariablesWithImageInformationInResponseRegardlessOfWhetherThePrefixIsProvided() {
+    void shouldSetEnvironmentVariablesWithImageInformationInResponseRegardlessOfWhetherThePrefixIsProvided() {
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final HashMap<String, String> artifactMetadata = new HashMap<>();
         artifactMetadata.put("image", "localhost:5000/alpine:v1");
@@ -127,7 +122,7 @@ public class FetchArtifactExecutorTest {
 
 
     @Test
-    public void shouldErrorOutWhenDigestIsNotSame() {
+    void shouldErrorOutWhenDigestIsNotSame() {
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final HashMap<String, String> artifactMetadata = new HashMap<>();
         artifactMetadata.put("image", "localhost:5000/alpine:v1");
@@ -144,7 +139,7 @@ public class FetchArtifactExecutorTest {
     }
 
     @Test
-    public void shouldErrorOutWhenFailedToPull() throws DockerException, InterruptedException {
+    void shouldErrorOutWhenFailedToPull() throws DockerException, InterruptedException {
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final HashMap<String, String> artifactMetadata = new HashMap<>();
         artifactMetadata.put("image", "localhost:5000/alpine:v1");

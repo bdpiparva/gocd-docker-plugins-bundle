@@ -27,7 +27,7 @@ import com.amazonaws.services.ecr.model.AuthorizationData;
 import com.amazonaws.services.ecr.model.GetAuthorizationTokenRequest;
 import com.amazonaws.services.ecr.model.GetAuthorizationTokenResult;
 import com.spotify.docker.client.messages.RegistryAuth;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -38,11 +38,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class RegistryAuthSupplierChainTest {
+class RegistryAuthSupplierChainTest {
     private AmazonECRClient mockAmazonEcrClient = mock(AmazonECRClient.class);
 
     @Test
-    public void shouldBuildRegistryAuthSupplierFromArtifactStoreConfigIfTypeIsOther() {
+    void shouldBuildRegistryAuthSupplierFromArtifactStoreConfigIfTypeIsOther() {
         final ArtifactStoreConfig artifactStoreConfig = new ArtifactStoreConfig("registry-url", "other", "username", "password");
 
         final RegistryAuthSupplierChain registryAuthSupplierChain = new RegistryAuthSupplierChain(artifactStoreConfig, new AWSTokenRequestGenerator());
@@ -54,7 +54,7 @@ public class RegistryAuthSupplierChainTest {
     }
 
     @Test
-    public void shouldSetUsernameAndPasswordByMakingARequestToECRIfTypeIsEcr() {
+    void shouldSetUsernameAndPasswordByMakingARequestToECRIfTypeIsEcr() {
         GetAuthorizationTokenResult mockAuthorizationTokenResult = mock(GetAuthorizationTokenResult.class);
         AuthorizationData mockAuthorization = mock(AuthorizationData.class);
         List<AuthorizationData> authorizationData = new ArrayList<>();
@@ -74,7 +74,7 @@ public class RegistryAuthSupplierChainTest {
         assertThat(registryAuth.password()).isEqualTo("secretAuthorizationToken");
     }
 
-    public class MockAwsECRClientBuilder extends AwsSyncClientBuilder<AmazonECRClientBuilder, AmazonECR> {
+    class MockAwsECRClientBuilder extends AwsSyncClientBuilder<AmazonECRClientBuilder, AmazonECR> {
 
         MockAwsECRClientBuilder(ClientConfigurationFactory clientConfigFactory) {
             super(clientConfigFactory);

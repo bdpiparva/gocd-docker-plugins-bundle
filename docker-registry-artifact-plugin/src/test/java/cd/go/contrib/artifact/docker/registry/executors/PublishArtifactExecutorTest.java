@@ -23,18 +23,16 @@ import cd.go.contrib.artifact.docker.registry.model.ArtifactPlan;
 import cd.go.contrib.artifact.docker.registry.model.ArtifactStore;
 import cd.go.contrib.artifact.docker.registry.model.ArtifactStoreConfig;
 import cd.go.contrib.artifact.docker.registry.model.PublishArtifactRequest;
+import cd.go.plugin.base.test_helper.system_extensions.annotations.EnvironmentVariable;
 import com.spotify.docker.client.DefaultDockerClient;
 import com.spotify.docker.client.ProgressHandler;
 import com.spotify.docker.client.exceptions.DockerCertificateException;
 import com.spotify.docker.client.exceptions.DockerException;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.contrib.java.lang.system.EnvironmentVariables;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 
@@ -52,12 +50,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class PublishArtifactExecutorTest {
-    @Rule
-    public TemporaryFolder tmpFolder = new TemporaryFolder();
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
-
+class PublishArtifactExecutorTest {
     @Mock
     private GoPluginApiRequest request;
     @Mock
@@ -68,22 +61,19 @@ public class PublishArtifactExecutorTest {
     private DefaultDockerClient dockerClient;
     @Mock
     private DockerClientFactory dockerClientFactory;
-    @Rule
-    public final EnvironmentVariables environmentVariables = new EnvironmentVariables();
 
     private File agentWorkingDir;
 
-    @Before
-    public void setUp() throws IOException, InterruptedException, DockerException, DockerCertificateException {
+    @BeforeEach
+    void setUp(@TempDir File tempDir) throws InterruptedException, DockerException, DockerCertificateException {
         initMocks(this);
-        environmentVariables.clear();
-        agentWorkingDir = tmpFolder.newFolder("go-agent");
+        agentWorkingDir = tempDir;
 
         when(dockerClientFactory.docker(any())).thenReturn(dockerClient);
     }
 
     @Test
-    public void shouldPublishArtifactUsingBuildFile() throws IOException, DockerException, InterruptedException {
+    void shouldPublishArtifactUsingBuildFile() throws IOException, DockerException, InterruptedException {
         final ArtifactPlan artifactPlan = new ArtifactPlan("id", "storeId", "build.json");
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final ArtifactStore artifactStore = new ArtifactStore(artifactPlan.getId(), storeConfig);
@@ -103,7 +93,7 @@ public class PublishArtifactExecutorTest {
     }
 
     @Test
-    public void shouldPublishArtifactUsingImageAndTag() throws IOException, DockerException, InterruptedException {
+    void shouldPublishArtifactUsingImageAndTag() throws IOException, DockerException, InterruptedException {
         final ArtifactPlan artifactPlan = new ArtifactPlan("id", "storeId", "alpine", Optional.of("3.6"));
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final ArtifactStore artifactStore = new ArtifactStore(artifactPlan.getId(), storeConfig);
@@ -120,7 +110,7 @@ public class PublishArtifactExecutorTest {
     }
 
     @Test
-    public void shouldAddErrorToPublishArtifactResponseWhenFailedToPublishImage() throws IOException, DockerException, InterruptedException {
+    void shouldAddErrorToPublishArtifactResponseWhenFailedToPublishImage() throws IOException, DockerException, InterruptedException {
         final ArtifactPlan artifactPlan = new ArtifactPlan("id", "storeId", "build.json");
         final ArtifactStoreConfig artifactStoreConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final ArtifactStore artifactStore = new ArtifactStore(artifactPlan.getId(), artifactStoreConfig);
@@ -140,7 +130,7 @@ public class PublishArtifactExecutorTest {
     }
 
     @Test
-    public void shouldReadEnvironmentVariablesPassedFromServer() throws IOException, DockerException, InterruptedException {
+    void shouldReadEnvironmentVariablesPassedFromServer() throws IOException, DockerException, InterruptedException {
         final ArtifactPlan artifactPlan = new ArtifactPlan("id", "storeId", "${IMAGE_NAME}", Optional.of("3.6"));
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final ArtifactStore artifactStore = new ArtifactStore(artifactPlan.getId(), storeConfig);
@@ -157,8 +147,8 @@ public class PublishArtifactExecutorTest {
     }
 
     @Test
-    public void shouldReadEnvironmentVariablesFromTheSystem() throws IOException, DockerException, InterruptedException {
-        environmentVariables.set("IMAGE_NAME", "alpine");
+    @EnvironmentVariable(key = "IMAGE_NAME", value = "alpine")
+    void shouldReadEnvironmentVariablesFromTheSystem() throws DockerException, InterruptedException {
         final ArtifactPlan artifactPlan = new ArtifactPlan("id", "storeId", "${IMAGE_NAME}", Optional.of("3.6"));
         final ArtifactStoreConfig storeConfig = new ArtifactStoreConfig("localhost:5000", "other", "admin", "admin123");
         final ArtifactStore artifactStore = new ArtifactStore(artifactPlan.getId(), storeConfig);

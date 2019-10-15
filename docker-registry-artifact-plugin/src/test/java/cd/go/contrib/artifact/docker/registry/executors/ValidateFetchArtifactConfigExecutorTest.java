@@ -19,8 +19,8 @@ package cd.go.contrib.artifact.docker.registry.executors;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -28,18 +28,17 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-public class ValidateFetchArtifactConfigExecutorTest {
-
+class ValidateFetchArtifactConfigExecutorTest {
     @Mock
     private GoPluginApiRequest request;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         initMocks(this);
     }
 
     @Test
-    public void shouldEmptyEnvironmentVariablePrefixShouldBeValid() throws Exception {
+    void shouldEmptyEnvironmentVariablePrefixShouldBeValid() throws Exception {
         String requestBody = new JSONObject().put("EnvironmentVariablePrefix", "").toString();
         when(request.requestBody()).thenReturn(requestBody);
 
@@ -50,7 +49,7 @@ public class ValidateFetchArtifactConfigExecutorTest {
     }
 
     @Test
-    public void shouldValidateValidEnvironmentVariablePrefix() throws Exception {
+    void shouldValidateValidEnvironmentVariablePrefix() throws Exception {
         String requestBody = new JSONObject().put("EnvironmentVariablePrefix", "ENVIRONMENT_VARIABLE").toString();
         when(request.requestBody()).thenReturn(requestBody);
 
@@ -61,7 +60,7 @@ public class ValidateFetchArtifactConfigExecutorTest {
     }
 
     @Test
-    public void shouldValidateInValidEnvironmentVariablePrefix() throws Exception {
+    void shouldValidateInValidEnvironmentVariablePrefix() throws Exception {
         String requestBody = new JSONObject().put("EnvironmentVariablePrefix", "1ENVIRONMENT_VARIABLE").toString();
         when(request.requestBody()).thenReturn(requestBody);
 
@@ -72,7 +71,7 @@ public class ValidateFetchArtifactConfigExecutorTest {
     }
 
     @Test
-    public void shouldValidateInValidEnvironmentVariablePrefixes() throws Exception {
+    void shouldValidateInValidEnvironmentVariablePrefixes() throws Exception {
         String requestBody = new JSONObject().put("EnvironmentVariablePrefix", "ENVIRONMENT VARIABLE").toString();
         when(request.requestBody()).thenReturn(requestBody);
 

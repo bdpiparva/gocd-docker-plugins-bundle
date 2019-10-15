@@ -20,14 +20,14 @@ import cd.go.contrib.artifact.docker.registry.model.ArtifactStoreConfig;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AWSTokenRequestGeneratorTest {
+class AWSTokenRequestGeneratorTest {
 
     @Test
-    public void shouldUseAwsStaticCredentialProviderIfAwsKeysAreConfigured() {
+    void shouldUseAwsStaticCredentialProviderIfAwsKeysAreConfigured() {
         AWSTokenRequestGenerator awsTokenRequestGenerator = new AWSTokenRequestGenerator();
         awsTokenRequestGenerator.setCredentialsProvider(new ArtifactStoreConfig("registry-url", "ecr", "awsAccessKeyId", "awsSecretKey", "awsRegion"));
         AWSCredentialsProvider credentialsProvider = awsTokenRequestGenerator.getBuilder().getCredentials();
@@ -35,7 +35,7 @@ public class AWSTokenRequestGeneratorTest {
     }
 
     @Test
-    public void shouldUseDefaultCredentialsProvider() {
+    void shouldUseDefaultCredentialsProvider() {
         AWSTokenRequestGenerator awsTokenRequestGenerator = new AWSTokenRequestGenerator();
         awsTokenRequestGenerator.setCredentialsProvider(new ArtifactStoreConfig("registry-url", "ecr", null, null, "awsRegion"));
         AWSCredentialsProvider credentialsProvider = awsTokenRequestGenerator.getBuilder().getCredentials();

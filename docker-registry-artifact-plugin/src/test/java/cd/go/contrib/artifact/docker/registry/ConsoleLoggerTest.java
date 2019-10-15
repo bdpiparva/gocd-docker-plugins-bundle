@@ -20,8 +20,8 @@ import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.request.GoApiRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoApiResponse;
 import org.json.JSONException;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -29,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ConsoleLoggerTest {
+class ConsoleLoggerTest {
     private static GoApplicationAccessor accessor;
     private static ConsoleLogger consoleLogger;
     private static ArgumentCaptor<GoApiRequest> argumentCaptor;
 
-    @BeforeClass
-    public static void setUp() {
+    @BeforeAll
+    static void setUp() {
         accessor = mock(GoApplicationAccessor.class);
         argumentCaptor = ArgumentCaptor.forClass(GoApiRequest.class);
 
@@ -45,7 +45,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldLogInfoMessageToConsoleLog() throws JSONException {
+    void shouldLogInfoMessageToConsoleLog() throws JSONException {
         consoleLogger.info("This is info message.");
 
         final GoApiRequest request = argumentCaptor.getValue();
@@ -61,7 +61,7 @@ public class ConsoleLoggerTest {
     }
 
     @Test
-    public void shouldLogErrorMessageToConsoleLog() throws JSONException {
+    void shouldLogErrorMessageToConsoleLog() throws JSONException {
         consoleLogger.error("This is error.");
 
         final GoApiRequest request = argumentCaptor.getValue();

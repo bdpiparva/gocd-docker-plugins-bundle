@@ -18,14 +18,14 @@ package cd.go.contrib.artifact.docker.registry.executors;
 
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.json.JSONException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetPublishArtifactRequestMetadataExecutorTest {
+class GetPublishArtifactRequestMetadataExecutorTest {
     @Test
-    public void shouldReturnPublishArtifactMetadata() throws JSONException {
+    void shouldReturnPublishArtifactMetadata() throws JSONException {
         final GoPluginApiResponse response = new GetPublishArtifactConfigMetadataExecutor().execute();
 
         final String expectedJSON = "[" +

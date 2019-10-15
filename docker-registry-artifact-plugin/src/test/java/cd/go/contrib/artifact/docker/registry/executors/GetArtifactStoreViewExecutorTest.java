@@ -19,16 +19,16 @@ package cd.go.contrib.artifact.docker.registry.executors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static cd.go.plugin.base.ResourceReader.readResource;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetArtifactStoreViewExecutorTest {
+class GetArtifactStoreViewExecutorTest {
     @Test
-    public void shouldRenderTheTemplateInJSON() throws Exception {
+    void shouldRenderTheTemplateInJSON() {
         GoPluginApiResponse response = new GetArtifactStoreViewExecutor().execute();
 
         Map<String, String> responseHash = new Gson().fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {

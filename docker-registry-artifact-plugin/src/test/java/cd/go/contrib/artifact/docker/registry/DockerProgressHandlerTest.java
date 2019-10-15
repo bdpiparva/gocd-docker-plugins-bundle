@@ -17,25 +17,25 @@
 package cd.go.contrib.artifact.docker.registry;
 
 import com.spotify.docker.client.messages.ProgressMessage;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
-public class DockerProgressHandlerTest {
+class DockerProgressHandlerTest {
     private ConsoleLogger consoleLogger;
     private DockerProgressHandler progressHandler;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         consoleLogger = mock(ConsoleLogger.class);
         progressHandler = new DockerProgressHandler(consoleLogger);
     }
 
     @Test
-    public void shouldLogErrorToConsoleLogger() {
+    void shouldLogErrorToConsoleLogger() {
         try {
             progressHandler.progress(ProgressMessage.builder().error("some-error").build());
             fail("Should throw runtime exception with error message");
@@ -46,7 +46,7 @@ public class DockerProgressHandlerTest {
     }
 
     @Test
-    public void shouldLogProgressToConsoleLogger() {
+    void shouldLogProgressToConsoleLogger() {
         progressHandler.progress(ProgressMessage.builder().progress("docker-push-pull-progress").build());
 
         verify(consoleLogger, times(1)).info("docker-push-pull-progress");

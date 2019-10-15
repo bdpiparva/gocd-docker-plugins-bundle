@@ -16,14 +16,14 @@
 
 package cd.go.contrib.artifact.docker.registry.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class PublishArtifactRequestTest {
+class PublishArtifactRequestTest {
 
     @Test
-    public void shouldDeserializeRequestBody() {
+    void shouldDeserializeRequestBody() {
         final String json = "{\n" +
                 "  \"artifact_plan\": {\n" +
                 "    \"configuration\": {\n" +
