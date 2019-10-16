@@ -284,10 +284,10 @@
         </div>
         <div class="tab-content environments" ng-show="currenttab == 'environments'">
           <ul class="name-value">
-              <#list environmentVariables?keys as name>
+              <#list environmentVariables as variable>
                 <li class="name-value_pair">
-                  <label style="width: 300px;">${name!}</label>
-                  <span>${environmentVariables[name]!}</span>
+                  <label style="width: 300px;">${variable.name!}</label>
+                  <span>${variable.value!}</span>
                 </li>
               </#list>
           </ul>

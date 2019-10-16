@@ -35,6 +35,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.*;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -66,7 +67,7 @@ class AgentStatusReportExecutorTest {
         AgentStatusReportRequest agentStatusReportRequest = new AgentStatusReportRequest();
         agentStatusReportRequest.setElasticAgentId(agentId)
                 .setClusterProfileConfiguration(clusterProfileProperties);
-        AgentStatusReport agentStatusReport = new AgentStatusReport(null, agentId, null, null, null, null, null, new HashMap<>(), new ArrayList<>());
+        AgentStatusReport agentStatusReport = new AgentStatusReport(null, agentId, null, null, null, null, null, emptyList(), new ArrayList<>());
 
         DockerContainer dockerContainer = new DockerContainer("id", "name", new JobIdentifier(), new Date(), new ElasticProfileConfiguration(), null);
         when(dockerContainers.find(agentId)).thenReturn(dockerContainer);
@@ -89,7 +90,7 @@ class AgentStatusReportExecutorTest {
         agentStatusReportRequest.setClusterProfileConfiguration(clusterProfileProperties)
                 .setJobIdentifier(jobIdentifier);
 
-        AgentStatusReport agentStatusReport = new AgentStatusReport(jobIdentifier, "elastic-agent-id", null, null, null, null, null, new HashMap<>(), new ArrayList<>());
+        AgentStatusReport agentStatusReport = new AgentStatusReport(jobIdentifier, "elastic-agent-id", null, null, null, null, null, emptyList(), new ArrayList<>());
 
         DockerContainer dockerContainer = new DockerContainer("id", "name", jobIdentifier, new Date(), new ElasticProfileConfiguration(), null);
         when(dockerContainers.find(jobIdentifier)).thenReturn(Optional.of(dockerContainer));

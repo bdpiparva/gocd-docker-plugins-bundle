@@ -56,7 +56,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
         verifyNoMoreInteractions(pluginRequest);
 
         final Collection<Agent> values = agents.agents();
-        HashMap<String, DockerContainers> dockerContainers = new HashMap<String, DockerContainers>() {{
+        HashMap<String, DockerContainers> dockerContainers = new HashMap<>() {{
             put(createClusterProfiles().uuid(), agentInstances);
         }};
 
@@ -65,12 +65,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
     }
 
     private ArgumentMatcher<Collection<Agent>> collectionMatches(final Collection<Agent> values) {
-        return new ArgumentMatcher<Collection<Agent>>() {
-            @Override
-            public boolean matches(Collection<Agent> argument) {
-                return new ArrayList<>(argument).equals(new ArrayList<>(values));
-            }
-        };
+        return argument -> new ArrayList<>(argument).equals(new ArrayList<>(values));
     }
 
     @Test
@@ -84,7 +79,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
         when(serverPingRequest.getAllClusterProfileConfigurations()).thenReturn(of(createClusterProfiles()));
         when(pluginRequest.listAgents()).thenReturn(agents);
         verifyNoMoreInteractions(pluginRequest);
-        HashMap<String, DockerContainers> dockerContainers = new HashMap<String, DockerContainers>() {{
+        HashMap<String, DockerContainers> dockerContainers = new HashMap<>() {{
             put(createClusterProfiles().uuid(), agentInstances);
         }};
 
@@ -113,7 +108,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
         DockerContainer container = agentInstances.create(request, pluginRequest, mock(ConsoleLogAppender.class));
         containers.add(container.name());
 
-        HashMap<String, DockerContainers> dockerContainers = new HashMap<String, DockerContainers>() {{
+        HashMap<String, DockerContainers> dockerContainers = new HashMap<>() {{
             put(createClusterProfiles().uuid(), agentInstances);
         }};
 
@@ -131,7 +126,7 @@ class ServerPingRequestExecutorTest extends BaseTest {
         verifyNoMoreInteractions(pluginRequest);
 
         DockerContainers agentInstances = new DockerContainers();
-        HashMap<String, DockerContainers> dockerContainers = new HashMap<String, DockerContainers>() {{
+        HashMap<String, DockerContainers> dockerContainers = new HashMap<>() {{
             put(createClusterProfiles().uuid(), agentInstances);
         }};
 

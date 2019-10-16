@@ -54,7 +54,7 @@ class ClusterStatusReportExecutorTest {
         final ViewBuilder builder = mock(ViewBuilder.class);
         final Template template = mock(Template.class);
 
-        when(builder.getTemplate("status-report.template.ftlh")).thenReturn(template);
+        when(builder.getTemplate("docker-swarm/cluster-status-report.template.ftlh")).thenReturn(template);
         when(builder.build(eq(template), any(SwarmCluster.class))).thenReturn("status-report");
         final GoPluginApiResponse response = new ClusterStatusReportExecutor(dockerClientFactory, builder).execute(request);
 

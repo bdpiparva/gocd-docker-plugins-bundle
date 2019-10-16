@@ -31,24 +31,6 @@ import static org.apache.commons.lang.StringUtils.isBlank;
 
 
 public class Util {
-    public static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-
-//    public static String readResource(String resourceFile) {
-//        try (InputStreamReader reader = new InputStreamReader(GetClusterProfileViewRequestExecutor.class.getResourceAsStream(resourceFile), StandardCharsets.UTF_8)) {
-//            return CharStreams.toString(reader);
-//        } catch (IOException e) {
-//            throw new RuntimeException("Could not find resource " + resourceFile, e);
-//        }
-//    }
-
-//    public static byte[] readResourceBytes(String resourceFile) {
-//        try (InputStream in = GetClusterProfileViewRequestExecutor.class.getResourceAsStream(resourceFile)) {
-//            return ByteStreams.toByteArray(in);
-//        } catch (IOException e) {
-//            throw new RuntimeException("Could not find resource " + resourceFile, e);
-//        }
-//    }
-
     public static Collection<String> splitIntoLinesAndTrimSpaces(String lines) {
         if (isBlank(lines)) {
             return Collections.emptyList();

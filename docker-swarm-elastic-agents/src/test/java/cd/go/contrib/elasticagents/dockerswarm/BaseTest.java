@@ -127,10 +127,10 @@ public abstract class BaseTest {
 
     static void requireDockerApiVersionAtLeast(final String required, final String functionality)
             throws Exception {
-
         final String msg = String.format("Docker API should be at least v%s to support %s but runtime version is %s", required, functionality, docker.version().apiVersion());
-
-        assertThat(msg).isEqualTo(dockerApiVersionAtLeast(docker, required));
+        if(!dockerApiVersionAtLeast(docker, required)) {
+            throw new RuntimeException(msg);
+        }
     }
 
     protected List<Container> waitForContainerToStart(DockerService service,

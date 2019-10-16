@@ -16,6 +16,7 @@
 
 package cd.go.contrib.elasticagents.dockerswarm.model.reports.agent;
 
+import cd.go.contrib.elasticagents.common.EnvironmentVariable;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.dockerswarm.utils.Util;
 import com.spotify.docker.client.DockerClient;
@@ -27,7 +28,9 @@ import com.spotify.docker.client.messages.swarm.Task;
 import com.spotify.docker.client.messages.swarm.TaskSpec;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static cd.go.contrib.elasticagents.dockerswarm.Constants.JOB_IDENTIFIER_LABEL_KEY;
 
@@ -43,7 +46,7 @@ public class DockerServiceElasticAgent {
     private String args;
     private JobIdentifier jobIdentifier;
     private String placementConstraints;
-    private Map<String, String> environments;
+    private List<EnvironmentVariable> environments;
     private String hosts;
     private String hostname;
     private List<TaskStatus> tasksStatus = new ArrayList<>();
@@ -92,7 +95,7 @@ public class DockerServiceElasticAgent {
         return placementConstraints;
     }
 
-    public Map<String, String> getEnvironments() {
+    public List<EnvironmentVariable> getEnvironments() {
         return environments;
     }
 
@@ -130,7 +133,7 @@ public class DockerServiceElasticAgent {
         agent.command = listToString(taskSpec.containerSpec().command());
         agent.args = listToString(taskSpec.containerSpec().args());
         agent.placementConstraints = listToString(taskSpec.placement().constraints());
-        agent.environments = toMap(taskSpec);
+        agent.environments = EnvironmentVariable.parse(taskSpec.containerSpec().env());
         agent.hosts = listToString(taskSpec.containerSpec().hosts());
 
         final List<Task> tasks = client.listTasks(Task.Criteria.builder().serviceName(service.id()).build());
@@ -141,27 +144,6 @@ public class DockerServiceElasticAgent {
         }
 
         return agent;
-    }
-
-    private static Map<String, String> toMap(TaskSpec taskSpec) {
-        final List<String> envFromTask = taskSpec.containerSpec().env();
-        Map<String, String> envs = new HashMap<>();
-        if (envFromTask != null) {
-            for (String env : envFromTask) {
-                final String[] parts = env.split("=", 2);
-
-                if ("GO_EA_AUTO_REGISTER_KEY".equals(parts[0])) {
-                    continue;
-                }
-
-                if (parts.length == 2) {
-                    envs.put(parts[0], parts[1]);
-                } else {
-                    envs.put(parts[0], null);
-                }
-            }
-        }
-        return envs;
     }
 
     private static String listToString(List<String> stringList) {

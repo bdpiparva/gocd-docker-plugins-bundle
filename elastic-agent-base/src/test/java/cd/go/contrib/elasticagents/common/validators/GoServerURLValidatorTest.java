@@ -28,13 +28,6 @@ class GoServerURLValidatorTest {
     private final GoServerURLValidator goServerURLMetadata = new GoServerURLValidator();
 
     @Test
-    void shouldCheckBlankInput() {
-        ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, ""));
-
-        assertThat(result.get(0).getMessage()).isEqualTo("Go Server URL must not be blank.");
-    }
-
-    @Test
     void shouldCheckIfStringIsValidUrl() {
         ValidationResult result = goServerURLMetadata.validate(Map.of(GO_SERVER_URL, "foobar"));
 

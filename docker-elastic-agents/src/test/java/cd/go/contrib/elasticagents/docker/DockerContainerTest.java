@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagents.docker;
 
 import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.EnvironmentVariable;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.models.AgentStatusReport;
@@ -32,7 +33,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.Map;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -220,9 +221,10 @@ class DockerContainerTest extends BaseTest {
         assertThat(agentStatusReport.getImage()).isEqualTo("alpine:latest");
         assertThat(agentStatusReport.getJobIdentifier()).isEqualTo(jobIdentifier);
         assertThat(agentStatusReport.getCommand()).isEqualTo("/bin/sleep");
-        Map<String, String> environmentVariables = agentStatusReport.getEnvironmentVariables();
-        assertThat(environmentVariables).containsEntry("A", "B");
-        assertThat(environmentVariables).containsEntry("C", "D");
+        List<EnvironmentVariable> environmentVariables = agentStatusReport.getEnvironmentVariables();
+        assertThat(environmentVariables)
+                .contains(new EnvironmentVariable("A", "B"))
+                .contains(new EnvironmentVariable("C", "D"));
     }
 
     @Test

@@ -16,10 +16,10 @@
 
 package cd.go.contrib.elasticagents.docker.models;
 
+import cd.go.contrib.elasticagents.common.EnvironmentVariable;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 
 import java.util.List;
-import java.util.Map;
 
 public class AgentStatusReport {
     private final JobIdentifier jobIdentifier;
@@ -29,7 +29,7 @@ public class AgentStatusReport {
     private final String command;
     private final String ipAddress;
     private final String logs;
-    private final Map<String, String> environmentVariables;
+    private final List<EnvironmentVariable> environmentVariables;
     private final List<String> hosts;
 
     public AgentStatusReport(JobIdentifier jobIdentifier,
@@ -39,7 +39,7 @@ public class AgentStatusReport {
                              String command,
                              String ipAddress,
                              String logs,
-                             Map<String, String> environmentVariables,
+                             List<EnvironmentVariable> environmentVariables,
                              List<String> hosts) {
         this.jobIdentifier = jobIdentifier;
         this.elasticAgentId = elasticAgentId;
@@ -80,7 +80,7 @@ public class AgentStatusReport {
         return logs;
     }
 
-    public Map<String, String> getEnvironmentVariables() {
+    public List<EnvironmentVariable> getEnvironmentVariables() {
         return environmentVariables;
     }
 

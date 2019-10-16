@@ -17,6 +17,7 @@
 package cd.go.contrib.elasticagents.docker;
 
 import cd.go.contrib.elasticagents.common.ConsoleLogAppender;
+import cd.go.contrib.elasticagents.common.EnvironmentVariable;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
 import cd.go.contrib.elasticagents.common.requests.AbstractCreateAgentRequest;
 import cd.go.contrib.elasticagents.docker.models.*;
@@ -257,20 +258,8 @@ public class DockerContainer {
                 parseEnvironmentVariables(containerInfo), extraHosts(containerInfo));
     }
 
-    private static Map<String, String> parseEnvironmentVariables(ContainerInfo containerInfo) {
-        ImmutableList<String> env = containerInfo.config().env();
-        Map<String, String> environmentVariables = new HashMap<>();
-        if (env != null) {
-            env.forEach(e -> {
-                String[] keyValue = e.split("=");
-                if (keyValue.length == 2) {
-                    environmentVariables.put(keyValue[0], keyValue[1]);
-                } else {
-                    environmentVariables.put(keyValue[0], null);
-                }
-            });
-        }
-        return environmentVariables;
+    private static List<EnvironmentVariable> parseEnvironmentVariables(ContainerInfo containerInfo) {
+        return EnvironmentVariable.parse(containerInfo.config().env());
     }
 
     private static List<String> extraHosts(ContainerInfo containerInfo) {

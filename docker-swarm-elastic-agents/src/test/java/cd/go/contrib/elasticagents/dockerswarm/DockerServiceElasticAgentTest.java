@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static com.spotify.docker.client.VersionCompare.compareVersion;
 import static java.lang.String.format;
 import static java.util.List.of;
 import static org.apache.commons.lang.StringUtils.join;
@@ -36,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 class DockerServiceElasticAgentTest extends BaseTest {
     private CreateAgentRequest createAgentRequest;
-
     private JobIdentifier jobIdentifier;
 
     @BeforeEach

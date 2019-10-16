@@ -52,7 +52,7 @@ public class ClusterStatusReportExecutor extends AbstractExecutor<ClusterStatusR
             LOG.debug("[status-report] Generating cluster status report.");
             final DockerClient dockerClient = dockerClientFactory.docker(request.getClusterProfileConfiguration());
             final SwarmCluster swarmCluster = new SwarmCluster(dockerClient);
-            final Template template = viewBuilder.getTemplate("status-report.template.ftlh");
+            final Template template = viewBuilder.getTemplate("docker-swarm/cluster-status-report.template.ftlh");
             final String statusReportView = viewBuilder.build(template, swarmCluster);
 
             JsonObject responseJSON = new JsonObject();

@@ -67,7 +67,7 @@ public class AgentStatusReportExecutor extends AbstractExecutor<AgentStatusRepor
             Service dockerService = findService(elasticAgentId, jobIdentifier, dockerClient);
 
             DockerServiceElasticAgent elasticAgent = DockerServiceElasticAgent.fromService(dockerService, dockerClient);
-            final String statusReportView = builder.build(builder.getTemplate("/docker-swarm/agent-status-report.template.ftlh"), elasticAgent);
+            final String statusReportView = builder.build(builder.getTemplate("docker-swarm/agent-status-report.template.ftlh"), elasticAgent);
 
             JsonObject responseJSON = new JsonObject();
             responseJSON.addProperty("view", statusReportView);

@@ -18,14 +18,15 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 
 import cd.go.contrib.elasticagents.common.ViewBuilder;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerClientFactory;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.AgentStatusReportRequest;
 import cd.go.contrib.elasticagents.dockerswarm.utils.JobIdentifierMother;
 import com.google.gson.reflect.TypeToken;
 import com.spotify.docker.client.DockerClient;
 import com.spotify.docker.client.LogMessage;
 import com.spotify.docker.client.LogStream;
+import com.spotify.docker.client.exceptions.DockerException;
 import com.spotify.docker.client.messages.swarm.*;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +44,7 @@ import java.util.Date;
 import java.util.Map;
 
 import static cd.go.contrib.elasticagents.dockerswarm.Constants.JOB_IDENTIFIER_LABEL_KEY;
-import static cd.go.contrib.elasticagents.dockerswarm.utils.Util.GSON;
+import static cd.go.plugin.base.GsonTransformer.fromJson;
 import static com.spotify.docker.client.DockerClient.LogsParam.stderr;
 import static com.spotify.docker.client.DockerClient.LogsParam.stdout;
 import static java.util.List.of;
@@ -83,7 +84,7 @@ class AgentStatusReportExecutorTest {
         GoPluginApiResponse response = executor.execute(statusReportRequest);
 
         assertThat(response.responseCode()).isEqualTo(200);
-        final Map<String, String> responseMap = GSON.fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
+        final Map<String, String> responseMap = fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
         assertThat(responseMap.containsKey("view")).isTrue();
 
@@ -95,7 +96,7 @@ class AgentStatusReportExecutorTest {
     }
 
     @Test
-    void shouldNotPrintAutoRegisterKey() throws Exception {
+    void shouldNotPrintAutoRegisterKey() throws DockerException, InterruptedException {
         final Service service = mockedService("elastic-agent-id", "abcd-xyz");
         when(statusReportRequest.getJobIdentifier()).thenReturn(JobIdentifierMother.get());
         when(statusReportRequest.getElasticAgentId()).thenReturn("elastic-agent-id");
@@ -105,7 +106,7 @@ class AgentStatusReportExecutorTest {
         GoPluginApiResponse response = executor.execute(statusReportRequest);
 
         assertThat(response.responseCode()).isEqualTo(200);
-        final Map<String, String> responseMap = GSON.fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
+        final Map<String, String> responseMap = fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
         assertThat(responseMap.containsKey("view")).isTrue();
 
@@ -114,7 +115,7 @@ class AgentStatusReportExecutorTest {
         assertServiceLog(document, "some-logs");
         assertThat(hasEnvironmentVariable(document, "Foo", "Bar")).isTrue();
         assertThat(hasEnvironmentVariable(document, "Baz", null)).isTrue();
-        assertThat(hasEnvironmentVariable(document, "GO_EA_AUTO_REGISTER_KEY", null)).isFalse();
+        assertThat(hasEnvironmentVariable(document, "GO_EA_AUTO_REGISTER_KEY", "**************key")).isTrue();
     }
 
     @Test
@@ -128,7 +129,7 @@ class AgentStatusReportExecutorTest {
         GoPluginApiResponse response = executor.execute(statusReportRequest);
 
         assertThat(response.responseCode()).isEqualTo(200);
-        final Map<String, String> responseMap = GSON.fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
+        final Map<String, String> responseMap = fromJson(response.responseBody(), new TypeToken<Map<String, String>>() {
         }.getType());
         assertThat(responseMap.containsKey("view")).isTrue();
 
