@@ -34,7 +34,8 @@ public class GoServerURLValidator implements Validator {
         ValidationResult result = new ValidationResult();
         String url = requestBody.get(GO_SERVER_URL);
         if (isBlank(url)) {
-            return addError(result, "%s must not be blank.");
+            //Default validation will take care of blank check based on metadata
+            return result;
         }
 
         URIBuilder uriBuilder = null;

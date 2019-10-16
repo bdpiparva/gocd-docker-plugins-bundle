@@ -19,8 +19,8 @@ package cd.go.contrib.elasticagents.dockerswarm.executors;
 import cd.go.contrib.elasticagents.common.ElasticAgentRequestClient;
 import cd.go.contrib.elasticagents.common.agent.Agent;
 import cd.go.contrib.elasticagents.common.models.JobIdentifier;
-import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.DockerServices;
+import cd.go.contrib.elasticagents.dockerswarm.SwarmClusterConfiguration;
 import cd.go.contrib.elasticagents.dockerswarm.requests.JobCompletionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,7 +73,7 @@ class JobCompletionRequestExecutorTest {
     void shouldTerminateElasticAgentOnJobCompletion() throws Exception {
         GoPluginApiResponse response = executor.execute(request);
 
-        InOrder inOrder = inOrder(mockPluginRequest, clusterToDockerServiceMap);
+        InOrder inOrder = inOrder(mockPluginRequest, mockAgentInstances);
         inOrder.verify(mockPluginRequest).disableAgents(agentsArgumentCaptor.capture());
         inOrder.verify(mockAgentInstances).terminate(ELASTIC_AGENT_ID, swarmClusterConfiguration);
         inOrder.verify(mockPluginRequest).deleteAgents(agentsArgumentCaptor.capture());
