@@ -21,6 +21,7 @@ dependencies {
 }
 
 jar {
+  archiveBaseName = "gocd-docker-plugins-bundle"
   from(configurations.compile) {
     into "lib/"
   }
